@@ -1,0 +1,160 @@
+AFFYMETRIX_3PRIME_IVT_ID	Name	Species
+38926_at	integrin, beta 5	Homo sapiens
+38236_at	glutamate receptor, ionotropic, N-methyl D-aspartate 2A	Homo sapiens
+35367_at	lectin, galactoside-binding, soluble, 3	Homo sapiens
+1910_s_at	B-cell CLL/lymphoma 2	Homo sapiens
+1391_s_at	cytochrome P450, family 4, subfamily A, polypeptide 11	Homo sapiens
+38674_at	kelch-like 9 (Drosophila)	Homo sapiens
+31576_at	mevalonate kinase	Homo sapiens
+606_at	Rho family GTPase 2	Homo sapiens
+34703_f_at	HERV-H LTR-associating 1	Homo sapiens
+34233_i_at	natural killer-tumor recognition sequence	Homo sapiens
+40959_at	pleckstrin homology domain containing, family G (with RhoGef domain) member 3	Homo sapiens
+822_s_at	CASP2 and RIPK1 domain containing adaptor with death domain	Homo sapiens
+966_at	RAD54-like (S. cerevisiae)	Homo sapiens
+967_g_at	RAD54-like (S. cerevisiae)	Homo sapiens
+39469_s_at	ATPase, aminophospholipid transporter-like, class I, type 8A, member 2	Homo sapiens
+41489_at	similar to transducin-like enhancer of split 1 (E(sp1) homolog, Drosophila); transducin-like enhancer of split 1 (E(sp1) homolog, Drosophila)	Homo sapiens
+36713_at	tripartite motif-containing 58	Homo sapiens
+37814_g_at	DEAD (Asp-Glu-Ala-Asp) box polypeptide 51	Homo sapiens
+40350_at	ADAM metallopeptidase domain 23	Homo sapiens
+39187_at	runt-related transcription factor 2	Homo sapiens
+33979_at	ribonuclease, RNase A family, 3 (eosinophil cationic protein)	Homo sapiens
+36317_at	coronin, actin binding protein, 2A	Homo sapiens
+38691_s_at	surfactant protein C	Homo sapiens
+36703_at	chemokine (C-C motif) ligand 25	Homo sapiens
+34629_at	tumor protein p53 inducible protein 11	Homo sapiens
+33516_at	hemoglobin, delta	Homo sapiens
+35069_at	PRAME family member 2	Homo sapiens
+1403_s_at	chemokine (C-C motif) ligand 5	Homo sapiens
+2090_i_at	wingless-type MMTV integration site family, member 6	Homo sapiens
+1355_g_at	neurotrophic tyrosine kinase, receptor, type 2	Homo sapiens
+37172_at	carboxypeptidase B2 (plasma)	Homo sapiens
+38508_s_at	tenascin XB; tenascin XA pseudogene	Homo sapiens
+40058_s_at	PDZ and LIM domain 5	Homo sapiens
+936_s_at	DNA segment on chromosome 4 (unique) 234 expressed sequence	Homo sapiens
+31687_f_at	hemoglobin, beta	Homo sapiens
+34539_at	olfactory receptor, family 7, subfamily E, member 35 pseudogene	Homo sapiens
+36234_at	similar to eukaryotic translation initiation factor 4A; small nucleolar RNA, H/ACA box 67; eukaryotic translation initiation factor 4A, isoform 1	Homo sapiens
+37953_s_at	amiloride-sensitive cation channel 2, neuronal	Homo sapiens
+33246_at	mitogen-activated protein kinase 13	Homo sapiens
+34546_at	defensin, alpha 4, corticostatin	Homo sapiens
+1890_at	growth differentiation factor 15	Homo sapiens
+41703_r_at	A kinase (PRKA) anchor protein 7	Homo sapiens
+33284_at	myeloperoxidase	Homo sapiens
+31525_s_at	hemoglobin, alpha 2; hemoglobin, alpha 1	Homo sapiens
+34577_at	melanoma antigen family A, 9; melanoma antigen family A, 9B	Homo sapiens
+32680_at	TRAF2 and NCK interacting kinase	Homo sapiens
+34467_g_at	5-hydroxytryptamine (serotonin) receptor 4	Homo sapiens
+1372_at	tumor necrosis factor, alpha-induced protein 6	Homo sapiens
+36328_at	sex hormone-binding globulin	Homo sapiens
+38128_at	N-acetyltransferase 8 (GCN5-related, putative); N-acetyltransferase 8B (GCN5-related, putative, gene/pseudogene)	Homo sapiens
+32010_at	chromosome 22 open reading frame 33	Homo sapiens
+1331_s_at	tumor necrosis factor receptor superfamily, member 25	Homo sapiens
+40186_at	dual specificity phosphatase 9	Homo sapiens
+35915_at	inhibin, beta C	Homo sapiens
+31621_s_at	elastin	Homo sapiens
+40294_at	ATP-binding cassette, sub-family B (MDR/TAP), member 9	Homo sapiens
+37905_r_at	guanine nucleotide binding protein-like 1	Homo sapiens
+39511_at	similar to Afadin (Protein AF-6); myeloid/lymphoid or mixed-lineage leukemia (trithorax homolog, Drosophila); translocated to, 4	Homo sapiens
+31512_at	similar to hCG26659; immunoglobulin kappa constant; similar to Ig kappa chain V-I region HK102 precursor	Homo sapiens
+35595_at	CGRP receptor component	Homo sapiens
+35648_at	autism susceptibility candidate 2	Homo sapiens
+38201_at	branched chain aminotransferase 1, cytosolic	Homo sapiens
+40317_at	amiloride-sensitive cation channel 1, neuronal	Homo sapiens
+1974_s_at	tumor protein p53	Homo sapiens
+39094_at	bromodomain containing 4	Homo sapiens
+34623_at	defensin, alpha 5, Paneth cell-specific	Homo sapiens
+33080_s_at	RAP1 GTPase activating protein	Homo sapiens
+33530_at	carcinoembryonic antigen-related cell adhesion molecule 8	Homo sapiens
+38945_at	metal-regulatory transcription factor 1	Homo sapiens
+37954_at	annexin A8-like 2	Homo sapiens
+37097_at	solute carrier family 17 (sodium phosphate), member 1	Homo sapiens
+1419_g_at	nitric oxide synthase 2, inducible	Homo sapiens
+37408_at	mannose receptor, C type 2	Homo sapiens
+37096_at	elastase, neutrophil expressed	Homo sapiens
+1112_g_at	neural cell adhesion molecule 1	Homo sapiens
+37061_at	chitinase 1 (chitotriosidase)	Homo sapiens
+34636_at	arachidonate 15-lipoxygenase	Homo sapiens
+32413_at	ENSG00000178672	Homo sapiens
+35903_at	oligodendrocyte myelin glycoprotein	Homo sapiens
+34606_s_at	activating transcription factor 7	Homo sapiens
+39908_at	TAF6-like RNA polymerase II, p300/CBP-associated factor (PCAF)-associated factor, 65kDa	Homo sapiens
+1855_at	fibroblast growth factor 3 (murine mammary tumor virus integration site (v-int-2) oncogene homolog)	Homo sapiens
+33684_at	wingless-type MMTV integration site family, member 2B	Homo sapiens
+38948_at	protein phosphatase 1, regulatory (inhibitor) subunit 3D	Homo sapiens
+1901_s_at	v-erb-b2 erythroblastic leukemia viral oncogene homolog 2, neuro/glioblastoma derived oncogene homolog (avian)	Homo sapiens
+31793_at	defensin, alpha 1	Homo sapiens
+31506_s_at	defensin, alpha 1	Homo sapiens
+32073_at	lysine (K)-specific demethylase 4A	Homo sapiens
+32250_at	complement factor H	Homo sapiens
+37166_at	3-hydroxyanthranilate 3,4-dioxygenase	Homo sapiens
+32439_at	ATPase, H+/K+ exchanging, beta polypeptide	Homo sapiens
+35956_s_at	pregnancy specific beta-1-glycoprotein 7; pregnancy specific beta-1-glycoprotein 8; pregnancy specific beta-1-glycoprotein 4	Homo sapiens
+35213_at	WW domain binding protein 4 (formin binding protein 21)	Homo sapiens
+32717_at	neuralized homolog (Drosophila)	Homo sapiens
+37983_at	angiotensin II receptor, type 1	Homo sapiens
+35373_at	phosphoinositide-3-kinase, regulatory subunit 1 (alpha)	Homo sapiens
+38229_at	cytochrome P450, family 3, subfamily A, polypeptide 5	Homo sapiens
+919_at	guanine nucleotide binding protein (G protein) alpha 12	Homo sapiens
+35896_at	POM121 membrane glycoprotein-like 9 (rat) pseudogene	Homo sapiens
+35121_at	solute carrier family 6 (neurotransmitter transporter, taurine), member 6	Homo sapiens
+34249_at	epilepsy, progressive myoclonus type 2A, Lafora disease (laforin)	Homo sapiens
+34702_f_at	TPTE pseudogene	Homo sapiens
+33685_at	ATPase, class I, type 8B, member 3	Homo sapiens
+35169_at	collagen, type XVI, alpha 1	Homo sapiens
+36436_at	leukocyte cell-derived chemotaxin 2	Homo sapiens
+36479_at	growth arrest-specific 8	Homo sapiens
+33293_at	Fas apoptotic inhibitory molecule 2	Homo sapiens
+35090_g_at	neuregulin 2	Homo sapiens
+35091_at	neuregulin 2	Homo sapiens
+37711_at	myocyte enhancer factor 2C	Homo sapiens
+31987_at	kin of IRRE like (Drosophila)	Homo sapiens
+1645_at	KiSS-1 metastasis-suppressor	Homo sapiens
+35439_at	splicing factor 1	Homo sapiens
+36421_at	cell division cycle 73, Paf1/RNA polymerase II complex component, homolog (S. cerevisiae)	Homo sapiens
+38646_s_at	regenerating islet-derived 1 alpha; regenerating islet-derived 1 pseudogene	Homo sapiens
+34453_at	cytochrome P450, family 2, subfamily B, polypeptide 7 pseudogene 1	Homo sapiens
+35038_at	myosin binding protein C, cardiac	Homo sapiens
+34012_at	keratin 34	Homo sapiens
+1575_at	ATP-binding cassette, sub-family B (MDR/TAP), member 1	Homo sapiens
+36766_at	ribonuclease, RNase A family, 2 (liver, eosinophil-derived neurotoxin)	Homo sapiens
+36696_at	phosphatidylinositol glycan anchor biosynthesis, class C	Homo sapiens
+32279_at	glutamate decarboxylase 2 (pancreatic islets and brain, 65kDa)	Homo sapiens
+39198_s_at	tetratricopeptide repeat domain 15	Homo sapiens
+35566_f_at	immunoglobulin heavy constant gamma 1 (G1m marker); immunoglobulin heavy constant mu; immunoglobulin heavy variable 3-7; immunoglobulin heavy constant gamma 3 (G3m marker); immunoglobulin heavy variable 3-11 (gene/pseudogene); immunoglobulin heavy variable 4-31; immunoglobulin heavy locus	Homo sapiens
+34529_at	hypothetical protein LOC729678	Homo sapiens
+40553_at	hypothetical LOC729400; hypothetical LOC728401; similar to Putative POM121-like protein 1-like	Homo sapiens
+31715_at	testis expressed 28; testis expressed 28 pseudogene 1; testis expressed 28 pseudogene 2	Homo sapiens
+34618_at	Indian hedgehog homolog (Drosophila)	Homo sapiens
+36378_at	uroplakin 1A	Homo sapiens
+38604_at	neuropeptide Y	Homo sapiens
+32418_at	phosphodiesterase 1C, calmodulin-dependent 70kDa	Homo sapiens
+32148_at	FERM, RhoGEF (ARHGEF) and pleckstrin domain protein 1 (chondrocyte-derived)	Homo sapiens
+37898_r_at	trefoil factor 3 (intestinal)	Homo sapiens
+38103_at	GRB10 interacting GYF protein 2	Homo sapiens
+33922_at	PR domain containing 2, with ZNF domain	Homo sapiens
+41280_r_at	mitogen-activated protein kinase 8 interacting protein 1	Homo sapiens
+34436_at	solute carrier family 17 (sodium phosphate), member 3	Homo sapiens
+37454_at	chemokine (C-C motif) ligand 13	Homo sapiens
+40790_at	basic helix-loop-helix family, member e40	Homo sapiens
+33077_at	sidekick homolog 1, cell adhesion molecule (chicken); hypothetical LOC730351	Homo sapiens
+41113_at	zinc finger protein 500	Homo sapiens
+33027_at	ArfGAP with GTPase domain, ankyrin repeat and PH domain 4; ArfGAP with GTPase domain, ankyrin repeat and PH domain 6	Homo sapiens
+40089_at	Williams Beuren syndrome chromosome region 22	Homo sapiens
+38482_at	claudin 7	Homo sapiens
+34972_s_at	dynein, axonemal, heavy chain 17	Homo sapiens
+32084_at	solute carrier family 22 (organic cation/carnitine transporter), member 5	Homo sapiens
+40735_at	histidine ammonia-lyase	Homo sapiens
+679_at	cathepsin G	Homo sapiens
+37105_at	cathepsin G	Homo sapiens
+33963_at	azurocidin 1	Homo sapiens
+40271_at	nucleoporin 93kDa	Homo sapiens
+37968_at	natural cytotoxicity triggering receptor 3	Homo sapiens
+39698_at	HOP homeobox	Homo sapiens
+32469_at	carcinoembryonic antigen-related cell adhesion molecule 3	Homo sapiens
+38816_at	transforming, acidic coiled-coil containing protein 2	Homo sapiens
+1983_at	cyclin D2	Homo sapiens
+34720_at	nuclear factor I/B	Homo sapiens
+1786_at	c-mer proto-oncogene tyrosine kinase	Homo sapiens
+33371_s_at	RAB31, member RAS oncogene family	Homo sapiens

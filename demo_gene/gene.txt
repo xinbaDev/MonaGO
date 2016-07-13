@@ -1,0 +1,66 @@
+ID	Gene Name	Species
+34467_g_at	5-hydroxytryptamine (serotonin) receptor 4	Homo sapiens
+41703_r_at	A kinase (PRKA) anchor protein 7	Homo sapiens
+40294_at	ATP-binding cassette, sub-family B (MDR/TAP), member 9	Homo sapiens
+33027_at	ArfGAP with GTPase domain, ankyrin repeat and PH domain 4; ArfGAP with GTPase domain, ankyrin repeat and PH domain 6	Homo sapiens
+822_s_at	CASP2 and RIPK1 domain containing adaptor with death domain	Homo sapiens
+37814_g_at	DEAD (Asp-Glu-Ala-Asp) box polypeptide 51	Homo sapiens
+936_s_at	DNA segment on chromosome 4 (unique) 234 expressed sequence	Homo sapiens
+32413_at	ENSG00000178672	Homo sapiens
+32148_at	FERM, RhoGEF (ARHGEF) and pleckstrin domain protein 1 (chondrocyte-derived)	Homo sapiens
+38103_at	GRB10 interacting GYF protein 2	Homo sapiens
+34703_f_at	HERV-H LTR-associating 1	Homo sapiens
+1645_at	KiSS-1 metastasis-suppressor	Homo sapiens
+40058_s_at	PDZ and LIM domain 5	Homo sapiens
+35896_at	POM121 membrane glycoprotein-like 9 (rat) pseudogene	Homo sapiens
+33922_at	PR domain containing 2, with ZNF domain	Homo sapiens
+35069_at	PRAME family member 2	Homo sapiens
+33371_s_at	RAB31, member RAS oncogene family	Homo sapiens
+33080_s_at	RAP1 GTPase activating protein	Homo sapiens
+606_at	Rho family GTPase 2	Homo sapiens
+39908_at	TAF6-like RNA polymerase II, p300/CBP-associated factor (PCAF)-associated factor, 65kDa	Homo sapiens
+34702_f_at	TPTE pseudogene	Homo sapiens
+35213_at	WW domain binding protein 4 (formin binding protein 21)	Homo sapiens
+40089_at	Williams Beuren syndrome chromosome region 22	Homo sapiens
+34606_s_at	activating transcription factor 7	Homo sapiens
+35648_at	autism susceptibility candidate 2	Homo sapiens
+39094_at	bromodomain containing 4	Homo sapiens
+32469_at	carcinoembryonic antigen-related cell adhesion molecule 3	Homo sapiens
+36421_at	cell division cycle 73, Paf1/RNA polymerase II complex component, homolog (S. cerevisiae)	Homo sapiens
+32010_at	chromosome 22 open reading frame 33	Homo sapiens
+36317_at	coronin, actin binding protein, 2A	Homo sapiens
+34453_at	cytochrome P450, family 2, subfamily B, polypeptide 7 pseudogene 1	Homo sapiens
+38229_at	cytochrome P450, family 3, subfamily A, polypeptide 5	Homo sapiens
+1391_s_at	cytochrome P450, family 4, subfamily A, polypeptide 11	Homo sapiens
+40553_at	hypothetical LOC729400; hypothetical LOC728401; similar to Putative POM121-like protein 1-like	Homo sapiens
+34529_at	hypothetical protein LOC729678	Homo sapiens
+35915_at	inhibin, beta C	Homo sapiens
+38674_at	kelch-like 9 (Drosophila)	Homo sapiens
+34012_at	keratin 34	Homo sapiens
+31987_at	kin of IRRE like (Drosophila)	Homo sapiens
+35367_at	lectin, galactoside-binding, soluble, 3	Homo sapiens
+32073_at	lysine (K)-specific demethylase 4A	Homo sapiens
+37408_at	mannose receptor, C type 2	Homo sapiens
+34577_at	melanoma antigen family A, 9; melanoma antigen family A, 9B	Homo sapiens
+38945_at	metal-regulatory transcription factor 1	Homo sapiens
+31576_at	mevalonate kinase	Homo sapiens
+34233_i_at	natural killer-tumor recognition sequence	Homo sapiens
+35090_g_at	neuregulin 2	Homo sapiens
+40271_at	nucleoporin 93kDa	Homo sapiens
+34539_at	olfactory receptor, family 7, subfamily E, member 35 pseudogene	Homo sapiens
+36696_at	phosphatidylinositol glycan anchor biosynthesis, class C	Homo sapiens
+32418_at	phosphodiesterase 1C, calmodulin-dependent 70kDa	Homo sapiens
+40959_at	pleckstrin homology domain containing, family G (with RhoGef domain) member 3	Homo sapiens
+38948_at	protein phosphatase 1, regulatory (inhibitor) subunit 3D	Homo sapiens
+36234_at	similar to eukaryotic translation initiation factor 4A; small nucleolar RNA, H/ACA box 67; eukaryotic translation initiation factor 4A, isoform 1	Homo sapiens
+41489_at	similar to transducin-like enhancer of split 1 (E(sp1) homolog, Drosophila); transducin-like enhancer of split 1 (E(sp1) homolog, Drosophila)	Homo sapiens
+35121_at	solute carrier family 6 (neurotransmitter transporter, taurine), member 6	Homo sapiens
+38691_s_at	surfactant protein C	Homo sapiens
+31715_at	testis expressed 28; testis expressed 28 pseudogene 1; testis expressed 28 pseudogene 2	Homo sapiens
+39198_s_at	tetratricopeptide repeat domain 15	Homo sapiens
+38816_at	transforming, acidic coiled-coil containing protein 2	Homo sapiens
+36713_at	tripartite motif-containing 58	Homo sapiens
+1331_s_at	tumor necrosis factor receptor superfamily, member 25	Homo sapiens
+36378_at	uroplakin 1A	Homo sapiens
+33684_at	wingless-type MMTV integration site family, member 2B	Homo sapiens
+41113_at	zinc finger protein 500	Homo sapiens
