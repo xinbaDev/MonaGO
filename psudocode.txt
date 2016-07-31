@@ -1,4 +1,0 @@
-  	 (i,j) = getMax(similarity matrix) //get the positions of  two most similar GO terms
- n = merge(i,j) //merge two GO terms(merge their associated genes)
- For each GOk except GOi and GOj
-	 	SIM(k,n) = update(n,GOk)//calculate the number of common genes
