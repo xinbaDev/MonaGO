@@ -25,11 +25,15 @@ import json
 fr_GO = open("E:\\research\\zebrafish\\server\\js\\GO.js","r")
 
 fr = open("E:\\research\\zebrafish\\Data.txt","r")
+fr_html = open('E:\\research\\zebrafish\\MonaGO\\MonaGO\\templates\\chord_layout.html',"r")
 
 for i in fr_GO:
     GO_hier = json.loads(str(i))
 
+html = "".join(fr_html.readlines())
+
 fr_GO.close()
+fr_html.close()
 
 metacount = 0
 geneLists = {}
@@ -83,7 +87,7 @@ def returnDemo():
     
     data = fr.readline()
 
-    return data + render_template("chord_layout.html")
+    return data + html;
 
 def davidPythonAPI(inputIds,idType,listName,listType,annotCat):
         url = 'http://david.abcc.ncifcrf.gov/webservice/services/DAVIDWebService?wsdl'
@@ -206,7 +210,7 @@ def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
     fw.write(data)
     fw.close()
 
-    return data+render_template("chord_layout.html")
+    return data+html
 
 def filterGO(pVal):
     filterGO_inf = []

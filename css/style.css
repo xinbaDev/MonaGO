@@ -396,3 +396,9 @@ a {
   transform: rotate(180deg);
   -webkit-transform: rotate(180deg);
 }
+
+.dropdown.dropdown-scroll .dropdown-menu {
+    max-height: 200px;
+    width: 60px;
+    overflow: auto;
+}
