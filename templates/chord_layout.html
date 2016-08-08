@@ -5,18 +5,18 @@ var go_inf=[{'count': '4', 'genes': 'histidine ammonia-lyase|nitric oxide syntha
 <html ng-app="MonaGO">
 
 <body>
-<div id="details" class="">
-    <div class="input-group">
+<div id="details" ng-controller="searchCtrl">
+    <div class="input-group" >
       <input type="text" id="filter" class="form-control" ng-model="searchText" ng-init="searchText=''" placeholder="Enter the gene name or GO term">
       <span class="input-group-btn">
         <button class="btn btn-primary" id="filter_button" type="button"><span class="glyphicon glyphicon-search"></span></button>
       </span>
      </div>
-     <div ng-controller="searchCtrl">
+     <div >
       <div ng-if="isNotEmpty(searchText)" class="scrollable list-group dropdown dropdown-menu">
         <div ng-repeat="GO in goNodes|filter:searchText">
-	        <div>
-	        	{{GO.id}}
+	        <div class="search-suggestion-item" ng-click="setSearchBox(GO.id)">
+	        	{{GO.id}} {{GO.term}}
 	        </div>
 	    </div>
       </div>

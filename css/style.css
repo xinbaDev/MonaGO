@@ -66,6 +66,15 @@ body, html{
 	color: lightgray;
 }
 
+.search-suggestion-item{
+  border:1px solid #ddd;
+}
+
+.search-suggestion-item:hover {
+    background-color: lightblue;
+    cursor: pointer;
+}
+
 .dropdown-menu {
   z-index: 10; 
   width : 500px;
