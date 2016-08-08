@@ -55,13 +55,6 @@ body, html{
 	border-bottom: 1px solid #ececec;
 }
 
-#dropdown-suggestions {
-	border-radius: 0px;
-	width: 490px;
-	position: relative;
-	margin-top: 46px; 
-	z-index: 10; 
-}
 
 #dropdown-suggestions  div div.list-group {
    width: 100%;
@@ -69,8 +62,15 @@ body, html{
 }
 
 .search-suggestion-typeLabel {
-    float: right;
+  float: right;
 	color: lightgray;
+}
+
+.dropdown-menu {
+  z-index: 10; 
+  width : 500px;
+  overflow-x: auto;
+  max-height: 500px; 
 }
 
 .dd-display {
@@ -395,10 +395,4 @@ a {
 .rotate180{
   transform: rotate(180deg);
   -webkit-transform: rotate(180deg);
-}
-
-.dropdown.dropdown-scroll .dropdown-menu {
-    max-height: 200px;
-    width: 60px;
-    overflow: auto;
 }
