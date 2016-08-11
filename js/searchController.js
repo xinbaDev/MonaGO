@@ -1,17 +1,20 @@
 var app = angular.module('MonaGO', []);
 
-app.constant('goNodes', goNodes);
+app.constant('go_inf', go_inf);
 
-app.controller('searchCtrl', ['$scope', 'goNodes', function($scope,goNodes) {
-    $scope.goNodes = [];
+app.controller('searchCtrl', ['$scope', 'go_inf', function($scope,go_inf) {
+    $scope.goArr = [];
 
-    for (var property in goNodes) {
-	    if (goNodes.hasOwnProperty(property)) {
+/*    for (var property in go_inf) {
+	    if (go_inf.hasOwnProperty(property)) {
 
-	        $scope.goNodes.push({"id":property,"term":goNodes[property]['n']});
+	        $scope.go_inf.push({"GO_name":property,"GO_id":goNodes[property]['GO_id']});
 	    }
-	}	
-	console.log(goNodes);
+	}	*/
+
+    go_inf.forEach(function(d,i){
+        $scope.goArr.push({"id":d.GO_id,"name":d.GO_name,"genes":d.genes});
+    });
     
     $scope.isNotEmpty = function(searchText){
 

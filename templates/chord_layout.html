@@ -14,9 +14,9 @@ var go_inf=[{'count': '4', 'genes': 'histidine ammonia-lyase|nitric oxide syntha
      </div>
      <div >
       <div ng-if="isNotEmpty(searchText)" class="scrollable list-group dropdown dropdown-menu">
-        <div ng-repeat="GO in goNodes|filter:searchText">
+        <div ng-repeat="GO in goArr|filter:searchText">
 	        <div class="search-suggestion-item" ng-click="setSearchBox(GO.id)">
-	        	{{GO.id}} {{GO.term}}
+	        	{{GO.id}} {{GO.name}}
 	        </div>
 	    </div>
       </div>
