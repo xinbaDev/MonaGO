@@ -28,6 +28,7 @@ app.controller('searchCtrl', ['$scope', 'go_inf', function($scope,go_inf) {
 
     $scope.setSearchBox = function(GO_id){
     	$scope.searchText = GO_id;
+        $('#searchBox').remove();
     	
     }
 }]);
