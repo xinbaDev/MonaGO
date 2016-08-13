@@ -1,21 +1,18 @@
 <link rel="stylesheet"  type="text/css" href="../css/index.css">
 <link  rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
 <link  rel="stylesheet" type="text/css" href="../css/bootstrap-select.min.css">
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="../js/bootstrap.min.js"></script>
 <script type="text/javascript" src="../js/bootstrap-select.min.js"></script>
+
 
 <form method="post" action="" name="frmManager" id="frmManager" enctype="multipart/form-data">
 <input type="Hidden" name="listType" value="null">
 <input type="Hidden" name="annotCat" value="null">
 <input type="Hidden" name="Mode" value="null">
 <div class="submitFormCentered">
-<script type="text/javascript">
 
-$(document).ready(function() {
-	$('.selectpicker').selectpicker({
-	});
-});
-</script>
 					<h2><span class="label label-primary">Step
 					1: Enter Gene List</span></h2>
 			
@@ -31,7 +28,7 @@ $(document).ready(function() {
 					
 					<input type="Button" value="Clear" onclick="clearPaste();" name="B3" class="upload">
 
-	
+				<div class="">
 
 
 							
@@ -52,8 +49,8 @@ $(document).ready(function() {
 							
 					<h2><span class="label label-primary">Step 2: Select Identifier</span></h2>
 		
-								
-								  <select class="selectpicker" name="idType">
+								<br>
+								  <select class="selectpicker" data-width="300px" name="idType">
 							  
 											
 										
@@ -187,14 +184,29 @@ $(document).ready(function() {
 			              		<td><input type="radio" name="uploadType" value="1"></td>
 							</tr>
 						</tbody></table> -->
+						<br>
+						<!-- <input type="text" name="pVal" value="0.05"/> -->
 
-						<input type="text" name="pVal" value="0.05"/>
-			            
+			            <select class="selectpicker" data-width="200px" name="pVal">
+
+			            	<option value="0.005">0.005</option>
+							<option value="0.01">0.01</option>
+			            	<option value="0.05">0.05</option>
+
+			            </select>
 
 
         			<h2><span class="label label-primary">Step 4: Annotation Type</span></h2>
 
-        
+        			<br>
+
+        				<select class="selectpicker show-tick" data-width="500px" name="annotType" multiple>
+
+			            	<option value="GOTERM_BP_FAT">Biological Process</option>
+							<option value="GOTERM_MF_FAT">Molecule Function</option>
+			            	<option value="GOTERM_CC_FAT">Cellular Component</option>
+
+			            </select>
 
 <!-- 							<tbody><tr>
 	<td class="sidebar_text">Biological Process</td>
