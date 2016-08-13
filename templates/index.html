@@ -1,45 +1,39 @@
+<link rel="stylesheet"  type="text/css" href="../css/index.css">
+<link  rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+<link  rel="stylesheet" type="text/css" href="../css/bootstrap-select.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="../js/bootstrap-select.min.js"></script>
+
 <form method="post" action="" name="frmManager" id="frmManager" enctype="multipart/form-data">
 <input type="Hidden" name="listType" value="null">
 <input type="Hidden" name="annotCat" value="null">
 <input type="Hidden" name="Mode" value="null">
+<div class="submitFormCentered">
+<script type="text/javascript">
 
-<table border="0" cellpadding="2" width="100%" align="top">
-				<tbody><tr>
-						  <td class="sidebar_header"><br>Upload Gene List<br><br></td>
-				</tr>
-				<tr><td>
-					
-					</td></tr>
-					<tr><td>
-					<!-- <font class="regular"><a href="/helps/list_manager.html#upload" target="_blank">Upload Help</a></font> -->
-					</td></tr>
-					
+$(document).ready(function() {
+	$('.selectpicker').selectpicker({
+	});
+});
+</script>
+					<h2><span class="label label-primary">Step
+					1: Enter Gene List</span></h2>
 			
-					<tr><td class="sidebar_subheader"><br>Step
-					1: Enter Gene List
-			
-					</td></tr>
-			
-			
-				<tr>
-				  <td align="left" height="15">
+				
+				
 					<font class="regular">A: Paste a list</font>
-				  </td>
-				</tr>
-			
-				<tr>
-				  <td valign="top" align="left">
 					
-					<textarea rows="4" id="LISTBox" class="paste" name="inputIds"></textarea>
+					<div >
+						<textarea rows="6" id="LISTBox" class="form-control" name="inputIds"></textarea>
+					</div>
+			
+					
+					
 					<input type="Button" value="Clear" onclick="clearPaste();" name="B3" class="upload">
-				  </td>
-				</tr>
-				<tr>
-								  <td align="left" height="8">
-									<b><font color="white" face="Verdana" size="2">Or&nbsp;</font></b>
-								  </td>
-				</tr>
-				<tr><td>
+
+	
+
+
 							
 	<!-- 						<font class="regular">B:Choose From a File</font>
 							</td>
@@ -56,15 +50,10 @@
 								<tr><td><input type="checkbox" name="cbMulti" id="cbMulti">Multi-List File <a href="/helps/multilist.html" class="jTip" id="Multi-list File Upload" name="Multi-list File Upload"><img style="border:0px;" src="images/help-icon.png"></a></td></tr> -->
 							   
 							
-				
-			<tr><td>&nbsp;</td></tr>
-			<tr><td class="sidebar_subheader">Step 2: Select Identifier
-						
-								</td></tr>
-								<tr><td>
-								<p align="left" style="word-spacing: 0; line-height: 100%; text-indent: 0; margin: 0">
-								  <font face="Verdana" size="1">
-								  <select id="IDT" size="1" name="idType">
+					<h2><span class="label label-primary">Step 2: Select Identifier</span></h2>
+		
+								
+								  <select class="selectpicker" name="idType">
 							  
 											
 										
@@ -179,16 +168,13 @@
 							 
 									  </select>
 							
-									  </font>
+								
 							
 									</p><br>
-								  </td>
-								</tr>
-						<tr>
-			          <td class="sidebar_subheader"><br>Step 3: Choose p value</td>
-			        </tr>
-			        <tr>
-			          <td class="sidebar_subheader"> 
+						
+
+						<h2><span class="label label-primary">Step 3: Choose p value</span></h2>
+
 			            <!-- <table>
 							<tbody><tr>
 								<td class="sidebar_text">Gene List</td>
@@ -204,26 +190,24 @@
 
 						<input type="text" name="pVal" value="0.05"/>
 			            
-			          </td>
 
-        			</tr>
-        			<td class="sidebar_subheader"><br>Step 4: Annotation Type</td>
-			        </tr>
-			        <tr>
-			          <td class="sidebar_subheader"> 
-			            <table>
-							<tbody><tr>
-								<td class="sidebar_text">Biological Process</td>
+
+        			<h2><span class="label label-primary">Step 4: Annotation Type</span></h2>
+
+        
+
+<!-- 							<tbody><tr>
+	<td class="sidebar_text">Biological Process</td>
 			              		<td><input type="checkbox" name="annotType" value="GOTERM_BP_FAT"></td>
-							</tr>
-							<tr>
-								<td class="sidebar_text">Molecule Function</td>
+</tr>
+<tr>
+	<td class="sidebar_text">Molecule Function</td>
 			              		<td><input type="checkbox" name="annotType" value="GOTERM_MF_FAT"></td>
-							</tr>
-							<tr>
-								<td class="sidebar_text">Cellular Component</td>
+</tr>
+<tr>
+	<td class="sidebar_text">Cellular Component</td>
 			              		<td><input type="checkbox" name="annotType" value="GOTERM_CC_FAT"></td>
-							</tr>
+</tr>
 						</tbody></table>
 			            
 			          </td>
@@ -238,7 +222,9 @@
               <input type="button" onclick="uploadList();" value="Submit List" name="B52" class="upload">
         </td></tr>
 			</tbody></table>
-</form>
+</form> -->
+
+</div>
 
 <script>
 
