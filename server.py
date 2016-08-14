@@ -13,6 +13,7 @@ import re
 
 #for http request
 import requests
+from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 from flask import Flask,render_template,request,send_from_directory
 app = Flask(__name__)
@@ -125,7 +126,20 @@ def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
 
     s = requests.Session()
 
-    get_rowsId_response = s.get("http://david.abcc.ncifcrf.gov/api.jsp?type="+idType+"&ids="+inputIds+"&tool=chartReport&annot="+annotCat);
+    #get is not feasible
+    #get_rowsId_response = s.get("http://david.abcc.ncifcrf.gov/api.jsp?type="+idType+"&ids="+inputIds+"&tool=chartReport&annot="+annotCat)
+
+    m = MultipartEncoder(
+        fields={
+                'idType': 'AFFYMETRIX_3PRIME_IVT_ID', 'uploadType': 'list','multiList':'false','Mode':'paste',
+                'useIndex': 'null','usePopIndex':'null','demoIndex':'null','ids':inputIds,
+                'assignToManifestChkbox':'on','submit':'','hidSmt':''
+                }
+        )
+
+    s.post("http://david.abcc.ncifcrf.gov/tool.jsp",data=m)
+
+
 
     m = re.search("Request-URI Too Long",get_rowsId_response.text)
 
