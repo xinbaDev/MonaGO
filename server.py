@@ -118,6 +118,12 @@ def parsePythonAPIResponse(response):
     return str(response)
 
 
+def getSessionId(s):
+    r = s.get('http://david.abcc.ncifcrf.gov/tools.jsp')
+    parser = sessionIdParser()
+    parser.feed(r.text)
+    
+
 
 
 def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
@@ -129,11 +135,12 @@ def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
     #get is not feasible
     #get_rowsId_response = s.get("http://david.abcc.ncifcrf.gov/api.jsp?type="+idType+"&ids="+inputIds+"&tool=chartReport&annot="+annotCat)
 
+    getSessionId()
+
     m = MultipartEncoder(
         fields={
                 'idType': 'AFFYMETRIX_3PRIME_IVT_ID', 'uploadType': 'list','multiList':'false','Mode':'paste',
-                'useIndex': 'null','usePopIndex':'null','demoIndex':'null','ids':inputIds,
-                'assignToManifestChkbox':'on','submit':'','hidSmt':''
+                'useIndex': 'null','usePopIndex':'null','demoIndex':'null','ids':inputIds,'SESSIONID':sessionId
                 }
         )
 
@@ -265,6 +272,8 @@ class GOParser(HTMLParser):
                 metacount+=1
 
 
+
+
 class geneParser(HTMLParser):
     table = 0
     tr = 0
@@ -300,6 +309,15 @@ class geneParser(HTMLParser):
         if self.tr == 1:
             if data != "RG" and self.td!= 4 and "\n" not in data:
                 genesIdName.append(data.encode('ascii','ignore'))
+
+class sessionIdParser(HTMLParser):
+    global sessionID
+    def handle_starttag(self, tag, attrs):
+        if tag == 'input':
+            if attrs[1][0] == 'name' and attrs[1][1] == 'SESSIONID':
+                sessionID = attrs[2][1]
+
+
 
 
 def parseGO(GO):
