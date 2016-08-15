@@ -45,10 +45,10 @@ genesIdName = []
 def hello():
     return "hello"
 
-@app.route('/test', methods=['POST','GET'])
-def test():
+@app.route('/index', methods=['POST','GET'])
+def index():
     if request.method == 'GET':
-        return render_template("test.html")
+        return render_template("index.html")
     else:
 
         inputIds = request.form['inputIds']
@@ -122,9 +122,29 @@ def getSessionId(s):
     r = s.get('http://david.abcc.ncifcrf.gov/tools.jsp')
     parser = sessionIdParser()
     parser.feed(r.text)
+    return parser.returnSessionId()
     
 
+def uploadGene(s,idType,inputIds,sessionId):
+    print inputIds
+    print idType
+    print sessionId
 
+    m = MultipartEncoder(
+        fields={
+                'idType': idType, 'uploadType': 'list','multiList':'false','Mode':'paste',
+                'useIndex': 'null','usePopIndex':'null','demoIndex':'null','ids':inputIds,'SESSIONID':sessionId,
+                'removeIndex':'null','renameIndex':'null','renamePopIndex':'null','newName':'null',
+                'combineIndex':'null','selectedSpecies':'null','uploadHTML':'null','managerHTML':'null',
+                'sublist':'','rowids':'','convertedListName':'null','convertedPopName':'null',
+                'pasteBox':inputIds,'speciesList':'0','myLists':'0','popLists':'0',
+                'Identifier':idType , 'rbUploadType':'list','fileBrowser': ('', '', 'application/octet-stream')
+                }
+        )
+
+    r = s.post("http://david.abcc.ncifcrf.gov/tool.jsp",data=m)
+
+    return r.text
 
 def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
     global geneLists
@@ -134,104 +154,103 @@ def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
 
     #get is not feasible
     #get_rowsId_response = s.get("http://david.abcc.ncifcrf.gov/api.jsp?type="+idType+"&ids="+inputIds+"&tool=chartReport&annot="+annotCat)
+    # m = re.search("Request-URI Too Long",get_rowsId_response.text)
 
-    getSessionId()
+    # if(m!=None):
+    #     return "The requested URL's length exceeds the capacity"
 
-    m = MultipartEncoder(
-        fields={
-                'idType': 'AFFYMETRIX_3PRIME_IVT_ID', 'uploadType': 'list','multiList':'false','Mode':'paste',
-                'useIndex': 'null','usePopIndex':'null','demoIndex':'null','ids':inputIds,'SESSIONID':sessionId
-                }
-        )
-
-    s.post("http://david.abcc.ncifcrf.gov/tool.jsp",data=m)
-
-
-
-    m = re.search("Request-URI Too Long",get_rowsId_response.text)
-
-    if(m!=None):
-        return "The requested URL's length exceeds the capacity"
-
-    rowids = ""
-    m = re.search('document.apiForm.rowids.value="(.+)"',get_rowsId_response.text)
-    if(m!=None):
-         rowids = m.group(1)
-    m = re.search('document.apiForm.annot.value="(.+)"',get_rowsId_response.text)
-    if(m!=None):
-         annot = m.group(1)
+    # rowids = ""
+    # m = re.search('document.apiForm.rowids.value="(.+)"',get_rowsId_response.text)
+    # if(m!=None):
+    #      rowids = m.group(1)
+    # m = re.search('document.apiForm.annot.value="(.+)"',get_rowsId_response.text)
+    # if(m!=None):
+    #      annot = m.group(1)
 
 
-    if(rowids==""):
-        return "Less than 80% of your list has mapped to your chosen identifier type. Please use the Gene Conversion Tool on DAVID to determine the identifier type."
+    # if(rowids==""):
+    #     return "Less than 80% of your list has mapped to your chosen identifier type. Please use the Gene Conversion Tool on DAVID to determine the identifier type."
+        # print 'http://david.abcc.ncifcrf.gov/chartReport.jsp?rowids='+rowids+"&annot="+annot
 
-    # print 'http://david.abcc.ncifcrf.gov/chartReport.jsp?rowids='+rowids+"&annot="+annot
+    # getGO_response = s.get('http://david.abcc.ncifcrf.gov/chartReport.jsp?rowids='+rowids+"&annot="+annot)
 
-    getGO_response = s.get('http://david.abcc.ncifcrf.gov/chartReport.jsp?rowids='+rowids+"&annot="+annot)
+    # m = re.search("Request-URI Too Long",getGO_response.text)
+    # if(m!=None):
+    #     return "The requested URL's length exceeds the capacity"
 
-    m = re.search("Request-URI Too Long",getGO_response.text)
-    if(m!=None):
-        return "The requested URL's length exceeds the capacity"
+    sessionId = getSessionId(s)
 
-    parser = GOParser()
+    res = uploadGene(s,idType,inputIds,sessionId)
 
-    parser.feed(getGO_response.text)#get go_inf
-
-    go_inf = filterGO(pVal)
-
-    rowids = set([])
-    for i in range(0,len(geneLists)-1):
-        for id in geneLists[i]:
-            rowids.add(id)
-
-    rowidstr = ""
-    for i in rowids:
-        rowidstr += (str(i)+",")#get gene rowid
-
-    response = s.get('https://david.ncifcrf.gov/geneReport.jsp?rowids='+rowidstr)
-
-    parser = geneParser()
-    parser.feed(response.text)#mapping between gene id and gene name
-
-    geneMapping = {};
-    for i in range(0,len(genesIdName)-1,2):
-        geneIds = genesIdName[i].split(",")
-        if len(geneIds) > 1:
-            for j in geneIds:
-                geneMapping[j.strip().lower()] = genesIdName[i+1]
-        else:
-            geneMapping[genesIdName[i].lower()] = genesIdName[i+1]
-
-    for i in range(0,len(go_inf)):
-        genes = go_inf[i]["genes"].split(",")
-        newString = ""
-        for j in genes:
-            newString += geneMapping[j.strip().lower()]+"|"
-        go_inf[i]["genes"] = newString[:-1]#map gene id to gene name
-
-
-    preProcessedData = dataProcessing.dataPreprocess(go_inf)
-
-    matrix_count = str(preProcessedData["matrix"]["matrix_count"])
-
-    array_order = str(preProcessedData["gen_anno_reord"])
-
-    clusterHierData = str(preProcessedData["clusterHierData"])
-
-    go_inf_reord = preProcessedData["go_inf"]
-
-    go_hier = getGOdDependency(go_inf_reord)
-
-    #print go_hier
-
-    data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+matrix_count+";"+"var array_order="+array_order+";"+"var clusterHierData="+clusterHierData\
-    +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
-
-    fw = open("E:\\research\\zebrafish\\Data.txt","w+")
-    fw.write(data)
+    fw = open("E:\\research\\zebrafish\\Data.html","w+")
+    fw.write(res)
     fw.close()
 
-    return data+html
+    # getGO_response = s.get('https://david.ncifcrf.gov/chartReport.jsp?annot='+annotCat+'&currentList=0')
+    # print getGO_response.text
+
+    # parser = GOParser()
+
+    # parser.feed(getGO_response.text)#get go_inf
+
+    # #go_inf = filterGO(pVal)
+
+    # # rowids = set([])
+    # # for i in range(0,len(geneLists)-1):
+    # #     for id in geneLists[i]:
+    # #         rowids.add(id)
+
+    # # rowidstr = ""
+    # # for i in rowids:
+    # #     rowidstr += (str(i)+",")#get gene rowid
+
+    # # response = s.get('https://david.ncifcrf.gov/geneReport.jsp?rowids='+rowidstr)
+
+    # geneName = s.get('https://david.ncifcrf.gov/list.jsp')#get gene name and id
+
+    # parser = geneParser()
+    # parser.feed(geneName.text)#mapping between gene id and gene name
+
+    # geneMapping = {}
+    # for i in range(0,len(genesIdName)-1,2):
+    #     geneIds = genesIdName[i].split(",")
+    #     if len(geneIds) > 1:
+    #         for j in geneIds:
+    #             geneMapping[j.strip().lower()] = genesIdName[i+1]
+    #     else:
+    #         geneMapping[genesIdName[i].lower()] = genesIdName[i+1]
+
+    # for i in range(0,len(go_inf)):
+    #     genes = go_inf[i]["genes"].split(",")
+    #     newString = ""
+    #     for j in genes:
+    #         newString += geneMapping[j.strip().lower()]+"|"
+    #     go_inf[i]["genes"] = newString[:-1]#map gene id to gene name
+
+    # print go_inf
+
+    # preProcessedData = dataProcessing.dataPreprocess(go_inf)
+
+    # matrix_count = str(preProcessedData["matrix"]["matrix_count"])
+
+    # array_order = str(preProcessedData["gen_anno_reord"])
+
+    # clusterHierData = str(preProcessedData["clusterHierData"])
+
+    # go_inf_reord = preProcessedData["go_inf"]
+
+    # go_hier = getGOdDependency(go_inf_reord)
+
+    # #print go_hier
+
+    # data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+matrix_count+";"+"var array_order="+array_order+";"+"var clusterHierData="+clusterHierData\
+    # +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
+
+    # # fw = open("E:\\research\\zebrafish\\Data.txt","w+")
+    # # fw.write(data)
+    # # fw.close()
+
+    # return data+html
 
 def filterGO(pVal):
     filterGO_inf = []
@@ -311,12 +330,17 @@ class geneParser(HTMLParser):
                 genesIdName.append(data.encode('ascii','ignore'))
 
 class sessionIdParser(HTMLParser):
-    global sessionID
+    def __init__(self):
+        HTMLParser.__init__(self)
+        self.sessionId = 0
+
     def handle_starttag(self, tag, attrs):
         if tag == 'input':
             if attrs[1][0] == 'name' and attrs[1][1] == 'SESSIONID':
-                sessionID = attrs[2][1]
+                self.sessionId = attrs[2][1]
 
+    def returnSessionId(self):
+        return self.sessionId
 
 
 
