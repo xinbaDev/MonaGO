@@ -137,36 +137,39 @@ def uploadGene(s,idType,inputIds,sessionId):
 
     payload = MultipartEncoder(
         fields={
-                'idType': str(idType), 'uploadType': 'list','multiList':'false','Mode':'paste',
+                'idType': idType, 'uploadType': 'list','multiList':'false','Mode':'paste',
                 'useIndex': 'null','usePopIndex':'null','demoIndex':'null','ids':inputIds,'SESSIONID':sessionId,
-                'removeIndex':'null','renameIndex':'null','renamePopIndex':'null','newName':'null',
+                'removeIndex':'','renameIndex':'null','renamePopIndex':'null','newName':'null',
                 'combineIndex':'null','selectedSpecies':'null','uploadHTML':'null','managerHTML':'null',
                 'sublist':'','rowids':'','convertedListName':'null','convertedPopName':'null',
                 'pasteBox':inputIds,'speciesList':'0','myLists':'1','popLists':'0',
-                'Identifier':idType , 'rbUploadType':'list','fileBrowser': ('', '', 'application/octet-stream')
+                'Identifier':idType , 'rbUploadType':'list','fileBrowser': (' ','', 'application/octet-stream')
                 }
         )
 
     fw = open("E:\\research\\zebrafish\\payload.txt","w+")
     fw.write(payload.to_string())
     fw.close()
-    print(payload.content_type)
 
     header = {
+        'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Encoding':'gzip, deflate',
+        'Accept-Language':'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4,ja;q=0.2,en-AU;q=0.2',
+        'Cache-Control':'no-cache',
+        'Connection':'keep-alive',
         'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64)',
         'Content-Type': payload.content_type,
         'Referer':'https://david.ncifcrf.gov/tools.jsp',
         'Host':'david.ncifcrf.gov',
         'Origin':'https://david.ncifcrf.gov'
     }
-    myCookies = {'/tools.jsp':'1|divManager'}
 
+    myCookies = {}
     myCookies.update(s.cookies.get_dict())
-    
-    print(myCookies)
 
-    r = s.post('http://127.0.0.1/test', data=payload, cookies=myCookies, headers=header)
-    # r = s.post("http://david.abcc.ncifcrf.gov/tool.jsp",data=payload, cookies=myCookies, headers=header)
+
+    r = s.post('http://192.168.1.111:8000', data=payload, cookies=myCookies, headers=header)
+    #r = s.post("http://david.abcc.ncifcrf.gov/tool.jsp", data=payload, headers=header)
 
     
 

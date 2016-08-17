@@ -1,0 +1,11 @@
+POST / HTTP/1.1
+Origin: https://david.ncifcrf.gov
+Content-Length: 2992
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Accept: */*
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64)
+Host: david.ncifcrf.gov
+Referer: https://david.ncifcrf.gov/tools.jsp
+Cookie: JSESSIONID=18744076958E667DBE649B94B6A243A0; JSESSIONID=18744076958E667DBE649B94B6A243A0; /tools.jsp=1|divManager
+Content-Type: multipart/form-data; boundary=f52ca1c9170146da9b37
