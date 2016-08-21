@@ -136,16 +136,19 @@ def uploadGene(s,idType,inputIds,sessionId):
     print sessionId
 
     payload = MultipartEncoder(
-        fields={
-                'idType': idType, 'uploadType': 'list','multiList':'false','Mode':'paste',
-                'useIndex': 'null','usePopIndex':'null','demoIndex':'null','ids':inputIds,'SESSIONID':sessionId,
-                'removeIndex':'','renameIndex':'null','renamePopIndex':'null','newName':'null',
-                'combineIndex':'null','selectedSpecies':'null','uploadHTML':'null','managerHTML':'null',
-                'sublist':'','rowids':'','convertedListName':'null','convertedPopName':'null',
-                'pasteBox':inputIds,'speciesList':'0','myLists':'1','popLists':'0',
-                'Identifier':idType , 'rbUploadType':'list','fileBrowser': (' ','', 'application/octet-stream')
-                }
-        )
+                [
+                    ('idType', idType), ('uploadType', 'list'),('multiList','false'),('Mode','paste'),
+                    ('useIndex','null'),('usePopIndex','null'),('demoIndex','null'),('ids',inputIds),
+                    ('removeIndex','null'),('renameIndex','null'),('renamePopIndex','null'),('newName','null'),
+                    ('combineIndex','null'),('selectedSpecies','null'),('SESSIONID',sessionId),('uploadHTML','null'),('managerHTML','null'),
+                    ('sublist',''),('rowids',''),('convertedListName','null'),('convertedPopName','null'),
+                    ('pasteBox',inputIds), ('fileBrowser', ('','', 'application/octet-stream')),
+                    ('Identifier',idType) , ('rbUploadType','list')
+                ], "----WebKitFormBoundaryMghM0fh74hiYqk68"
+                
+    )
+
+    print payload._calculate_length()
 
     fw = open("E:\\research\\zebrafish\\payload.txt","w+")
     fw.write(payload.to_string())
@@ -157,20 +160,25 @@ def uploadGene(s,idType,inputIds,sessionId):
         'Accept-Language':'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4,ja;q=0.2,en-AU;q=0.2',
         'Cache-Control':'no-cache',
         'Connection':'keep-alive',
+        'Pragma':'no-cache',
         'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64)',
         'Content-Type': payload.content_type,
         'Referer':'https://david.ncifcrf.gov/tools.jsp',
         'Host':'david.ncifcrf.gov',
+        'Upgrade-Insecure-Requests':'1',
         'Origin':'https://david.ncifcrf.gov'
     }
 
-    myCookies = {}
+    myCookies = {
+   
+    }
+
+    #myCookies.update(s.cookies.get_dict())
+
+
+    #r = s.post('http://192.168.1.111:8000', data=payload, headers=header)
+    r = s.post("http://david.abcc.ncifcrf.gov/tool.jsp", data=payload, headers=header)
     myCookies.update(s.cookies.get_dict())
-
-
-    r = s.post('http://192.168.1.111:8000', data=payload, cookies=myCookies, headers=header)
-    #r = s.post("http://david.abcc.ncifcrf.gov/tool.jsp", data=payload, headers=header)
-
     
 
     return r.text
@@ -280,6 +288,7 @@ def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
     # # fw.close()
 
     # return data+html
+    return "Mock";
 
 def filterGO(pVal):
     filterGO_inf = []
