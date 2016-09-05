@@ -23,6 +23,10 @@ import dataProcessing
 
 import json
 
+import pycurl
+from StringIO import StringIO
+import certifi
+
 fr_GO = open("E:\\research\\zebrafish\\server\\js\\GO.js","r")
 
 fr = open("E:\\research\\zebrafish\\Data.txt","r")
@@ -130,58 +134,80 @@ def getSessionId(s):
     return parser.returnSessionId()
     
 
-def uploadGene(s,idType,inputIds,sessionId):
+def uploadGene(s,idType,inputIds):
     print inputIds
     print idType
-    print sessionId
 
-    payload = MultipartEncoder(
-                [
-                    ('idType', idType), ('uploadType', 'list'),('multiList','false'),('Mode','paste'),
-                    ('useIndex','null'),('usePopIndex','null'),('demoIndex','null'),('ids',inputIds),
-                    ('removeIndex','null'),('renameIndex','null'),('renamePopIndex','null'),('newName','null'),
-                    ('combineIndex','null'),('selectedSpecies','null'),('SESSIONID',sessionId),('uploadHTML','null'),('managerHTML','null'),
-                    ('sublist',''),('rowids',''),('convertedListName','null'),('convertedPopName','null'),
-                    ('pasteBox',inputIds), ('fileBrowser', ('','', 'application/octet-stream')),
-                    ('Identifier',idType) , ('rbUploadType','list')
-                ], "----WebKitFormBoundaryMghM0fh74hiYqk68"
+    # payload = MultipartEncoder(
+    #             [
+    #                 ('idType', idType), ('uploadType', 'list'),('multiList','false'),('Mode','paste'),
+    #                 ('useIndex','null'),('usePopIndex','null'),('demoIndex','null'),('ids',inputIds),
+    #                 ('removeIndex','null'),('renameIndex','null'),('renamePopIndex','null'),('newName','null'),
+    #                 ('combineIndex','null'),('selectedSpecies','null'),('uploadHTML','null'),('managerHTML','null'),
+    #                 ('sublist',''),('rowids',''),('convertedListName','null'),('convertedPopName','null'),
+    #                 ('pasteBox',inputIds),('Identifier',idType) , ('rbUploadType','list')
+    #             ], "----WebKitFormBoundaryMghM0fh74hiYqk68"
                 
-    )
+    # )
 
-    print payload._calculate_length()
+    # print payload._calculate_length()
 
-    fw = open("E:\\research\\zebrafish\\payload.txt","w+")
-    fw.write(payload.to_string())
-    fw.close()
-
-    header = {
-        'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Encoding':'gzip, deflate',
-        'Accept-Language':'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4,ja;q=0.2,en-AU;q=0.2',
-        'Cache-Control':'no-cache',
-        'Connection':'keep-alive',
-        'Pragma':'no-cache',
-        'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64)',
-        'Content-Type': payload.content_type,
-        'Referer':'https://david.ncifcrf.gov/tools.jsp',
-        'Host':'david.ncifcrf.gov',
-        'Upgrade-Insecure-Requests':'1',
-        'Origin':'https://david.ncifcrf.gov'
-    }
+    # header = {
+    #     'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    #     'Accept-Encoding':'gzip, deflate',
+    #     'Accept-Language':'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4,ja;q=0.2,en-AU;q=0.2',
+    #     'Cache-Control':'no-cache',
+    #     'Connection':'keep-alive',
+    #     'Pragma':'no-cache',
+    #     'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64)',
+    #     'Content-Type': payload.content_type,
+    #     'Referer':'https://david.ncifcrf.gov/tools.jsp',
+    #     'Host':'david.ncifcrf.gov',
+    #     'Upgrade-Insecure-Requests':'1',
+    #     'Origin':'https://david.ncifcrf.gov'
+    # }
 
     myCookies = {
    
     }
 
+    # data=dict(idType=idType,uploadType="list",multiList="false",Mode="paste",useIndex="null",usePopIndex="null",demoIndex='null',
+    #                 ids=inputIds,removeIndex='null',renameIndex='null',renamePopIndex='null',newName='null',
+    #                 combineIndex='null',selectedSpecies='null',uploadHTML='null',managerHTML='null',
+    #                 sublist='',rowids='',convertedListName='null',convertedPopName='null',
+    #                 pasteBox=inputIds,Identifier=idType, rbUploadType='list')
+
+    data = [('idType', idType), ('uploadType', 'list'),('multiList','false'),('Mode','paste'),
+                     ('useIndex','null'),('usePopIndex','null'),('demoIndex','null'),('ids',inputIds),
+                     ('removeIndex','null'),('renameIndex','null'),('renamePopIndex','null'),('newName','null'),
+                     ('combineIndex','null'),('selectedSpecies','null'),('uploadHTML','null'),('managerHTML','null'),
+                     ('sublist',''),('rowids',''),('convertedListName','null'),('convertedPopName','null'),
+                     ('pasteBox',inputIds),('Identifier',idType) , ('rbUploadType','list')]
+
+
+
+    buffer = StringIO()
+    c = pycurl.Curl()
+    c.setopt(pycurl.URL, "https://david.ncifcrf.gov/tools.jsp")
+    c.setopt(pycurl.HTTPPOST, data)
+    c.setopt(pycurl.CUSTOMREQUEST, "PUT")
+    c.setopt(c.WRITEDATA, buffer)
+    c.setopt(pycurl.CAINFO, certifi.where())
+    c.perform()
+    c.close()
     #myCookies.update(s.cookies.get_dict())
 
-
-    #r = s.post('http://192.168.1.111:8000', data=payload, headers=header)
-    r = s.post("http://david.abcc.ncifcrf.gov/tool.jsp", data=payload, headers=header)
-    myCookies.update(s.cookies.get_dict())
+    # r = s.post("http://david.abcc.ncifcrf.gov/tools.jsp", files=files)
+    # myCookies.update(s.cookies.get_dict())
     
+    body = buffer.getvalue()
 
-    return r.text
+    with open("E:\\research\\zebrafish\\result.html","w+") as f:
+        f.write(body.decode('iso-8859-1'))
+
+
+    return "test"
+
 
 def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
     global geneLists
@@ -215,12 +241,12 @@ def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
     # if(m!=None):
     #     return "The requested URL's length exceeds the capacity"
 
-    sessionId = getSessionId(s)
+    #sessionId = getSessionId(s)
 
-    res = uploadGene(s,idType,inputIds,sessionId)
+    res = uploadGene(s,idType,inputIds)
 
-    fw = open("E:\\research\\zebrafish\\Data.html","w+")
-    fw.write(res)
+    fw = open("E:\\research\\zebrafish\\Data.html","wb")
+    fw.write(res.encode('utf-8','strict'))
     fw.close()
 
     # getGO_response = s.get('https://david.ncifcrf.gov/chartReport.jsp?annot='+annotCat+'&currentList=0')
