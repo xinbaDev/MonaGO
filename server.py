@@ -2,9 +2,9 @@
 #for pythonAPI
 import sys
 sys.path.append('../')
-import suds.metrics as metrics
-from suds import *
-from suds.client import Client
+# import suds.metrics as metrics
+# from suds import *
+# from suds.client import Client
 from datetime import datetime
 
 #for praser
@@ -13,7 +13,7 @@ import re
 
 #for http request
 import requests
-from requests_toolbelt.multipart.encoder import MultipartEncoder
+# from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 from flask import Flask,render_template,request,send_from_directory
 app = Flask(__name__)
@@ -51,6 +51,13 @@ def hello():
 
 @app.route('/index', methods=['POST','GET'])
 def index():
+
+    annotCatDict = {
+        'GOTERM_BP_FAT':'25',
+        'GOTERM_CC_FAT':'32',
+        'GOTERM_MF_FAT':'39'
+    }
+
     if request.method == 'GET':
         return render_template("index.html")
     else:
@@ -62,6 +69,8 @@ def index():
         annotCat = request.form['annotCat']
         pVal = request.form['pVal'];
         #html = davidPythonAPI(inputIds,idType,listName,listType,annotCat);
+
+        annotCat = ','.join([annotCatDict[cat] for cat in annotCat.split(",")])
 
         html = davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal);
 
@@ -99,29 +108,29 @@ def returnDemo():
 
     return data + html;
 
-def davidPythonAPI(inputIds,idType,listName,listType,annotCat):
-        url = 'http://david.abcc.ncifcrf.gov/webservice/services/DAVIDWebService?wsdl'
-        #
-        # create a service client using the wsdl.
-        #
-        client = Client(url)
-        client.wsdl.services[0].setlocation('https://david.ncifcrf.gov/webservice/services/DAVIDWebService.DAVIDWebServiceHttpSoap11Endpoint/')
-        #
-        # print the service (introspection)
-        #
-        #print client
+# def davidPythonAPI(inputIds,idType,listName,listType,annotType):
+#         url = 'http://david.abcc.ncifcrf.gov/webservice/services/DAVIDWebService?wsdl'
+#         #
+#         # create a service client using the wsdl.
+#         #
+#         client = Client(url)
+#         client.wsdl.services[0].setlocation('https://david.ncifcrf.gov/webservice/services/DAVIDWebService.DAVIDWebServiceHttpSoap11Endpoint/')
+#         #
+#         # print the service (introspection)
+#         #
+#         #print client
 
-        #authenticate user email 
-        client.service.authenticate('zxin9@student.monash.edu')
+#         #authenticate user email 
+#         client.service.authenticate('zxin9@student.monash.edu')
 
-        #add a list 
-        client.service.addList(inputIds, idType, listName, listType)
+#         #add a list 
+#         client.service.addList(inputIds, idType, listName, listType)
 
-        #print client.service.getDefaultCategoryNames()
+#         #print client.service.getDefaultCategoryNames()
 
-        client.service.setCategories(annotCat)
+#         client.service.setCategories(annotType)
 
-        return parsePythonAPIResponse(client.service.getChartReport(0.1,2))
+#         return parsePythonAPIResponse(client.service.getChartReport(0.1,2))
 
 def parsePythonAPIResponse(response):
     return str(response)
@@ -134,9 +143,7 @@ def getSessionId(s):
     return parser.returnSessionId()
     
 
-def uploadGene(s,idType,inputIds):
-    print inputIds
-    print idType
+def uploadGene(pcHelper,idType,inputIds):
 
     # payload = MultipartEncoder(
     #             [
@@ -149,8 +156,6 @@ def uploadGene(s,idType,inputIds):
     #             ], "----WebKitFormBoundaryMghM0fh74hiYqk68"
                 
     # )
-
-    # print payload._calculate_length()
 
     # header = {
     #     'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -167,15 +172,16 @@ def uploadGene(s,idType,inputIds):
     #     'Origin':'https://david.ncifcrf.gov'
     # }
 
-    myCookies = {
-   
-    }
-
     # data=dict(idType=idType,uploadType="list",multiList="false",Mode="paste",useIndex="null",usePopIndex="null",demoIndex='null',
     #                 ids=inputIds,removeIndex='null',renameIndex='null',renamePopIndex='null',newName='null',
     #                 combineIndex='null',selectedSpecies='null',uploadHTML='null',managerHTML='null',
     #                 sublist='',rowids='',convertedListName='null',convertedPopName='null',
     #                 pasteBox=inputIds,Identifier=idType, rbUploadType='list')
+
+
+    #r = s.post("http://david.abcc.ncifcrf.gov/tools.jsp", data=data)
+    # myCookies.update(s.cookies.get_dict())
+
 
     data = [('idType', idType), ('uploadType', 'list'),('multiList','false'),('Mode','paste'),
                      ('useIndex','null'),('usePopIndex','null'),('demoIndex','null'),('ids',inputIds),
@@ -185,69 +191,91 @@ def uploadGene(s,idType,inputIds):
                      ('pasteBox',inputIds),('Identifier',idType) , ('rbUploadType','list')]
 
 
-
-    buffer = StringIO()
-    c = pycurl.Curl()
-    c.setopt(pycurl.URL, "https://david.ncifcrf.gov/tools.jsp")
-    c.setopt(pycurl.HTTPPOST, data)
-    c.setopt(pycurl.CUSTOMREQUEST, "PUT")
-    c.setopt(c.WRITEDATA, buffer)
-    c.setopt(pycurl.CAINFO, certifi.where())
-    c.perform()
-    c.close()
-    #myCookies.update(s.cookies.get_dict())
-
-    # r = s.post("http://david.abcc.ncifcrf.gov/tools.jsp", files=files)
-    # myCookies.update(s.cookies.get_dict())
-    
-    body = buffer.getvalue()
-
-    with open("E:\\research\\zebrafish\\result.html","w+") as f:
-        f.write(body.decode('iso-8859-1'))
+    return pcHelper.sendMultipart(url="https://david.ncifcrf.gov/tools.jsp",data=data)
 
 
-    return "test"
+
+'''
+pycurl helper class
+
+'''
+class PycurlHelper:
+
+    def __init__(self):
+        self.curl = pycurl.Curl()
+
+    def get(self,url):
+        buffer = StringIO()
+        self.curl.setopt(pycurl.URL, url)
+        self.curl.setopt(self.curl.WRITEDATA, buffer)
+        self.curl.perform()
+        return buffer.getvalue().decode('iso-8859-1')
+
+    def post(self,url,data):
+        return 0
+
+    def sendMultipart(self,url,data):
+        buffer = StringIO()
+        self.curl.setopt(pycurl.URL, url)
+        self.curl.setopt(pycurl.HTTPPOST, data)
+        self.curl.setopt(pycurl.CUSTOMREQUEST, "PUT")
+        self.curl.setopt(self.curl.WRITEDATA, buffer)
+        self.curl.setopt(pycurl.CAINFO, certifi.where())
+        self.curl.perform()
+        return buffer.getvalue().decode('iso-8859-1')
+
+    def close(self):
+        self.curl.close()
 
 
 def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
     global geneLists
     global go_inf
 
-    s = requests.Session()
+    pcHelper = PycurlHelper()
+
+    res = uploadGene(pcHelper,idType,inputIds)
+
+    if _checkSuccess(res):
+        print annotCat
+        url = 'https://david.ncifcrf.gov/chartReport.jsp?annot={0}&currentList=0'.format(annotCat)
+        print url
+        with open("E:\\research\\zebrafish\\result.html","w") as fw:
+            res = pcHelper.get(url)
+            fw.write(res)
+
 
     #get is not feasible
-    #get_rowsId_response = s.get("http://david.abcc.ncifcrf.gov/api.jsp?type="+idType+"&ids="+inputIds+"&tool=chartReport&annot="+annotCat)
-    # m = re.search("Request-URI Too Long",get_rowsId_response.text)
+        # s = requests.Session()
 
-    # if(m!=None):
-    #     return "The requested URL's length exceeds the capacity"
+        #get_rowsId_response = s.get("http://david.abcc.ncifcrf.gov/api.jsp?type="+idType+"&ids="+inputIds+"&tool=chartReport&annot="+annotCat)
+        # m = re.search("Request-URI Too Long",get_rowsId_response.text)
 
-    # rowids = ""
-    # m = re.search('document.apiForm.rowids.value="(.+)"',get_rowsId_response.text)
-    # if(m!=None):
-    #      rowids = m.group(1)
-    # m = re.search('document.apiForm.annot.value="(.+)"',get_rowsId_response.text)
-    # if(m!=None):
-    #      annot = m.group(1)
+        # if(m!=None):
+        #     return "The requested URL's length exceeds the capacity"
+
+        # rowids = ""
+        # m = re.search('document.apiForm.rowids.value="(.+)"',get_rowsId_response.text)
+        # if(m!=None):
+        #      rowids = m.group(1)
+        # m = re.search('document.apiForm.annot.value="(.+)"',get_rowsId_response.text)
+        # if(m!=None):
+        #      annot = m.group(1)
 
 
-    # if(rowids==""):
-    #     return "Less than 80% of your list has mapped to your chosen identifier type. Please use the Gene Conversion Tool on DAVID to determine the identifier type."
-        # print 'http://david.abcc.ncifcrf.gov/chartReport.jsp?rowids='+rowids+"&annot="+annot
+        # if(rowids==""):
+        #     return "Less than 80% of your list has mapped to your chosen identifier type. Please use the Gene Conversion Tool on DAVID to determine the identifier type."
+            # print 'http://david.abcc.ncifcrf.gov/chartReport.jsp?rowids='+rowids+"&annot="+annot
 
-    # getGO_response = s.get('http://david.abcc.ncifcrf.gov/chartReport.jsp?rowids='+rowids+"&annot="+annot)
+        # getGO_response = s.get('http://david.abcc.ncifcrf.gov/chartReport.jsp?rowids='+rowids+"&annot="+annot)
 
-    # m = re.search("Request-URI Too Long",getGO_response.text)
-    # if(m!=None):
-    #     return "The requested URL's length exceeds the capacity"
+        # m = re.search("Request-URI Too Long",getGO_response.text)
+        # if(m!=None):
+        #     return "The requested URL's length exceeds the capacity"
 
-    #sessionId = getSessionId(s)
+        #sessionId = getSessionId(s)
 
-    res = uploadGene(s,idType,inputIds)
 
-    fw = open("E:\\research\\zebrafish\\Data.html","wb")
-    fw.write(res.encode('utf-8','strict'))
-    fw.close()
 
     # getGO_response = s.get('https://david.ncifcrf.gov/chartReport.jsp?annot='+annotCat+'&currentList=0')
     # print getGO_response.text
@@ -314,7 +342,15 @@ def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
     # # fw.close()
 
     # return data+html
-    return "Mock";
+
+    return res;
+
+def _checkSuccess(res):
+    if res.find("DAVID: Functional Annotation Tools")==-1:
+        return False
+    else:
+        return True
+
 
 def filterGO(pVal):
     filterGO_inf = []

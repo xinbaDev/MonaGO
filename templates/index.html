@@ -202,7 +202,7 @@
 					
         				<select class="selectpicker show-tick" data-width="500px" name="annotType" multiple>
 
-			            	<option value="GOTERM_BP_FAT">Biological Process</option>
+			            	<option value="GOTERM_BP_FAT" selected>Biological Process</option>
 							<option value="GOTERM_MF_FAT">Molecule Function</option>
 			            	<option value="GOTERM_CC_FAT">Cellular Component</option>
 
@@ -212,7 +212,7 @@
 					<br>
 					
 
-						<button class="btn btn-success btn-rounded waves-effect waves-light btn-lg submit-btn" onclick="uploadList();" 
+					<button class="btn btn-success btn-rounded waves-effect waves-light btn-lg submit-btn" onclick="uploadList();" 
 			            value="Submit List">Submit</button>
 
 					
@@ -244,11 +244,14 @@
               <input type="button" onclick="uploadList();" value="Submit List" name="B52" class="upload">
         </td></tr>
 			</tbody></table>
-</form> -->
+ -->
+</form>
 
 </div>
 
 <script>
+
+	uploadList();
 
 	function clearPaste(){
 		document.frmManager.inputIds.value="";
@@ -259,11 +262,6 @@
 		//alert("start upload");
 		var FM = document.frmManager;
 		
-		if(FM.idType.value ==""){
-			alert("Please choose an identifier");
-			return;
-		}
-
 	/*	if(FM.cbMulti.checked)
 		{
 			FM.multiList.value="true";
@@ -288,13 +286,12 @@
 		var annotList = []
 
 		for(var i=0;i<3;i++){
-			if(FM.annotType[i].checked)
+			if(FM.annotType[i].selected)
 				annotList.push(FM.annotType[i].value);
 		}
 
-		console.log(annotList);
-		FM.annotCat.value = annotList.toString();
 
+		FM.annotCat.value = annotList.toString();
 	/*	if(FM.fileBrowser.value !="")
 		{
 			FM.Mode.value="file";
@@ -316,7 +313,7 @@
 			FM.Mode.value="paste";
 			FM.action="\\index";
 			FM.target="";
-			FM.submit();
+			//FM.submit();
 
 	}
 
