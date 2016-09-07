@@ -145,44 +145,6 @@ def getSessionId(s):
 
 def uploadGene(pcHelper,idType,inputIds):
 
-    # payload = MultipartEncoder(
-    #             [
-    #                 ('idType', idType), ('uploadType', 'list'),('multiList','false'),('Mode','paste'),
-    #                 ('useIndex','null'),('usePopIndex','null'),('demoIndex','null'),('ids',inputIds),
-    #                 ('removeIndex','null'),('renameIndex','null'),('renamePopIndex','null'),('newName','null'),
-    #                 ('combineIndex','null'),('selectedSpecies','null'),('uploadHTML','null'),('managerHTML','null'),
-    #                 ('sublist',''),('rowids',''),('convertedListName','null'),('convertedPopName','null'),
-    #                 ('pasteBox',inputIds),('Identifier',idType) , ('rbUploadType','list')
-    #             ], "----WebKitFormBoundaryMghM0fh74hiYqk68"
-                
-    # )
-
-    # header = {
-    #     'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-    #     'Accept-Encoding':'gzip, deflate',
-    #     'Accept-Language':'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4,ja;q=0.2,en-AU;q=0.2',
-    #     'Cache-Control':'no-cache',
-    #     'Connection':'keep-alive',
-    #     'Pragma':'no-cache',
-    #     'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64)',
-    #     'Content-Type': payload.content_type,
-    #     'Referer':'https://david.ncifcrf.gov/tools.jsp',
-    #     'Host':'david.ncifcrf.gov',
-    #     'Upgrade-Insecure-Requests':'1',
-    #     'Origin':'https://david.ncifcrf.gov'
-    # }
-
-    # data=dict(idType=idType,uploadType="list",multiList="false",Mode="paste",useIndex="null",usePopIndex="null",demoIndex='null',
-    #                 ids=inputIds,removeIndex='null',renameIndex='null',renamePopIndex='null',newName='null',
-    #                 combineIndex='null',selectedSpecies='null',uploadHTML='null',managerHTML='null',
-    #                 sublist='',rowids='',convertedListName='null',convertedPopName='null',
-    #                 pasteBox=inputIds,Identifier=idType, rbUploadType='list')
-
-
-    #r = s.post("http://david.abcc.ncifcrf.gov/tools.jsp", data=data)
-    # myCookies.update(s.cookies.get_dict())
-
-
     data = [('idType', idType), ('uploadType', 'list'),('multiList','false'),('Mode','paste'),
                      ('useIndex','null'),('usePopIndex','null'),('demoIndex','null'),('ids',inputIds),
                      ('removeIndex','null'),('renameIndex','null'),('renamePopIndex','null'),('newName','null'),
@@ -207,6 +169,7 @@ class PycurlHelper:
     def get(self,url):
         buffer = StringIO()
         self.curl.setopt(pycurl.URL, url)
+        self.curl.setopt(pycurl.CUSTOMREQUEST, "GET")
         self.curl.setopt(self.curl.WRITEDATA, buffer)
         self.curl.perform()
         return buffer.getvalue().decode('iso-8859-1')
@@ -245,35 +208,7 @@ def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
             fw.write(res)
 
 
-    #get is not feasible
-        # s = requests.Session()
-
-        #get_rowsId_response = s.get("http://david.abcc.ncifcrf.gov/api.jsp?type="+idType+"&ids="+inputIds+"&tool=chartReport&annot="+annotCat)
-        # m = re.search("Request-URI Too Long",get_rowsId_response.text)
-
-        # if(m!=None):
-        #     return "The requested URL's length exceeds the capacity"
-
-        # rowids = ""
-        # m = re.search('document.apiForm.rowids.value="(.+)"',get_rowsId_response.text)
-        # if(m!=None):
-        #      rowids = m.group(1)
-        # m = re.search('document.apiForm.annot.value="(.+)"',get_rowsId_response.text)
-        # if(m!=None):
-        #      annot = m.group(1)
-
-
-        # if(rowids==""):
-        #     return "Less than 80% of your list has mapped to your chosen identifier type. Please use the Gene Conversion Tool on DAVID to determine the identifier type."
-            # print 'http://david.abcc.ncifcrf.gov/chartReport.jsp?rowids='+rowids+"&annot="+annot
-
-        # getGO_response = s.get('http://david.abcc.ncifcrf.gov/chartReport.jsp?rowids='+rowids+"&annot="+annot)
-
-        # m = re.search("Request-URI Too Long",getGO_response.text)
-        # if(m!=None):
-        #     return "The requested URL's length exceeds the capacity"
-
-        #sessionId = getSessionId(s)
+    #sessionId = getSessionId(s)
 
 
 
