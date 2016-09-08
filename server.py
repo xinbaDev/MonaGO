@@ -169,6 +169,7 @@ class PycurlHelper:
     def get(self,url):
         buffer = StringIO()
         self.curl.setopt(pycurl.URL, url)
+        self.curl.setopt(pycurl.COOKIEFILE, 'cookie.txt')
         self.curl.setopt(pycurl.CUSTOMREQUEST, "GET")
         self.curl.setopt(self.curl.WRITEDATA, buffer)
         self.curl.perform()
@@ -183,6 +184,7 @@ class PycurlHelper:
         self.curl.setopt(pycurl.HTTPPOST, data)
         self.curl.setopt(pycurl.CUSTOMREQUEST, "PUT")
         self.curl.setopt(self.curl.WRITEDATA, buffer)
+        self.curl.setopt(pycurl.COOKIEJAR, 'cookie.txt')
         self.curl.setopt(pycurl.CAINFO, certifi.where())
         self.curl.perform()
         return buffer.getvalue().decode('iso-8859-1')
