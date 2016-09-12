@@ -34,19 +34,6 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
-with open("E:\\research\\zebrafish\\server\\js\\GO.js","r") as fr_GO:
-	for i in fr_GO:
-		GO_hier = json.loads(str(i)) 
-
-
-with open('E:\\research\\zebrafish\\MonaGO\\MonaGO\\templates\\chord_layout.html',"r") as fr_html:
-	html = "".join(fr_html.readlines())
-
-
-geneLists = {}
-genesIdName = []
-GO_hier_list = {}
-
 '''
 pycurl helper class
 
@@ -188,34 +175,37 @@ def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
 		
 		go_inf_filtered_geneName = changeGeneIdToNameInGO(go_inf_filtered,geneIdNameMapping)#change the gene id into gene name in go_inf
 
+        processedData(go_inf_filtered_geneName)
 
+        with open('E:\\research\\zebrafish\\MonaGO\\MonaGO\\templates\\chord_layout.html',"r") as fr_html:
+            html = "".join(fr_html.readlines())
+
+        data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+matrix_count+";"+"var array_order="+array_order+";"+"var clusterHierData="+clusterHierData\
+        +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
+
+
+        return data+html
 
 	else:
 		logger.info("get chartReport failed")
 
+        return "upload genes to DAVID failed"
 
 
-	# preProcessedData = dataProcessing.dataPreprocess(go_inf)
 
-	# matrix_count = str(preProcessedData["matrix"]["matrix_count"])
+def processedData(go_inf_filtered_geneName):
 
-	# array_order = str(preProcessedData["gen_anno_reord"])
+    preProcessedData = dataProcessing.dataPreprocess(go_inf_filtered_geneName)
 
-	# clusterHierData = str(preProcessedData["clusterHierData"])
+    matrix_count = str(preProcessedData["matrix"]["matrix_count"])
 
-	# go_inf_reord = preProcessedData["go_inf"]
+    array_order = str(preProcessedData["gen_anno_reord"])
 
-	# go_hier = getGODependency(go_inf_reord)
+    clusterHierData = str(preProcessedData["clusterHierData"])
 
-	# #print go_hier
+    go_inf_reord = preProcessedData["go_inf"]
 
-	# data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+matrix_count+";"+"var array_order="+array_order+";"+"var clusterHierData="+clusterHierData\
-	# +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
-
-
-	# return data+html
-
-	return res;
+    go_hier = getGODependency(go_inf_reord)
 
 
 def changeGeneIdToNameInGO(go_inf_filtered,geneIdNameMapping):
@@ -376,21 +366,30 @@ def parseStringIntoList(genes):
 
 
 def getGODependency(GO_inf):
-	global GO_hier_list
-	GO_hier_list = {}
-	for gos in GO_inf:
-		recuriveGetGOId(gos["GO_id"].encode('ascii','ignore'))
+    with open("E:\\research\\zebrafish\\server\\js\\GO.js","r") as fr_GO:
+        for GO in fr_GO:
+            GO_hier = json.loads(str(GO)) 
+
+    GO_hier_list = {}
+
+    for gos in GO_inf:
+        recuriveGetGOId(gos["GO_id"].encode('ascii','ignore'))
+
+
+    def recuriveGetGOId(GO_id):
+
+    GO_hier_list[GO_id]=GO_hier[GO_id]
+
+    for i in GO_hier[GO_id]["p"]:
+        if not GO_hier_list.has_key(i):
+            recuriveGetGOId(i.encode('ascii','ignore'),GO_hier)
+
+
+
 	return json.dumps(GO_hier_list)
 
 
-def recuriveGetGOId(GO_id):
-	global GO_hier_list
 
-	GO_hier_list[GO_id]=GO_hier[GO_id]
-
-	for i in GO_hier[GO_id]["p"]:
-		if not GO_hier_list.has_key(i):
-			recuriveGetGOId(i.encode('ascii','ignore'))
 
 if __name__ == '__main__':
 	app.run(debug = True)
