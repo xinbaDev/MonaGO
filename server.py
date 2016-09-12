@@ -1,19 +1,12 @@
 
-#for pythonAPI
 import sys
 sys.path.append('../')
-# import suds.metrics as metrics
-# from suds import *
-# from suds.client import Client
+
 from datetime import datetime
 
 #for praser
 from HTMLParser import HTMLParser
 import re
-
-#for http request
-import requests
-# from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 from flask import Flask,render_template,request,send_from_directory
 app = Flask(__name__)
@@ -154,26 +147,26 @@ def uploadGene(pcHelper,idType,inputIds):
 
 def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
 
-	pcHelper = PycurlHelper()
+    pcHelper = PycurlHelper()
 
-	res = uploadGene(pcHelper,idType,inputIds)
+    res = uploadGene(pcHelper,idType,inputIds)
 
-	if _checkSuccess(res):
-		url = 'https://david.ncifcrf.gov/chartReport.jsp?annot={0}&currentList=0'.format(annotCat)
-		getGO_response = pcHelper.get(url)
+    if _checkSuccess(res):
+        url = 'https://david.ncifcrf.gov/chartReport.jsp?annot={0}&currentList=0'.format(annotCat)
+        getGO_response = pcHelper.get(url)
 
-		parser = GOParser()
-		parser.feed(getGO_response)#get go_inf
-		go_inf = parser.getGO_inf()
-		geneLists = parser.getGeneLists()#get a list of genes for each GO term
+        parser = GOParser()
+        parser.feed(getGO_response)#get go_inf
+        go_inf = parser.getGO_inf()
+        geneLists = parser.getGeneLists()#get a list of genes for each GO term
 
-		go_inf_filtered = filterGO(pVal,go_inf)
+        go_inf_filtered = filterGO(pVal,go_inf)
 
-		geneIds = getUniqueGeneIds(geneLists)
+        geneIds = getUniqueGeneIds(geneLists)
 
-		geneIdNameMapping = getGenesNamesByIds(geneIds)
-		
-		go_inf_filtered_geneName = changeGeneIdToNameInGO(go_inf_filtered,geneIdNameMapping)#change the gene id into gene name in go_inf
+        geneIdNameMapping = getGenesNamesByIds(geneIds)
+
+        go_inf_filtered_geneName = changeGeneIdToNameInGO(go_inf_filtered,geneIdNameMapping)#change the gene id into gene name in go_inf
 
         processedData(go_inf_filtered_geneName)
 
@@ -186,8 +179,8 @@ def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
 
         return data+html
 
-	else:
-		logger.info("get chartReport failed")
+    else:
+        logger.info("get chartReport failed")
 
         return "upload genes to DAVID failed"
 
@@ -241,7 +234,7 @@ def getUniqueGeneIds(geneLists):
 	rowids = set([])
 	rowidstr = ""
 
-	rowids.add(genes) for genes in geneLists
+	map(rowids.add, [genes for genes in geneLists])
 
 	rowidstr = ','.join(rowids)
 
@@ -257,7 +250,7 @@ def _checkSuccess(res):
 
 def filterGO(pVal,go_inf):
 
-	filterGO_inf = [for i in go_inf if float(go_inf[i]["pVal"]) < float(pVal)]
+	filterGO_inf = [GO for GO in go_inf if float(go_inf[i]["pVal"]) < float(pVal)]
 	
 	return filterGO_inf
 
@@ -378,11 +371,11 @@ def getGODependency(GO_inf):
 
     def recuriveGetGOId(GO_id):
 
-    GO_hier_list[GO_id]=GO_hier[GO_id]
+        GO_hier_list[GO_id]=GO_hier[GO_id]
 
-    for i in GO_hier[GO_id]["p"]:
-        if not GO_hier_list.has_key(i):
-            recuriveGetGOId(i.encode('ascii','ignore'),GO_hier)
+        for i in GO_hier[GO_id]["p"]:
+            if not GO_hier_list.has_key(i):
+                recuriveGetGOId(i.encode('ascii','ignore'),GO_hier)
 
 
 
