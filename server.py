@@ -43,7 +43,6 @@ with open('E:\\research\\zebrafish\\MonaGO\\MonaGO\\templates\\chord_layout.html
 	html = "".join(fr_html.readlines())
 
 
-metacount = 0
 geneLists = {}
 genesIdName = []
 GO_hier_list = {}
@@ -167,7 +166,6 @@ def uploadGene(pcHelper,idType,inputIds):
 
 
 def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
-	global geneLists
 
 	pcHelper = PycurlHelper()
 
@@ -180,6 +178,15 @@ def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
 		parser = GOParser()
 		parser.feed(getGO_response)#get go_inf
 		go_inf = parser.getGO_inf()
+		geneLists = parser.getGeneLists()#get a list of genes for each GO term
+
+		go_inf_filtered = filterGO(pVal,go_inf)
+
+		geneIds = getUniqueGeneIds(geneLists)
+
+		geneIdNameMapping = getGenesNamesByIds(geneIds)
+		
+		go_inf_filtered_geneName = changeGeneIdToNameInGO(go_inf_filtered,geneIdNameMapping)#change the gene id into gene name in go_inf
 
 
 
@@ -187,45 +194,6 @@ def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
 		logger.info("get chartReport failed")
 
 
-	#sessionId = getSessionId(s)
-
-
-
-	# #go_inf = filterGO(pVal)
-
-	# # rowids = set([])
-	# # for i in range(0,len(geneLists)-1):
-	# #     for id in geneLists[i]:
-	# #         rowids.add(id)
-
-	# # rowidstr = ""
-	# # for i in rowids:
-	# #     rowidstr += (str(i)+",")#get gene rowid
-
-	# # response = s.get('https://david.ncifcrf.gov/geneReport.jsp?rowids='+rowidstr)
-
-	# geneName = s.get('https://david.ncifcrf.gov/list.jsp')#get gene name and id
-
-	# parser = geneParser()
-	# parser.feed(geneName.text)#mapping between gene id and gene name
-
-	# geneMapping = {}
-	# for i in range(0,len(genesIdName)-1,2):
-	#     geneIds = genesIdName[i].split(",")
-	#     if len(geneIds) > 1:
-	#         for j in geneIds:
-	#             geneMapping[j.strip().lower()] = genesIdName[i+1]
-	#     else:
-	#         geneMapping[genesIdName[i].lower()] = genesIdName[i+1]
-
-	# for i in range(0,len(go_inf)):
-	#     genes = go_inf[i]["genes"].split(",")
-	#     newString = ""
-	#     for j in genes:
-	#         newString += geneMapping[j.strip().lower()]+"|"
-	#     go_inf[i]["genes"] = newString[:-1]#map gene id to gene name
-
-	# print go_inf
 
 	# preProcessedData = dataProcessing.dataPreprocess(go_inf)
 
@@ -244,13 +212,51 @@ def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
 	# data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+matrix_count+";"+"var array_order="+array_order+";"+"var clusterHierData="+clusterHierData\
 	# +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
 
-	# # fw = open("E:\\research\\zebrafish\\Data.txt","w+")
-	# # fw.write(data)
-	# # fw.close()
 
 	# return data+html
 
 	return res;
+
+
+def changeGeneIdToNameInGO(go_inf_filtered,geneIdNameMapping):
+    for i in range(0,len(go_inf)):
+
+        geneNames = go_inf_filtered[i]["genes"].split(",")
+
+        geneNameString = "|".join([geneIdNameMapping[geneName.strip().lower()] for geneName in geneNames]) 
+
+        go_inf_filtered[i]["genes"] = geneNameString[:-1]# strip the last '|'
+
+        return go_inf_filtered
+
+
+def getGenesNamesByIds(geneIds):
+    res = pcHelper.get('https://david.ncifcrf.gov/list.jsp')#get gene name and id
+    parser = geneParser()
+    parser.feed(res)#mapping between gene id and gene name
+    parser.getParsedGeneNameWithId()
+    geneIdNameMapping = {}
+
+    for i in range(0,len(genesIdName)-1,2):#ugly way, need improve
+        geneIds = genesIdName[i].split(",")
+        if len(geneIds) > 1:
+            for j in geneIds:
+                geneIdNameMapping[j.strip().lower()] = genesIdName[i+1]
+        else:
+            geneIdNameMapping[genesIdName[i].lower()] = genesIdName[i+1]
+
+    return geneIdNameMapping
+
+def getUniqueGeneIds(geneLists):
+	rowids = set([])
+	rowidstr = ""
+
+	rowids.add(genes) for genes in geneLists
+
+	rowidstr = ','.join(rowids)
+
+	return rowidstr
+
 
 def _checkSuccess(res):
 	if res.find("DAVID: Functional Annotation Tools")==-1:
@@ -271,33 +277,27 @@ def filterGO(pVal,go_inf):
 class GOParser(HTMLParser):
 	def __init__(self):
 		self.go_inf = []
+		self.geneLists = {}
+		self.metacount = 0
 
-  # function to handle an opening tag in the doc
 	def handle_starttag(self, tag, attrs):
-		global geneLists
-		global metacount
 
 		#get GO_id,GO_name,p-value,count
 		if tag == "a":
-
 			m = re.search('(data/download/chart_\w+.txt)',attrs[0][1])
 			if m!=None:
-				url = 'http://david.abcc.ncifcrf.gov/'+m.group(0)
-				s = requests.get(url)
-
-				self._parseGO(s.text)
-
-				
+				url = 'http://david.ncifcrf.gov/'+m.group(0)
+				res = pcHelper.get(url)
+				self._parseGO(res)
 
 		#get gene rowid
 		if tag == "img":
 			if attrs[0][1] == 'graphics/two_tone_2_a.jpg':
 				genes = attrs[6][1].split(";")[1]
-				geneLists[metacount] = parseStringIntoList(genes)
-				metacount+=1
+				self.geneLists[self.metacount] = parseStringIntoList(genes)
+				self.metacount+=1
 
 	def _parseGO(self,GO):
-		#get rid of first line
 		line = GO.encode('ascii','ignore').split("\n")
 		for i in range(1,len(line)-1):
 			cell = line[i].split("\t")
@@ -307,10 +307,15 @@ class GOParser(HTMLParser):
 	def getGO_inf(self):
 		return self.go_inf
 
+	def getGeneLists(self):
+		return self.geneLists
+
+
 class geneParser(HTMLParser):
 	table = 0
 	tr = 0
 	td = 0
+	genesIdName = []
 	# function to handle an opening tag in the doc
 
 	def handle_starttag(self, tag, attrs):
@@ -338,10 +343,14 @@ class geneParser(HTMLParser):
 
 
 	def handle_data(self, data):
-		global genesIdName
+		
 		if self.tr == 1:
 			if data != "RG" and self.td!= 4 and "\n" not in data:
-				genesIdName.append(data.encode('ascii','ignore'))
+				self.genesIdName.append(data.encode('ascii','ignore'))
+
+	def getParsedGeneNameWithId(self):
+			return self.genesIdName
+
 
 
 class sessionIdParser(HTMLParser):
@@ -356,9 +365,6 @@ class sessionIdParser(HTMLParser):
 
 	def returnSessionId(self):
 		return self.sessionId
-
-
-
 
 
 
