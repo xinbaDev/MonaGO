@@ -155,26 +155,35 @@ def davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal):
         url = 'https://david.ncifcrf.gov/chartReport.jsp?annot={0}&currentList=0'.format(annotCat)
         getGO_response = pcHelper.get(url)
 
-        parser = GOParser()
+        parser = GOParser(pcHelper)
         parser.feed(getGO_response)#get go_inf
         go_inf = parser.getGO_inf()
+
+        logger.debug('go_inf:{}'.format(go_inf))
+
         geneLists = parser.getGeneLists()#get a list of genes for each GO term
+
+        logger.debug('geneLists:{}'.format(geneLists))
 
         go_inf_filtered = filterGO(pVal,go_inf)
 
+        logger.debug('go_inf_filtered:{}'.format(go_inf_filtered))
+
         geneIds = getUniqueGeneIds(geneLists)
 
-        geneIdNameMapping = getGenesNamesByIds(geneIds)
+        logger.debug("geneIds:{}".format(geneIds))
+
+        geneIdNameMapping = getGenesNamesByIds(pcHelper,geneIds)
 
         go_inf_filtered_geneName = changeGeneIdToNameInGO(go_inf_filtered,geneIdNameMapping)#change the gene id into gene name in go_inf
 
-        processedData(go_inf_filtered_geneName)
+        matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go_inf_filtered_geneName)
 
         with open('E:\\research\\zebrafish\\MonaGO\\MonaGO\\templates\\chord_layout.html',"r") as fr_html:
             html = "".join(fr_html.readlines())
 
-        data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+matrix_count+";"+"var array_order="+array_order+";"+"var clusterHierData="+clusterHierData\
-        +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
+        data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+matrix_count+";"+"var array_order="+array_order+";"\
+        +"var clusterHierData="+clusterHierData +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
 
 
         return data+html
@@ -200,9 +209,11 @@ def processedData(go_inf_filtered_geneName):
 
     go_hier = getGODependency(go_inf_reord)
 
+    return matrix_count,array_order,go_hier,go_inf_reord,clusterHierData
+
 
 def changeGeneIdToNameInGO(go_inf_filtered,geneIdNameMapping):
-    for i in range(0,len(go_inf)):
+    for i in range(0,len(go_inf_filtered)):
 
         geneNames = go_inf_filtered[i]["genes"].split(",")
 
@@ -213,11 +224,12 @@ def changeGeneIdToNameInGO(go_inf_filtered,geneIdNameMapping):
         return go_inf_filtered
 
 
-def getGenesNamesByIds(geneIds):
+def getGenesNamesByIds(pcHelper,geneIds):
     res = pcHelper.get('https://david.ncifcrf.gov/list.jsp')#get gene name and id
     parser = geneParser()
     parser.feed(res)#mapping between gene id and gene name
-    parser.getParsedGeneNameWithId()
+
+    genesIdName = parser.getParsedGeneNameWithId()
     geneIdNameMapping = {}
 
     for i in range(0,len(genesIdName)-1,2):#ugly way, need improve
@@ -230,15 +242,20 @@ def getGenesNamesByIds(geneIds):
 
     return geneIdNameMapping
 
-def getUniqueGeneIds(geneLists):
-	rowids = set([])
-	rowidstr = ""
+def getUniqueGeneIds(geneListsDic):
+    rowids = set([])
+    rowidstr = ""
 
-	map(rowids.add, [genes for genes in geneLists])
+    #map(rowids.add, [genes for genes in geneListsDic.values()]) #list is not hashable
+    for genes in geneListsDic.values():
+        if isinstance(genes,list):
+            map(rowids.add,[gene for gene in genes])
+        else:
+            rowids.add(genes)
 
-	rowidstr = ','.join(rowids)
+    rowidstr = ','.join(rowids)
 
-	return rowidstr
+    return rowidstr
 
 
 def _checkSuccess(res):
@@ -250,7 +267,7 @@ def _checkSuccess(res):
 
 def filterGO(pVal,go_inf):
 
-	filterGO_inf = [GO for GO in go_inf if float(go_inf[i]["pVal"]) < float(pVal)]
+	filterGO_inf = [GO for GO in go_inf if float(GO["pVal"]) < float(pVal)]
 	
 	return filterGO_inf
 
@@ -258,43 +275,47 @@ def filterGO(pVal,go_inf):
 
 # create a subclass and override the handler methods
 class GOParser(HTMLParser):
-	def __init__(self):
-		self.go_inf = []
-		self.geneLists = {}
-		self.metacount = 0
+    def __init__(self,pcHelper):
+        HTMLParser.__init__(self)
 
-	def handle_starttag(self, tag, attrs):
+        self.pcHelper = pcHelper
+        self.go_inf = []
+        self.geneLists = {}
+        self.metacount = 0
 
-		#get GO_id,GO_name,p-value,count
-		if tag == "a":
-			m = re.search('(data/download/chart_\w+.txt)',attrs[0][1])
-			if m!=None:
-				url = 'http://david.ncifcrf.gov/'+m.group(0)
-				res = pcHelper.get(url)
-				self._parseGO(res)
+    def handle_starttag(self, tag, attrs):
 
-		#get gene rowid
-		if tag == "img":
-			if attrs[0][1] == 'graphics/two_tone_2_a.jpg':
-				genes = attrs[6][1].split(";")[1]
-				self.geneLists[self.metacount] = parseStringIntoList(genes)
-				self.metacount+=1
+        #get GO_id,GO_name,p-value,count
+        if tag == "a":
+            m = re.search('(data/download/chart_\w+.txt)',attrs[0][1])
+            if m!=None:
+                url = 'https://david.ncifcrf.gov/'+m.group(0)
+                res = self.pcHelper.get(url)
+                self._parseGO(res)
 
-	def _parseGO(self,GO):
-		line = GO.encode('ascii','ignore').split("\n")
-		for i in range(1,len(line)-1):
-			cell = line[i].split("\t")
-			GO_term = cell[1].split("~")
-			self.go_inf.append({"cat":cell[0],"GO_id":GO_term[0],"GO_name":GO_term[1],"count":cell[2],"pVal":cell[4],"genes":cell[5].lower().strip()})
+    	#get gene rowid
+        if tag == "img":
+            if attrs[0][1] == 'graphics/two_tone_2_a.jpg':
+                genes = attrs[6][1].split(";")[1]
+                self.geneLists[self.metacount] = parseStringIntoList(genes)
+                self.metacount+=1
 
-	def getGO_inf(self):
-		return self.go_inf
+    def _parseGO(self,GO):
+        line = GO.encode('ascii','ignore').split("\n")
+        for i in range(1,len(line)-1):
+            cell = line[i].split("\t")
+            GO_term = cell[1].split("~")
+            self.go_inf.append({"cat":cell[0],"GO_id":GO_term[0],"GO_name":GO_term[1],"count":cell[2],"pVal":cell[4],"genes":cell[5].lower().strip()})
 
-	def getGeneLists(self):
-		return self.geneLists
+    def getGO_inf(self):
+        return self.go_inf
+
+    def getGeneLists(self):
+        return self.geneLists
 
 
 class geneParser(HTMLParser):
+
 	table = 0
 	tr = 0
 	td = 0
@@ -359,6 +380,15 @@ def parseStringIntoList(genes):
 
 
 def getGODependency(GO_inf):
+
+    def recuriveGetGOId(GO_id):
+
+        GO_hier_list[GO_id]=GO_hier[GO_id]
+
+        for i in GO_hier[GO_id]["p"]:
+            if not GO_hier_list.has_key(i):
+                recuriveGetGOId(i.encode('ascii','ignore'))
+
     with open("E:\\research\\zebrafish\\server\\js\\GO.js","r") as fr_GO:
         for GO in fr_GO:
             GO_hier = json.loads(str(GO)) 
@@ -369,19 +399,8 @@ def getGODependency(GO_inf):
         recuriveGetGOId(gos["GO_id"].encode('ascii','ignore'))
 
 
-    def recuriveGetGOId(GO_id):
-
-        GO_hier_list[GO_id]=GO_hier[GO_id]
-
-        for i in GO_hier[GO_id]["p"]:
-            if not GO_hier_list.has_key(i):
-                recuriveGetGOId(i.encode('ascii','ignore'),GO_hier)
-
-
 
 	return json.dumps(GO_hier_list)
-
-
 
 
 if __name__ == '__main__':
