@@ -7,3 +7,17 @@
 .submit-btn{
 	float: right;
 }
+
+.header-index{
+/* 	width: auto;
+height: ;
+background-image: url("../img/header.jpg"); */
+	
+}
+
+
+.header-img{
+	width:800px;
+	height:200px;
+	background-size: contain;
+}
