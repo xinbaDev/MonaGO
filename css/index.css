@@ -2,18 +2,15 @@
 	margin: auto;
     padding-bottom: 64px;
     width: 800px;
+    background-color: white;
+    z-index:1000;
+   /*  box-shadow: 0px 5px 5px 2px #888888;  */
 }
 
 .submit-btn{
 	float: right;
 }
 
-.header-index{
-/* 	width: auto;
-height: ;
-background-image: url("../img/header.jpg"); */
-	
-}
 
 
 .header-img{
@@ -21,3 +18,11 @@ background-image: url("../img/header.jpg"); */
 	height:200px;
 	background-size: contain;
 }
+
+/* .bg-img{
+	width: auto;
+	height: ;
+	background-image: url("../img/header.jpg");
+	background-size: contain;
+	
+} */
