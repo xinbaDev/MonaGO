@@ -9,7 +9,7 @@ from HTMLParser import HTMLParser
 import re
 
 from flask import Flask,render_template,request,send_from_directory
-app = Flask(__name__)
+
 
 #for pre processing the data
 import dataProcessing
@@ -62,7 +62,9 @@ class PycurlHelper:
 	def close(self):
 		self.curl.close()
 
+root_dir = "/root/alex/myproject/"
 
+app = Flask(__name__)
 @app.route('/index', methods=['POST','GET'])
 def index():
 
@@ -82,54 +84,51 @@ def index():
 		listType = request.form['listType']
 		annotCat = request.form['annotCat']
 		pVal = request.form['pVal'];
-		#html = davidPythonAPI(inputIds,idType,listName,listType,annotCat);
 
 		annotCat = ','.join([annotCatDict[cat] for cat in annotCat.split(",")])
 
 		html = davidWebAPI(inputIds,idType,listName,listType,annotCat,pVal);
 
 		return html
-
-@app.route('/test', methods='POST')
-def test():
-	request.get_data()
-	print(request.data)
+        
 
 @app.route('/css/<fileName>')
 def getCss(fileName):
-	return send_from_directory('css', fileName)
+	return send_from_directory(root_dir+'css', fileName)
 
 @app.route('/img/<fileName>')
 def getImg(fileName):
-	return send_from_directory('img',fileName)
+	return send_from_directory(root_dir+'img',fileName)
 
 @app.route('/js/<fileName>')
 def getJs(fileName):
-	return send_from_directory('js', fileName)
+	return send_from_directory(root_dir+'js', fileName)
 
 @app.route('/fonts/<fileName>')
 def getFonts(fileName):
-	return send_from_directory('fonts', fileName)
+	return send_from_directory(root_dir+'fonts', fileName)
 
 @app.route('/txt/<fileName>')
 def getText(fileName):
-	return send_from_directory('text', fileName)
+	return send_from_directory(root_dir+'text', fileName)
 
 @app.route('/demo')
 def returnDemo():
+    with open("visitors.txt",'a') as fw:
+        fw.write("remote address: {}  time: {}\n".format(request.remote_addr,datetime.today()))
+    with open(root_dir+"\\templates\chord_layout.html","r") as fr_html:
+        html = "".join(fr_html.readlines())
+    with open(root_dir+"\\demo\\Data.txt","r") as fr:
+        data = fr.readline()
 
-	with open("E:\\research\\zebrafish\\Data.txt","r") as fr:
-		data = fr.readline()
+    return data + html;
 
-	return data + html;
+@app.route('/my/img/my_logo.jpg')
+def getMyLogo():
+    with open("visitors.txt",'a') as fw:
+        fw.write("remote address: {}  time: {}\n".format(request.remote_addr,datetime.today()))
+    return send_from_directory(root_dir+'my/img','my_logo.jpg')
 
-
-def getSessionId(s):
-	r = s.get('http://david.abcc.ncifcrf.gov/tools.jsp')
-	parser = sessionIdParser()
-	parser.feed(r.text)
-	return parser.returnSessionId()
-	
 
 def uploadGene(pcHelper,idType,inputIds):
 
@@ -397,11 +396,9 @@ def getGODependency(GO_inf):
 
     for gos in GO_inf:
         recuriveGetGOId(gos["GO_id"].encode('ascii','ignore'))
-
-
-
+        
 	return json.dumps(GO_hier_list)
 
 
 if __name__ == '__main__':
-	app.run(debug = True)
+    app.run(host="0.0.0.0")
