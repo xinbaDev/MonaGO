@@ -54,8 +54,18 @@ def index():
 
         annotCat = ','.join([annotCatDict[cat] for cat n annotCat.split(",")])
 
-        html = getDataFromDavid(inputIds,idType,listName,listType,annotCat,pVal);
+        data = getDataFromDavid(inputIds,idType,listName,listType,annotCat,pVal)
+        
+        matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(data)
 
+        with open('E:\\research\\zebrafish\\MonaGO\\MonaGO\\templates\\chord_layout.html',"r") as fr_html:
+            html = "".join(fr_html.readlines())
+
+        data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+matrix_count+";"+"var array_order="+array_order+";"\
+        +"var clusterHierData="+clusterHierData +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
+
+
+    return data+html
         return html
         
 
@@ -100,9 +110,31 @@ def getMyLogo():
 def getDataFromDavid(inputIds,idType,annotCat,pVal):
     davidScrawler = DavidDataScrawler()
     davidScrawler.setParams(inputIds,idType,annotCat,pVal);
-    davidScrawler.run()
 
-    
+    try:
+        matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = davidScrawler.run()
+    except Exception as e:
+        logger.error(e.info)
+
+    return [matrix_count,array_order,go_hier,go_inf_reord,clusterHierData]
+
+def processedData(go_inf_filtered_geneName):
+
+    preProcessedData = DataProcessing.dataPreprocess(go_inf_filtered_geneName)
+
+    matrix_count = str(preProcessedData["matrix"]["matrix_count"])
+
+    array_order = str(preProcessedData["gen_anno_reord"])
+
+    clusterHierData = str(preProcessedData["clusterHierData"])
+
+    go_inf_reord = preProcessedData["go_inf"]
+
+    go_hier = getGODependency(go_inf_reord)
+
+    return matrix_count,array_order,go_hier,go_inf_reord,clusterHierData
+
+
 
 class DavidDataScrawler(object):
 
@@ -143,21 +175,13 @@ class DavidDataScrawler(object):
 
             go_inf_filtered_geneName = self._changeGeneIdToNameInGO(go_inf_filtered,geneIdNameMapping)#change the gene id into gene name in go_inf
 
-            matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go_inf_filtered_geneName)
 
-            with open('E:\\research\\zebrafish\\MonaGO\\MonaGO\\templates\\chord_layout.html',"r") as fr_html:
-                html = "".join(fr_html.readlines())
+            return go_inf_filtered_geneName
 
-            data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+matrix_count+";"+"var array_order="+array_order+";"\
-            +"var clusterHierData="+clusterHierData +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
-
-
-            return data+html
 
         else:
             logger.info("get chartReport failed")
-
-            return "upload genes to DAVID failed"
+            raise Exception("upload genes to DAVID failed")
 
 
     def _checkSuccess(self,res):
@@ -216,21 +240,6 @@ class DavidDataScrawler(object):
         return pcHelper.sendMultipart(url="https://david.ncifcrf.gov/tools.jsp",data=data)
 
 
-    def processedData(go_inf_filtered_geneName):
-
-        preProcessedData = dataProcessing.dataPreprocess(go_inf_filtered_geneName)
-
-        matrix_count = str(preProcessedData["matrix"]["matrix_count"])
-
-        array_order = str(preProcessedData["gen_anno_reord"])
-
-        clusterHierData = str(preProcessedData["clusterHierData"])
-
-        go_inf_reord = preProcessedData["go_inf"]
-
-        go_hier = getGODependency(go_inf_reord)
-
-        return matrix_count,array_order,go_hier,go_inf_reord,clusterHierData
 
 
     def _changeGeneIdToNameInGO(self,go_inf_filtered,geneIdNameMapping):
