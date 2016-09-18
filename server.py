@@ -12,9 +12,7 @@ from flask import Flask,render_template,request,send_from_directory
 
 
 #for pre processing the data
-import dataProcessing
-
-import json
+import DataProcessing
 
 import pycurl
 from StringIO import StringIO
@@ -27,9 +25,12 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
+remote_server = False;
 
-
-root_dir = "/root/alex/myproject/"
+if(remote_server):
+    root_dir = "/root/alex/myproject/"
+else:
+    root_dir = ""
 
 app = Flask(__name__)
 @app.route('/index', methods=['POST','GET'])
@@ -52,13 +53,13 @@ def index():
         annotCat = request.form['annotCat']
         pVal = request.form['pVal'];
 
-        annotCat = ','.join([annotCatDict[cat] for cat n annotCat.split(",")])
+        annotCat = ','.join([annotCatDict[cat] for cat in annotCat.split(",")])
 
-        data = getDataFromDavid(inputIds,idType,listName,listType,annotCat,pVal)
-        
+        data = getDataFromDavid(inputIds,idType,annotCat,pVal)
+
         matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(data)
 
-        with open('E:\\research\\zebrafish\\MonaGO\\MonaGO\\templates\\chord_layout.html',"r") as fr_html:
+        with open(root_dir+'templates/chord_layout.html',"r") as fr_html:
             html = "".join(fr_html.readlines())
 
         data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+matrix_count+";"+"var array_order="+array_order+";"\
@@ -66,7 +67,7 @@ def index():
 
 
     return data+html
-        return html
+        
         
 
 @app.route('/css/<fileName>')
@@ -93,9 +94,9 @@ def getText(fileName):
 def returnDemo():
     with open("visitors.txt",'a') as fw:
         fw.write("remote address: {}  time: {}\n".format(request.remote_addr,datetime.today()))
-    with open(root_dir+"\\templates\chord_layout.html","r") as fr_html:
+    with open(root_dir+"templates/chord_layout.html","r") as fr_html:
         html = "".join(fr_html.readlines())
-    with open(root_dir+"\\demo\\Data.txt","r") as fr:
+    with open(root_dir+"demo/Data.txt","r") as fr:
         data = fr.readline()
 
     return data + html;
@@ -112,11 +113,13 @@ def getDataFromDavid(inputIds,idType,annotCat,pVal):
     davidScrawler.setParams(inputIds,idType,annotCat,pVal);
 
     try:
-        matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = davidScrawler.run()
+        go_inf_filtered_geneName = davidScrawler.run()
     except Exception as e:
-        logger.error(e.info)
+        logger.error(str(e))
+    else:
+        return go_inf_filtered_geneName
 
-    return [matrix_count,array_order,go_hier,go_inf_reord,clusterHierData]
+
 
 def processedData(go_inf_filtered_geneName):
 
@@ -130,15 +133,13 @@ def processedData(go_inf_filtered_geneName):
 
     go_inf_reord = preProcessedData["go_inf"]
 
-    go_hier = getGODependency(go_inf_reord)
+    go_hier = preProcessedData["go_hier"]
 
     return matrix_count,array_order,go_hier,go_inf_reord,clusterHierData
 
 
-
 class DavidDataScrawler(object):
 
-    inputIds,idType,annotCat,pVal=None
 
     def setParams(self,inputIds,idType,annotCat,pVal):
         self.inputIds,self.idType,self.annotCat,self.pVal = inputIds,idType,annotCat,pVal
@@ -174,7 +175,6 @@ class DavidDataScrawler(object):
             geneIdNameMapping = self._getGenesNamesByIds(pcHelper,geneIds)
 
             go_inf_filtered_geneName = self._changeGeneIdToNameInGO(go_inf_filtered,geneIdNameMapping)#change the gene id into gene name in go_inf
-
 
             return go_inf_filtered_geneName
 
@@ -256,7 +256,7 @@ class DavidDataScrawler(object):
 
     def _getGenesNamesByIds(self,pcHelper,geneIds):
         res = pcHelper.get('https://david.ncifcrf.gov/list.jsp')#get gene name and id
-        parser = geneParser()
+        parser = DavidDataScrawler.geneParser()
         parser.feed(res)#mapping between gene id and gene name
 
         genesIdName = parser.getParsedGeneNameWithId()
@@ -296,26 +296,7 @@ class DavidDataScrawler(object):
         return filterGO_inf
 
 
-    def getGODependency(GO_inf):
 
-        def recuriveGetGOId(GO_id):
-
-            GO_hier_list[GO_id]=GO_hier[GO_id]
-
-            for i in GO_hier[GO_id]["p"]:
-                if not GO_hier_list.has_key(i):
-                    recuriveGetGOId(i.encode('ascii','ignore'))
-
-        with open("E:\\research\\zebrafish\\server\\js\\GO.js","r") as fr_GO:
-            for GO in fr_GO:
-                GO_hier = json.loads(str(GO)) 
-
-        GO_hier_list = {}
-
-        for gos in GO_inf:
-            recuriveGetGOId(gos["GO_id"].encode('ascii','ignore'))
-            
-        return json.dumps(GO_hier_list)
 
 
     # create a subclass and override the handler methods
@@ -358,7 +339,7 @@ class DavidDataScrawler(object):
         def getGeneLists(self):
             return self.geneLists
 
-        def _parseStringIntoList(genes):
+        def _parseStringIntoList(self,genes):
             index = genes.find("geneReport")
             geneList = genes[index+10:][2:-2].encode('ascii','ignore').split(",")
             return geneList
@@ -407,18 +388,18 @@ class DavidDataScrawler(object):
 
 
 
-    class sessionIdParser(HTMLParser):
-        def __init__(self):
-            HTMLParser.__init__(self)
-            self.sessionId = 0
+    # class sessionIdParser(HTMLParser):
+    #     def __init__(self):
+    #         HTMLParser.__init__(self)
+    #         self.sessionId = 0
 
-        def handle_starttag(self, tag, attrs):
-            if tag == 'input':
-                if attrs[1][0] == 'name' and attrs[1][1] == 'SESSIONID':
-                    self.sessionId = attrs[2][1]
+    #     def handle_starttag(self, tag, attrs):
+    #         if tag == 'input':
+    #             if attrs[1][0] == 'name' and attrs[1][1] == 'SESSIONID':
+    #                 self.sessionId = attrs[2][1]
 
-        def returnSessionId(self):
-            return self.sessionId
+    #     def returnSessionId(self):
+    #         return self.sessionId
 
 
 

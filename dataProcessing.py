@@ -1,9 +1,16 @@
 import numpy as np
-
+import json
 
 
 clusterHierData = []
 
+
+remote_server = False;
+
+if(remote_server):
+    root_dir = "/root/alex/myproject/"
+else:
+    root_dir = ""
 
 class ClusterNode:
     """
@@ -363,9 +370,30 @@ def dataPreprocess(go_inf):
 
 	matrix_reOrder = createMatrixReord(go_inf_reOrder)#create matrix and clusterHierData
 
-	
+	go_hier = getGODependency(go_inf_reOrder)
 
-	return {"matrix":matrix_reOrder,"gen_anno_reord":gen_anno_reord,"clusterHierData":clusterHierData,"go_inf":go_inf_reOrder}
+	return {"matrix":matrix_reOrder,"gen_anno_reord":gen_anno_reord,"clusterHierData":clusterHierData,"go_inf":go_inf_reOrder,"go_hier":go_hier}
+
+def getGODependency(GO_inf):
+
+    def recuriveGetGOId(GO_id):
+
+        GO_hier_list[GO_id]=GO_hier[GO_id]
+
+        for i in GO_hier[GO_id]["p"]:
+            if not GO_hier_list.has_key(i):
+                recuriveGetGOId(i.encode('ascii','ignore'))
+
+    with open(root_dir+'js/GO.js',"r") as fr_GO:
+        for GO in fr_GO:
+            GO_hier = json.loads(str(GO)) 
+
+    GO_hier_list = {}
+
+    for gos in GO_inf:
+        recuriveGetGOId(gos["GO_id"].encode('ascii','ignore'))
+        
+    return json.dumps(GO_hier_list)
 
 def reOrder(gen_anno_reord,go_inf):
 	go_inf_tmp = []
