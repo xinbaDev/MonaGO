@@ -25,18 +25,18 @@ class DavidDataScrawler(object):
             getGO_response = pcHelper.get(url)
 
             parser = DavidDataScrawler.GOParser(pcHelper)
-            parser.feed(getGO_response)#get go_inf
-            go_inf = parser.getGO_inf()
+            parser.feed(getGO_response)#get go
+            go = parser.getGO_inf()
 
-            logger.debug('go_inf:{}'.format(go_inf))
+            logger.debug('go:{}'.format(go))
 
             geneLists = parser.getGeneLists()#get a list of genes for each GO term
 
             logger.debug('geneLists:{}'.format(geneLists))
 
-            go_inf_filtered = self._filterGO(self.pVal,go_inf)
+            go_filtered = self._filterGO(self.pVal,go)
 
-            logger.debug('go_inf_filtered:{}'.format(go_inf_filtered))
+            logger.debug('go_filtered:{}'.format(go_filtered))
 
             geneIds = self._getUniqueGeneIds(geneLists)
 
@@ -44,7 +44,7 @@ class DavidDataScrawler(object):
 
             geneIdNameMapping = self._getGenesNamesByIds(pcHelper,geneIds)
 
-            go_inf_filtered_geneName = self._changeGeneIdToNameInGO(go_inf_filtered,geneIdNameMapping)#change the gene id into gene name in go_inf
+            go_inf_filtered_geneName = self._changeGeneIdToNameInGO(go_filtered,geneIdNameMapping)#change the gene id into gene name in go
 
             return go_inf_filtered_geneName
 
@@ -112,22 +112,42 @@ class DavidDataScrawler(object):
 
 
 
-    def _changeGeneIdToNameInGO(self,go_inf_filtered,geneIdNameMapping):
-        for i in range(0,len(go_inf_filtered)):
+    def _changeGeneIdToNameInGO(self,go,geneIdNameMapping):
+        '''
+        transfrom the gene ids in GO terms to gene name according to the mapping
 
-            geneNames = go_inf_filtered[i]["genes"].split(",")
+        Args:
+            go:a list of GO terms
+            geneIdNameMapping:mapping between gene id and gene name
 
+        return:
+            processed GO terms
+        '''
+
+        for i in range(0,len(go)):
+
+            geneNames = go[i]["genes"].split(",")
             geneNameString = "|".join([geneIdNameMapping[geneName.strip().lower()] for geneName in geneNames]) 
 
-            go_inf_filtered[i]["genes"] = geneNameString[:-1]# strip the last '|'
+            go[i]["genes"] = geneNameString[:-1]# strip the last '|'
 
-            return go_inf_filtered
+            return go
 
 
     def _getGenesNamesByIds(self,pcHelper,geneIds):
+        '''
+        create a dict(geneIdNameMapping) to map gene id to gene name
+
+        Args:
+            pcHelper: pycurl helper object
+            geneIds: an array of gene ids
+
+        return:
+            a dict mapping gene id to gene name
+        '''
         res = pcHelper.get('https://david.ncifcrf.gov/list.jsp')#get gene name and id
         parser = DavidDataScrawler.geneParser()
-        parser.feed(res)#mapping between gene id and gene name
+        parser.feed(res)
 
         genesIdName = parser.getParsedGeneNameWithId()
         geneIdNameMapping = {}
@@ -166,11 +186,11 @@ class DavidDataScrawler(object):
         return filterGO_inf
 
 
-
-
-
-    # create a subclass and override the handler methods
     class GOParser(HTMLParser):
+        '''
+        parse a list of GO terms(name and a list of associated gene ids)
+        '''
+
         def __init__(self,pcHelper):
             HTMLParser.__init__(self)
 
@@ -216,6 +236,9 @@ class DavidDataScrawler(object):
 
 
     class geneParser(HTMLParser):
+        '''
+        parse gene id and gene name
+        '''
 
         table = 0
         tr = 0

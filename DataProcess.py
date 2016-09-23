@@ -440,12 +440,12 @@ class DataProcess():
         nd = [None] * (size * 2 - 1)
         nd = self.to_tree(Z)
 
-        gen_anno_reord =  nd.pre_order()#array_order
+        go_index_reord =  nd.pre_order()#array_order
 
-        go_inf_reOrder = self.reOrder(gen_anno_reord,go_inf)
+        go_inf_reOrder = self.reOrder(go_index_reord,go_inf)
 
         matrix_reOrder = self.createMatrixReord(go_inf_reOrder)#create matrix and clusterHierData
 
         go_hier = self.getGODependency(go_inf_reOrder)
 
-        return {"matrix":matrix_reOrder,"gen_anno_reord":gen_anno_reord,"clusterHierData":self.clusterHierData,"go_inf":go_inf_reOrder,"go_hier":go_hier}
+        return {"matrix":matrix_reOrder,"go_index_reord":go_index_reord,"clusterHierData":self.clusterHierData,"go_inf":go_inf_reOrder,"go_hier":go_hier}

@@ -32,34 +32,33 @@ app = Flask(__name__)
 def index():
 
     annotCatDict = {
-        'GOTERM_BP_FAT':'25',
-        'GOTERM_CC_FAT':'32',
-        'GOTERM_MF_FAT':'39'
+        'GOTERM_BP_FAT':'25',#biological process
+        'GOTERM_CC_FAT':'32',#celluar component
+        'GOTERM_MF_FAT':'39'#melocular function
     }
 
     if request.method == 'GET':
         return render_template("index.html")
     else:
 
+        #parameters needed for querying DAVID
         inputIds = request.form['inputIds']
         idType = request.form['idType']
-        listName = "test"
-        listType = request.form['listType']
         annotCat = request.form['annotCat']
         pVal = request.form['pVal'];
 
+        #transform annotation name to number recognized by DAVID(e.g. GOTERM_BP_FAT to 25) .
         annotCat = ','.join([annotCatDict[cat] for cat in annotCat.split(",")])
 
-        data = getDataFromDavid(inputIds,idType,annotCat,pVal)
+        go = getDataFromDavid(inputIds,idType,annotCat,pVal)
 
-        matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(data)
+        matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go)
 
         with open(root_dir+'templates/chord_layout.html',"r") as fr_html:
             html = "".join(fr_html.readlines())
 
-        data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+matrix_count+";"+"var array_order="+array_order+";"\
-        +"var clusterHierData="+clusterHierData +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
-
+        data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+str(matrix_count)+";"+"var array_order="+str(array_order)+";"\
+        +"var clusterHierData="+str(clusterHierData) +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
 
     return data+html
         
@@ -104,34 +103,56 @@ def getMyLogo():
 
 
 def getDataFromDavid(inputIds,idType,annotCat,pVal):
+    '''
+    send https request to David and get GO information
+    
+    Args:
+        inputIds:a list of gene ids
+        idType:the type of gene ids, such as AFFYMETRIX_3PRIME_IVT_ID
+        annotcat: type of annotation wanted, such as GO
+        pVal: p-value
+
+    return:
+        A list of GO terms
+    '''
     davidScrawler = DavidDataScrawler()
     davidScrawler.setParams(inputIds,idType,annotCat,pVal);
 
     try:
-        go_inf_filtered_geneName = davidScrawler.run()
+        go = davidScrawler.run()
     except Exception as e:
         logger.error(str(e))
     else:
-        return go_inf_filtered_geneName
+        return go
 
 
 
-def processedData(go_inf_filtered_geneName):
+def processedData(go):
+    '''
+    generate necessary data for visualization
+
+    Args:
+        a list of GO terms
+
+    return:
+        matrix:a matrix M where M(i,j) represents the number of intersected genes betweeen GO[i] and GO[j]
+        go_index_reord:an array representing the position change of GO terms after hieracical clustering
+        go_hier:a list of GO that are ancesters of enriched GO terms.
+        go_inf_reord:an array of enriched GO terms
+        clusterHierData:an array storing hierarcical data use to generated hierarcical tree
+    '''
     dataProcess = DataProcess()
+    preProcessedData = dataProcess.dataProcess(go)
 
-    preProcessedData = dataProcess.dataProcess(go_inf_filtered_geneName)
-
-    matrix_count = str(preProcessedData["matrix"]["matrix_count"])
-
-    array_order = str(preProcessedData["gen_anno_reord"])
-
-    clusterHierData = str(preProcessedData["clusterHierData"])
-
-    go_inf_reord = preProcessedData["go_inf"]
-
+    matrix = preProcessedData["matrix"]["matrix_count"]
+    go_index_reord = preProcessedData["go_index_reord"]
     go_hier = preProcessedData["go_hier"]
+    go_inf_reord = preProcessedData["go_inf"]
+    clusterHierData = preProcessedData["clusterHierData"]
+    
+    
 
-    return matrix_count,array_order,go_hier,go_inf_reord,clusterHierData
+    return matrix,go_index_reord,go_hier,go_inf_reord,clusterHierData
 
 
 if __name__ == '__main__':
