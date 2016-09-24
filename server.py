@@ -50,17 +50,23 @@ def index():
         #transform annotation name to number recognized by DAVID(e.g. GOTERM_BP_FAT to 25) .
         annotCat = ','.join([annotCatDict[cat] for cat in annotCat.split(",")])
 
-        go = getDataFromDavid(inputIds,idType,annotCat,pVal)
+        go,status = getDataFromDavid(inputIds,idType,annotCat,pVal)
 
-        matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go)
+        if status == True:
+            matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go)
 
-        with open(root_dir+'templates/chord_layout.html',"r") as fr_html:
-            html = "".join(fr_html.readlines())
+            with open(root_dir+'templates/chord_layout.html',"r") as fr_html:
+                html = "".join(fr_html.readlines())
 
-        data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+str(matrix_count)+";"+"var array_order="+str(array_order)+";"\
-        +"var clusterHierData="+str(clusterHierData) +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
+            data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+str(matrix_count)+";"+"var array_order="+str(array_order)+";"\
+            +"var clusterHierData="+str(clusterHierData) +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
 
-    return data+html
+            return data+html
+        else:
+            return "Failure to grape data"
+        
+
+
         
         
 
@@ -93,7 +99,7 @@ def returnDemo():
     with open(root_dir+"demo/Data.txt","r") as fr:
         data = fr.readline()
 
-    return data + html;
+    return data + html
 
 @app.route('/my/img/my_logo.jpg')
 def getMyLogo():
@@ -116,14 +122,15 @@ def getDataFromDavid(inputIds,idType,annotCat,pVal):
         A list of GO terms
     '''
     davidScrawler = DavidDataScrawler()
-    davidScrawler.setParams(inputIds,idType,annotCat,pVal);
+    davidScrawler.setParams(inputIds,idType,annotCat,pVal)
 
     try:
         go = davidScrawler.run()
     except Exception as e:
         logger.error(str(e))
+        return _,False
     else:
-        return go
+        return go,True
 
 
 

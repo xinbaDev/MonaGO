@@ -10,11 +10,14 @@ logger = logging.getLogger(__name__)
 
 class DavidDataScrawler(object):
 
+    
 
     def setParams(self,inputIds,idType,annotCat,pVal):
         self.inputIds,self.idType,self.annotCat,self.pVal = inputIds,idType,annotCat,pVal
 
     def run(self):
+
+        if()
 
         pcHelper = DavidDataScrawler.PycurlHelper()
 

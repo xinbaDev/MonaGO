@@ -1,11 +1,20 @@
 import unittest
+from DavidDataScrawler import DavidDataScrawler
+from DataProcess import DataProcess
 
 class TestStringMethods(unittest.TestCase):
-	def setUp():
+	def setUp(self):
+		dataScrawler = DavidDataScrawler()
+		DataProcess = DataProcess()
+
+	def tearDown(self):
 		return
 
-	def tearDown():
-		return
+
+	def test_Scrawler(self):
+		davidScrawler.setParams(inputIds,idType,annotCat,pVal)
+		
+	
 
 
 if __name__ == '__main__':
