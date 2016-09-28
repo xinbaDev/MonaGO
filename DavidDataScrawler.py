@@ -17,8 +17,6 @@ class DavidDataScrawler(object):
 
     def run(self):
 
-        if()
-
         pcHelper = DavidDataScrawler.PycurlHelper()
 
         res = self._uploadGene(pcHelper,self.idType,self.inputIds)
@@ -47,9 +45,9 @@ class DavidDataScrawler(object):
 
             geneIdNameMapping = self._getGenesNamesByIds(pcHelper,geneIds)
 
-            go_inf_filtered_geneName = self._changeGeneIdToNameInGO(go_filtered,geneIdNameMapping)#change the gene id into gene name in go
+            goFiltered = self._changeGeneIdToNameInGO(go_filtered,geneIdNameMapping)#change the gene id into gene name in go
 
-            return go_inf_filtered_geneName
+            return goFiltered , True
 
 
         else:

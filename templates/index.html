@@ -218,39 +218,11 @@
 					<br>
 					
 
-					<button class="btn btn-success btn-rounded waves-effect waves-light btn-lg submit-btn" onclick="uploadList();" 
-			            value="Submit List">Submit</button>
+					<div class="btn btn-success btn-rounded btn-lg submit-btn" onclick="uploadList()" 
+			            >Submit</div>
 
 					
-			            
-
-<!-- 							<tbody><tr>
-	<td class="sidebar_text">Biological Process</td>
-			              		<td><input type="checkbox" name="annotType" value="GOTERM_BP_FAT"></td>
-</tr>
-<tr>
-	<td class="sidebar_text">Molecule Function</td>
-			              		<td><input type="checkbox" name="annotType" value="GOTERM_MF_FAT"></td>
-</tr>
-<tr>
-	<td class="sidebar_text">Cellular Component</td>
-			              		<td><input type="checkbox" name="annotType" value="GOTERM_CC_FAT"></td>
-</tr>
-						</tbody></table>
-			            
-			          </td>
-
-        			</tr>
-
-        <tr><td>
-        <table>			
-	            <tbody><tr><td class="sidebar_subheader"><br>
-	                  Step 5: Submit List </td>
-	              </tr></tbody></table>
-              <input type="button" onclick="uploadList();" value="Submit List" name="B52" class="upload">
-        </td></tr>
-			</tbody></table>
- -->
+			           
 </form>
 
 </div>
@@ -305,10 +277,20 @@
 			return;
 		}*/
 
+
 		if(FM.inputIds.value == ""){
-			alert("Error: Please either upload a file or paste a list in step 1.");
+			alert("Error: Please paste a list in step 1.");
 			return;
 		}
+
+		
+
+		if(FM.annotCat.value == ""){
+			alert("Error: Please select annotation type in step 4.");
+
+			return;
+		}
+
 		
 		FM.inputIds.value = convertInputIds(FM.inputIds.value);
 		//alert("upload:"+ident);
@@ -317,7 +299,7 @@
 			FM.Mode.value="paste";
 			FM.action="\\index";
 			FM.target="";
-			//FM.submit();
+			FM.submit();
 
 	}
 

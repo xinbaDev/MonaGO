@@ -63,7 +63,7 @@ def index():
 
             return data+html
         else:
-            return "Failure to grape data"
+            return "Failure to get data"
         
 
 
