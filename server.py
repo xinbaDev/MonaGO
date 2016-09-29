@@ -53,7 +53,14 @@ def index():
         go,status = getDataFromDavid(inputIds,idType,annotCat,pVal)
 
         if status == True:
+
+            #check whether the data is valid to create chord diagram
+            # if checkGOData(go):
+
             matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go)
+
+            if not matrix_count:
+                return "Failure to process data"
 
             with open(root_dir+'templates/chord_layout.html',"r") as fr_html:
                 html = "".join(fr_html.readlines())
@@ -62,6 +69,9 @@ def index():
             +"var clusterHierData="+str(clusterHierData) +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
 
             return data+html
+            # else:
+
+            #     return "The number of enriched GO terms is less than two"
         else:
             return "Failure to get data"
         
@@ -128,7 +138,7 @@ def getDataFromDavid(inputIds,idType,annotCat,pVal):
         go = davidScrawler.run()
     except Exception as e:
         logger.error(str(e))
-        return _,False
+        return [],False
     else:
         return go,True
 
@@ -149,17 +159,20 @@ def processedData(go):
         clusterHierData:an array storing hierarcical data use to generated hierarcical tree
     '''
     dataProcess = DataProcess()
-    preProcessedData = dataProcess.dataProcess(go)
+    status = True
 
-    matrix = preProcessedData["matrix"]["matrix_count"]
-    go_index_reord = preProcessedData["go_index_reord"]
-    go_hier = preProcessedData["go_hier"]
-    go_inf_reord = preProcessedData["go_inf"]
-    clusterHierData = preProcessedData["clusterHierData"]
+    try:
+        preProcessedData = dataProcess.dataProcess(go)
+    except Exception as e:
+        logger.error(str(e))
+    else:
+        matrix = preProcessedData["matrix"]["matrix_count"]
+        go_index_reord = preProcessedData["go_index_reord"]
+        go_hier = preProcessedData["go_hier"]
+        go_inf_reord = preProcessedData["go_inf"]
+        clusterHierData = preProcessedData["clusterHierData"]
     
-    
-
-    return matrix,go_index_reord,go_hier,go_inf_reord,clusterHierData
+        return matrix,go_index_reord,go_hier,go_inf_reord,clusterHierData
 
 
 if __name__ == '__main__':

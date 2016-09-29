@@ -31,23 +31,40 @@ class DavidDataScrawler(object):
 
             logger.debug('go:{}'.format(go))
 
+            if not go:
+                raise Exception("get GO terms failed") 
+
             geneLists = parser.getGeneLists()#get a list of genes for each GO term
 
             logger.debug('geneLists:{}'.format(geneLists))
+
+            if not geneLists:
+                raise Exception("get gene lists failed") 
+                
 
             go_filtered = self._filterGO(self.pVal,go)
 
             logger.debug('go_filtered:{}'.format(go_filtered))
 
+            if not go_filtered:
+                raise Exception("get go_filtered failed")
+                
+
             geneIds = self._getUniqueGeneIds(geneLists)
 
             logger.debug("geneIds:{}".format(geneIds))
 
+
             geneIdNameMapping = self._getGenesNamesByIds(pcHelper,geneIds)
 
-            goFiltered = self._changeGeneIdToNameInGO(go_filtered,geneIdNameMapping)#change the gene id into gene name in go
+            #change the gene id into gene name in go
+            go_processed = self._changeGeneIdToNameInGO(go_filtered,geneIdNameMapping)
 
-            return goFiltered , True
+            if not go_processed:
+                raise Exception("get final GO failed")
+                
+
+            return go_processed , True
 
 
         else:

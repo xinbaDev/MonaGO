@@ -430,6 +430,10 @@ class DataProcess():
     def dataProcess(self,go_inf):
          
         size = len(go_inf)
+
+        if size==0:
+            raise Exception("go_inf is empty")
+            
         matrix = self.createMatrix(go_inf)
 
         D = np.ndarray(size * (size - 1) / 2,dtype=np.int)
