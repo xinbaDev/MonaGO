@@ -235,6 +235,8 @@
 
 
 	function uploadList(){
+
+		$(".submit-btn").attr('disabled','disabled'); 
 		//alert("start upload");
 		var FM = document.frmManager;
 		
@@ -300,6 +302,7 @@
 			FM.action="\\index";
 			FM.target="";
 			FM.submit();
+
 
 	}
 

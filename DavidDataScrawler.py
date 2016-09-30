@@ -5,6 +5,8 @@ from StringIO import StringIO
 import certifi
 import logging
 
+
+
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
@@ -64,7 +66,7 @@ class DavidDataScrawler(object):
                 raise Exception("get final GO failed")
                 
 
-            return go_processed , True
+            return go_processed
 
 
         else:

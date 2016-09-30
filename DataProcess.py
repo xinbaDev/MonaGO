@@ -1,6 +1,9 @@
 import numpy as np
 import json
+import logging
 
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 class DataProcess():
@@ -379,8 +382,12 @@ class DataProcess():
         return go_inf_tmp
 
     def createMatrix(self,go_inf):
+
+        logger.debug(go_inf)
+
         size = len(go_inf)
         matrix = [[0] * size for _ in range(size)];
+
 
         for i in range(0,size):
             for j in range(0,size):
@@ -433,7 +440,7 @@ class DataProcess():
 
         if size==0:
             raise Exception("go_inf is empty")
-            
+
         matrix = self.createMatrix(go_inf)
 
         D = np.ndarray(size * (size - 1) / 2,dtype=np.int)
