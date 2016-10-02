@@ -19,9 +19,10 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 import time
-import resource
+
 
 remote_server = False;
+
 
 if(remote_server):
     root_dir = "/root/alex/myproject/"
@@ -83,10 +84,6 @@ def index():
             #     return "The number of enriched GO terms is less than two"
         else:
             return "Failure to get data"
-        
-
-
-        
         
 
 @app.route('/css/<fileName>')

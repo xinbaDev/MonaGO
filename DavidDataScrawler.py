@@ -4,8 +4,9 @@ import pycurl
 from StringIO import StringIO
 import certifi
 import logging
+import time
 
-
+from twisted.internet import defer
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -21,7 +22,11 @@ class DavidDataScrawler(object):
 
         pcHelper = DavidDataScrawler.PycurlHelper()
 
-        res = self._uploadGene(pcHelper,self.idType,self.inputIds)
+        d = Deferred()#init defer
+
+        d = self._uploadGene(d)
+
+        res = (pcHelper,self.idType,self.inputIds)
 
         if self._checkSuccess(res):
             url = 'https://david.ncifcrf.gov/chartReport.jsp?annot={0}&currentList=0'.format(self.annotCat)
@@ -86,8 +91,9 @@ class DavidDataScrawler(object):
     '''
     class PycurlHelper:
 
-        def __init__(self):
+        def __init__(self,defer):
             self.curl = pycurl.Curl()
+            self.d = defer
 
         def get(self,url):
             buffer = StringIO()
@@ -95,8 +101,9 @@ class DavidDataScrawler(object):
             self.curl.setopt(pycurl.COOKIEFILE, 'cookie.txt')
             self.curl.setopt(pycurl.CUSTOMREQUEST, "GET")
             self.curl.setopt(self.curl.WRITEDATA, buffer)
-            self.curl.perform()
-            return buffer.getvalue().decode('iso-8859-1')
+            self.d.addCallbacks(self.curl.perform)
+            self.d.callback()
+            return self.d
 
         def post(self,url,data):
             return 0
@@ -109,7 +116,11 @@ class DavidDataScrawler(object):
             self.curl.setopt(self.curl.WRITEDATA, buffer)
             self.curl.setopt(pycurl.COOKIEJAR, 'cookie.txt')
             self.curl.setopt(pycurl.CAINFO, certifi.where())
+
+            start_time = time.time()
             self.curl.perform()
+            logger.debug("upload data lasts--- %s seconds ---" % (time.time() - start_time))
+            
             return buffer.getvalue().decode('iso-8859-1')
 
         def close(self):
