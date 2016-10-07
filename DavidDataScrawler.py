@@ -5,64 +5,103 @@ from StringIO import StringIO
 import certifi
 import logging
 import time
+import threading
 
 from twisted.internet import defer
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-class DavidDataScrawler(object):
+'''
+pycurl helper class
 
-    
+'''
+class PycurlHelper:
+
+    def __init__(self):
+        self.curl = pycurl.Curl()
+
+    def get(self,url):
+        buffer = StringIO()
+        self.curl.setopt(pycurl.URL, url)
+        self.curl.setopt(pycurl.COOKIEFILE, 'cookie.txt')
+        self.curl.setopt(pycurl.CUSTOMREQUEST, "GET")
+        self.curl.setopt(self.curl.WRITEDATA, buffer)
+        self.curl.perform()
+        return buffer.getvalue().decode('iso-8859-1')
+
+    def post(self,url,data):
+        return 0
+
+    def sendMultipart(self,url,data):
+        buffer = StringIO()
+        self.curl.setopt(pycurl.URL, url)
+        self.curl.setopt(pycurl.HTTPPOST, data)
+        self.curl.setopt(pycurl.CUSTOMREQUEST, "PUT")
+        self.curl.setopt(self.curl.WRITEDATA, buffer)
+        self.curl.setopt(pycurl.COOKIEJAR, 'cookie.txt')
+        self.curl.setopt(pycurl.CAINFO, certifi.where())
+
+        start_time = time.time()
+        self.curl.perform()
+        logger.debug("upload data lasts--- %s seconds ---" % (time.time() - start_time))
+        
+        return buffer.getvalue().decode('iso-8859-1')
+
+    def close(self):
+        self.curl.close()
+
+class HttpThread(threading.Thread):
+    def __init__(self,pcHelper,url):
+        super(HttpThread,self).__init__()
+        self.url = url
+        self.pcHelper = pcHelper
+        self.res = ""
+
+    def run(self):
+        self.res = self.pcHelper.get(self.url)
+
+
+class DavidDataScrawler(object):
 
     def setParams(self,inputIds,idType,annotCat,pVal):
         self.inputIds,self.idType,self.annotCat,self.pVal = inputIds,idType,annotCat,pVal
 
     def run(self):
 
-        pcHelper = DavidDataScrawler.PycurlHelper()
+        pcHelper = PycurlHelper()
 
-        d = Deferred()#init defer
+        #d = Deferred()#init defer
 
-        d = self._uploadGene(d)
-
-        res = (pcHelper,self.idType,self.inputIds)
+        res = self._uploadGene(pcHelper,self.idType,self.inputIds)
 
         if self._checkSuccess(res):
+
             url = 'https://david.ncifcrf.gov/chartReport.jsp?annot={0}&currentList=0'.format(self.annotCat)
-            getGO_response = pcHelper.get(url)
+            thread1 = HttpThread(pcHelper,url)
 
-            parser = DavidDataScrawler.GOParser(pcHelper)
-            parser.feed(getGO_response)#get go
-            go = parser.getGO_inf()
+            url = 'https://david.ncifcrf.gov/list.jsp'
+            thread2 = HttpThread(pcHelper,url)
 
-            logger.debug('go:{}'.format(go))
+            thread1.start()
+            thread2.start()
 
-            if not go:
-                raise Exception("get GO terms failed") 
+            thread1.join()
+            thread2.join() 
 
-            geneLists = parser.getGeneLists()#get a list of genes for each GO term
+            getGO_response = thread1.res
+            geneList_response = thread2.res
 
-            logger.debug('geneLists:{}'.format(geneLists))
-
-            if not geneLists:
-                raise Exception("get gene lists failed") 
+            go,geneIds = self._parseGO(getGO_response)
+            geneList = self._parseGenes(geneList_response)
                 
 
             go_filtered = self._filterGO(self.pVal,go)
-
-            logger.debug('go_filtered:{}'.format(go_filtered))
-
-            if not go_filtered:
-                raise Exception("get go_filtered failed")
-                
-
-            geneIds = self._getUniqueGeneIds(geneLists)
+            geneIds = self._getUniqueGeneIds(geneIds)
 
             logger.debug("geneIds:{}".format(geneIds))
 
-
-            geneIdNameMapping = self._getGenesNamesByIds(pcHelper,geneIds)
+            geneIdNameMapping = self._getGenesNamesByIds(geneIds,geneList)
 
             #change the gene id into gene name in go
             go_processed = self._changeGeneIdToNameInGO(go_filtered,geneIdNameMapping)
@@ -85,46 +124,33 @@ class DavidDataScrawler(object):
         else:
             return True
 
-    '''
-    pycurl helper class
 
-    '''
-    class PycurlHelper:
+    def _parseGO(self):
+        parser = DavidDataScrawler.GOParser(pcHelper)
+        parser.feed(getGO_response)#get go
+        go = parser.getGO_inf()
+        geneIds = parser.getGeneLists()
 
-        def __init__(self,defer):
-            self.curl = pycurl.Curl()
-            self.d = defer
+        logger.debug('go:{}'.format(go))
 
-        def get(self,url):
-            buffer = StringIO()
-            self.curl.setopt(pycurl.URL, url)
-            self.curl.setopt(pycurl.COOKIEFILE, 'cookie.txt')
-            self.curl.setopt(pycurl.CUSTOMREQUEST, "GET")
-            self.curl.setopt(self.curl.WRITEDATA, buffer)
-            self.d.addCallbacks(self.curl.perform)
-            self.d.callback()
-            return self.d
+        if not go:
+            raise Exception("get GO terms failed") 
 
-        def post(self,url,data):
-            return 0
+        logger.debug('geneIds:{}'.format(geneIds))
 
-        def sendMultipart(self,url,data):
-            buffer = StringIO()
-            self.curl.setopt(pycurl.URL, url)
-            self.curl.setopt(pycurl.HTTPPOST, data)
-            self.curl.setopt(pycurl.CUSTOMREQUEST, "PUT")
-            self.curl.setopt(self.curl.WRITEDATA, buffer)
-            self.curl.setopt(pycurl.COOKIEJAR, 'cookie.txt')
-            self.curl.setopt(pycurl.CAINFO, certifi.where())
+        if not geneIds:
+            raise Exception("get gene lists failed") 
 
-            start_time = time.time()
-            self.curl.perform()
-            logger.debug("upload data lasts--- %s seconds ---" % (time.time() - start_time))
-            
-            return buffer.getvalue().decode('iso-8859-1')
+        return go,geneIds
 
-        def close(self):
-            self.curl.close()
+
+    def _parseGenes(self):
+        parser = DavidDataScrawler.geneParser()
+        parser.feed(res)
+        genesIdName = parser.getParsedGeneNameWithId()
+        return genesIdName
+
+
 
 
 
@@ -136,7 +162,6 @@ class DavidDataScrawler(object):
                          ('combineIndex','null'),('selectedSpecies','null'),('uploadHTML','null'),('managerHTML','null'),
                          ('sublist',''),('rowids',''),('convertedListName','null'),('convertedPopName','null'),
                          ('pasteBox',inputIds),('Identifier',idType) , ('rbUploadType','list')]
-
 
         return pcHelper.sendMultipart(url="https://david.ncifcrf.gov/tools.jsp",data=data)
 
@@ -165,7 +190,7 @@ class DavidDataScrawler(object):
             return go
 
 
-    def _getGenesNamesByIds(self,pcHelper,geneIds):
+    def _getGenesNamesByIds(self,geneIds,genesIdName):
         '''
         create a dict(geneIdNameMapping) to map gene id to gene name
 
@@ -176,11 +201,7 @@ class DavidDataScrawler(object):
         return:
             a dict mapping gene id to gene name
         '''
-        res = pcHelper.get('https://david.ncifcrf.gov/list.jsp')#get gene name and id
-        parser = DavidDataScrawler.geneParser()
-        parser.feed(res)
 
-        genesIdName = parser.getParsedGeneNameWithId()
         geneIdNameMapping = {}
 
         for i in range(0,len(genesIdName)-1,2):#ugly way, need improve
@@ -213,6 +234,11 @@ class DavidDataScrawler(object):
     def _filterGO(self,pVal,go_inf):
 
         filterGO_inf = [GO for GO in go_inf if float(GO["pVal"]) < float(pVal)]
+
+        logger.debug('go_filtered:{}'.format(filterGO_inf))
+
+        if not filterGO_inf:
+            raise Exception("get go_filtered failed")
 
         return filterGO_inf
 
