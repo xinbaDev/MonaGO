@@ -5,7 +5,7 @@ from StringIO import StringIO
 import certifi
 import logging
 import time
-import threading
+import select
 
 from twisted.internet import defer
 
@@ -20,6 +20,8 @@ class PycurlHelper:
 
     def __init__(self):
         self.curl = pycurl.Curl()
+        self.curls = []#for multicurl
+        self.buffers = []
 
     def get(self,url):
         buffer = StringIO()
@@ -32,6 +34,7 @@ class PycurlHelper:
 
     def post(self,url,data):
         return 0
+
 
     def sendMultipart(self,url,data):
         buffer = StringIO()
@@ -51,15 +54,48 @@ class PycurlHelper:
     def close(self):
         self.curl.close()
 
-class HttpThread(threading.Thread):
-    def __init__(self,pcHelper,url):
-        super(HttpThread,self).__init__()
-        self.url = url
-        self.pcHelper = pcHelper
-        self.res = ""
 
-    def run(self):
-        self.res = self.pcHelper.get(self.url)
+    def CurlMultiGet(self,urls):
+        self.curls = []
+
+        SELECT_TIMEOUT = 1.0
+
+        for url in urls:
+            self._setCurlHandle(url) 
+
+        m = pycurl.CurlMulti()
+
+        for c in self.curls:
+            m.add_handle(c) 
+
+        # Stir the state machine into action
+        while 1:
+            ret, num_handles = m.perform()
+            if ret != pycurl.E_CALL_MULTI_PERFORM:
+                break
+
+        # Keep going until all the connections have terminated
+        while num_handles:
+            # The select method uses fdset internally to determine which file descriptors
+            # to check.
+            m.select(SELECT_TIMEOUT)
+            while 1:
+                ret, num_handles = m.perform()
+                if ret != pycurl.E_CALL_MULTI_PERFORM:
+                    break
+
+
+    def _setCurlHandle(self,url):
+        curl = pycurl.Curl()
+        curl.setopt(pycurl.URL, url)
+        curl.setopt(pycurl.COOKIEFILE, 'cookie.txt')
+        curl.setopt(pycurl.CUSTOMREQUEST, "GET")
+
+        buffer = StringIO()
+        curl.setopt(self.curl.WRITEDATA, buffer)
+
+        self.curls.append(curl)
+        self.buffers.append(buffer)
 
 
 class DavidDataScrawler(object):
@@ -77,20 +113,21 @@ class DavidDataScrawler(object):
 
         if self._checkSuccess(res):
 
-            url = 'https://david.ncifcrf.gov/chartReport.jsp?annot={0}&currentList=0'.format(self.annotCat)
-            thread1 = HttpThread(pcHelper,url)
+            url_1 = 'https://david.ncifcrf.gov/chartReport.jsp?annot={0}&currentList=0'.format(self.annotCat)
+            url_2 = 'https://david.ncifcrf.gov/list.jsp'
 
-            url = 'https://david.ncifcrf.gov/list.jsp'
-            thread2 = HttpThread(pcHelper,url)
+            urls = [url_1,url_2]
 
-            thread1.start()
-            thread2.start()
+            pcHelper.CurlMultiGet(urls)
 
-            thread1.join()
-            thread2.join() 
+            for buffer in pcHelper.buffers:
+                logger.debug("buffer:{}".format(buffer.getvalue().decode('iso-8859-1')))
+                
 
-            getGO_response = thread1.res
-            geneList_response = thread2.res
+            ##getGO_response,geneList_response = [map(lambda x: x.getvalue().decode('iso-8859-1'), pcHelper.buffers)]
+            
+            logger.debug("getGO_response:{}".format(getGO_response))
+            logger.debug("geneList_response:{}".format(geneList_response))
 
             go,geneIds = self._parseGO(getGO_response)
             geneList = self._parseGenes(geneList_response)
