@@ -22,11 +22,18 @@ class PycurlHelper:
         self.curl = pycurl.Curl()
         self.curls = []#for multicurl
         self.buffers = []
+        self.i = 0
+        self.curl.setopt(pycurl.VERBOSE, 1)
+        self.s = pycurl.CurlShare()
+        self.s.setopt(pycurl.SH_SHARE, pycurl.LOCK_DATA_COOKIE)
+        self.s.setopt(pycurl.SH_SHARE, pycurl.LOCK_DATA_DNS)
+        self.s.setopt(pycurl.SH_SHARE, pycurl.LOCK_DATA_SSL_SESSION)
 
     def get(self,url):
         buffer = StringIO()
         self.curl.setopt(pycurl.URL, url)
         self.curl.setopt(pycurl.COOKIEFILE, 'cookie.txt')
+        self.curl.setopt(pycurl.SHARE, self.s)
         self.curl.setopt(pycurl.CUSTOMREQUEST, "GET")
         self.curl.setopt(self.curl.WRITEDATA, buffer)
         self.curl.perform()
@@ -40,6 +47,7 @@ class PycurlHelper:
         buffer = StringIO()
         self.curl.setopt(pycurl.URL, url)
         self.curl.setopt(pycurl.HTTPPOST, data)
+        self.curl.setopt(pycurl.SHARE, self.s)
         self.curl.setopt(pycurl.CUSTOMREQUEST, "PUT")
         self.curl.setopt(self.curl.WRITEDATA, buffer)
         self.curl.setopt(pycurl.COOKIEJAR, 'cookie.txt')
@@ -56,46 +64,60 @@ class PycurlHelper:
 
 
     def CurlMultiGet(self,urls):
-        self.curls = []
 
-        SELECT_TIMEOUT = 1.0
 
-        for url in urls:
-            self._setCurlHandle(url) 
+
+        SELECT_TIMEOUT = 5.0
 
         m = pycurl.CurlMulti()
 
-        for c in self.curls:
-            m.add_handle(c) 
-
-        # Stir the state machine into action
-        while 1:
-            ret, num_handles = m.perform()
-            if ret != pycurl.E_CALL_MULTI_PERFORM:
-                break
-
-        # Keep going until all the connections have terminated
-        while num_handles:
-            # The select method uses fdset internally to determine which file descriptors
-            # to check.
-            m.select(SELECT_TIMEOUT)
-            while 1:
-                ret, num_handles = m.perform()
-                if ret != pycurl.E_CALL_MULTI_PERFORM:
-                    break
-
-
-    def _setCurlHandle(self,url):
+        #for url in urls:
         curl = pycurl.Curl()
-        curl.setopt(pycurl.URL, url)
-        curl.setopt(pycurl.COOKIEFILE, 'cookie.txt')
+        curl.setopt(pycurl.VERBOSE, 1)
+        curl.setopt(pycurl.URL, urls[0])
+        curl.setopt(pycurl.SHARE, self.s)
         curl.setopt(pycurl.CUSTOMREQUEST, "GET")
 
-        buffer = StringIO()
-        curl.setopt(self.curl.WRITEDATA, buffer)
+        self.i+=1
+        curl.fp = open("filename"+str(self.i), "wb")
+        curl.setopt(pycurl.WRITEDATA, curl.fp)
 
-        self.curls.append(curl)
-        self.buffers.append(buffer)
+        # mybuffer = StringIO() 
+        # hdr = StringIO()          
+        # curl.setopt(pycurl.WRITEDATA, mybuffer)
+
+        m.add_handle(curl)
+
+        start_time = time.time()
+
+        while True:
+            ret, num_handles = m.perform()
+            print "number of handler " + str(num_handles)
+            if  ret != pycurl.E_CALL_MULTI_PERFORM:
+                break
+
+        while num_handles:
+
+            ret = m.select(SELECT_TIMEOUT)
+
+            if ret == -1:
+                continue
+            while 1:
+                ret, num_handles = m.perform()
+
+                if ret != pycurl.E_CALL_MULTI_PERFORM: 
+                    break
+
+        
+        num_q, ok_list, err_list = m.info_read()
+
+        
+        logger.debug("run pycurl multi lasts %s" % (time.time() - start_time))
+
+        for b in self.buffers:
+                logger.debug("buffer:{}".format(b.getvalue()))
+
+
 
 
 class DavidDataScrawler(object):
@@ -120,11 +142,7 @@ class DavidDataScrawler(object):
 
             pcHelper.CurlMultiGet(urls)
 
-            for buffer in pcHelper.buffers:
-                logger.debug("buffer:{}".format(buffer.getvalue().decode('iso-8859-1')))
-                
-
-            ##getGO_response,geneList_response = [map(lambda x: x.getvalue().decode('iso-8859-1'), pcHelper.buffers)]
+            getGO_response,geneList_response = [map(lambda x: x.getvalue().decode('iso-8859-1'), pcHelper.buffers)]
             
             logger.debug("getGO_response:{}".format(getGO_response))
             logger.debug("geneList_response:{}".format(geneList_response))
