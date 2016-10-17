@@ -23,7 +23,7 @@ class PycurlHelper:
         self.curls = []#for multicurl
         self.buffers = []
         self.i = 0
-        self.curl.setopt(pycurl.VERBOSE, 1)
+
         self.s = pycurl.CurlShare()
         self.s.setopt(pycurl.SH_SHARE, pycurl.LOCK_DATA_COOKIE)
         self.s.setopt(pycurl.SH_SHARE, pycurl.LOCK_DATA_DNS)
@@ -65,28 +65,30 @@ class PycurlHelper:
 
     def CurlMultiGet(self,urls):
 
-
-
         SELECT_TIMEOUT = 5.0
 
         m = pycurl.CurlMulti()
 
-        #for url in urls:
-        curl = pycurl.Curl()
-        curl.setopt(pycurl.VERBOSE, 1)
-        curl.setopt(pycurl.URL, urls[0])
-        curl.setopt(pycurl.SHARE, self.s)
-        curl.setopt(pycurl.CUSTOMREQUEST, "GET")
+        curls = []
 
-        self.i+=1
-        curl.fp = open("filename"+str(self.i), "wb")
-        curl.setopt(pycurl.WRITEDATA, curl.fp)
+        for url in urls:
+            curl = pycurl.Curl()
+            curl.setopt(pycurl.VERBOSE, 1)#for debugging, show details about connection status 
+            curl.setopt(pycurl.SHARE,self.s)#share ssl session,cookies,DNS cache
+            curl.setopt(pycurl.URL, url)
+            curl.setopt(pycurl.CUSTOMREQUEST, "GET")
 
-        # mybuffer = StringIO() 
-        # hdr = StringIO()          
-        # curl.setopt(pycurl.WRITEDATA, mybuffer)
+            mybuffer = StringIO() 
+            curl.setopt(pycurl.WRITEDATA, mybuffer)
+            curl.setopt(pycurl.CAINFO, certifi.where())
 
-        m.add_handle(curl)
+            self.buffers.append(mybuffer)
+            curls.append(curl)
+
+        #m.add_handle does not add a Python reference to the Curl object
+        #therefore need a container to hold the reference to curl object
+        for curl in curls:
+            m.add_handle(curl)         
 
         start_time = time.time()
 
@@ -114,8 +116,8 @@ class PycurlHelper:
         
         logger.debug("run pycurl multi lasts %s" % (time.time() - start_time))
 
-        for b in self.buffers:
-                logger.debug("buffer:{}".format(b.getvalue()))
+        # for b in self.buffers:
+        #         logger.debug("buffer:{}".format(b.getvalue()))
 
 
 
@@ -142,10 +144,10 @@ class DavidDataScrawler(object):
 
             pcHelper.CurlMultiGet(urls)
 
-            getGO_response,geneList_response = [map(lambda x: x.getvalue().decode('iso-8859-1'), pcHelper.buffers)]
+            getGO_response,geneList_response = map(lambda x: x.getvalue().decode('iso-8859-1'), pcHelper.buffers)
             
-            logger.debug("getGO_response:{}".format(getGO_response))
-            logger.debug("geneList_response:{}".format(geneList_response))
+            #logger.debug("getGO_response:{}".format(getGO_response))
+            #logger.debug("geneList_response:{}".format(geneList_response))
 
             go,geneIds = self._parseGO(getGO_response)
             geneList = self._parseGenes(geneList_response)
@@ -180,7 +182,7 @@ class DavidDataScrawler(object):
             return True
 
 
-    def _parseGO(self):
+    def _parseGO(self,getGO_response):
         parser = DavidDataScrawler.GOParser(pcHelper)
         parser.feed(getGO_response)#get go
         go = parser.getGO_inf()
@@ -199,9 +201,9 @@ class DavidDataScrawler(object):
         return go,geneIds
 
 
-    def _parseGenes(self):
+    def _parseGenes(self,geneList_response):
         parser = DavidDataScrawler.geneParser()
-        parser.feed(res)
+        parser.feed(geneList_response)
         genesIdName = parser.getParsedGeneNameWithId()
         return genesIdName
 
