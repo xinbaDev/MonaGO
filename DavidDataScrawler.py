@@ -32,8 +32,6 @@ class PycurlHelper:
     def get(self,url):
         buffer = StringIO()
         self.curl.setopt(pycurl.URL, url)
-        self.curl.setopt(pycurl.COOKIEFILE, 'cookie.txt')
-        self.curl.setopt(pycurl.SHARE, self.s)
         self.curl.setopt(pycurl.CUSTOMREQUEST, "GET")
         self.curl.setopt(self.curl.WRITEDATA, buffer)
         self.curl.perform()
@@ -149,7 +147,7 @@ class DavidDataScrawler(object):
             #logger.debug("getGO_response:{}".format(getGO_response))
             #logger.debug("geneList_response:{}".format(geneList_response))
 
-            go,geneIds = self._parseGO(getGO_response)
+            go,geneIds = self._parseGO(getGO_response, pcHelper)
             geneList = self._parseGenes(geneList_response)
                 
 
@@ -182,7 +180,7 @@ class DavidDataScrawler(object):
             return True
 
 
-    def _parseGO(self,getGO_response):
+    def _parseGO(self,getGO_response,pcHelper):
         parser = DavidDataScrawler.GOParser(pcHelper)
         parser.feed(getGO_response)#get go
         go = parser.getGO_inf()
