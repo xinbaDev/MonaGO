@@ -2,7 +2,7 @@ import numpy as np
 import json
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -383,7 +383,7 @@ class DataProcess():
 
     def createMatrix(self,go_inf):
 
-        logger.debug(go_inf)
+        #logger.debug(go_inf)
 
         size = len(go_inf)
         matrix = [[0] * size for _ in range(size)];

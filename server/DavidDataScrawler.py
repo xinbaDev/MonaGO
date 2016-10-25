@@ -9,7 +9,7 @@ import select
 
 from twisted.internet import defer
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 '''
@@ -53,7 +53,7 @@ class PycurlHelper:
 
         start_time = time.time()
         self.curl.perform()
-        logger.debug("upload data lasts--- %s seconds ---" % (time.time() - start_time))
+        logger.info("upload data lasts--- %s seconds ---" % (time.time() - start_time))
         
         return buffer.getvalue().decode('iso-8859-1')
 
@@ -71,7 +71,7 @@ class PycurlHelper:
 
         for url in urls:
             curl = pycurl.Curl()
-            curl.setopt(pycurl.VERBOSE, 1)#for debugging, show details about connection status 
+            #curl.setopt(pycurl.VERBOSE, 1)#for debugging, show details about connection status 
             curl.setopt(pycurl.SHARE,self.s)#share ssl session,cookies,DNS cache
             curl.setopt(pycurl.URL, url)
             curl.setopt(pycurl.CUSTOMREQUEST, "GET")
@@ -92,7 +92,6 @@ class PycurlHelper:
 
         while True:
             ret, num_handles = m.perform()
-            print "number of handler " + str(num_handles)
             if  ret != pycurl.E_CALL_MULTI_PERFORM:
                 break
 
@@ -112,7 +111,7 @@ class PycurlHelper:
         num_q, ok_list, err_list = m.info_read()
 
         
-        logger.debug("run pycurl multi lasts %s" % (time.time() - start_time))
+        logger.info("run pycurl multi lasts %s" % (time.time() - start_time))
 
         # for b in self.buffers:
         #         logger.debug("buffer:{}".format(b.getvalue()))
@@ -154,7 +153,7 @@ class DavidDataScrawler(object):
             go_filtered = self._filterGO(self.pVal,go)
             geneIds = self._getUniqueGeneIds(geneIds)
 
-            logger.debug("geneIds:{}".format(geneIds))
+            #logger.debug("geneIds:{}".format(geneIds))
 
             geneIdNameMapping = self._getGenesNamesByIds(geneIds,geneList)
 
@@ -186,12 +185,12 @@ class DavidDataScrawler(object):
         go = parser.getGO_inf()
         geneIds = parser.getGeneLists()
 
-        logger.debug('go:{}'.format(go))
+        #logger.debug('go:{}'.format(go))
 
         if not go:
             raise Exception("get GO terms failed") 
 
-        logger.debug('geneIds:{}'.format(geneIds))
+        #logger.debug('geneIds:{}'.format(geneIds))
 
         if not geneIds:
             raise Exception("get gene lists failed") 

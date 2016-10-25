@@ -4,8 +4,6 @@ import sys
 from datetime import datetime
 
 #for praser
-
-
 from flask import Flask,render_template,request,send_from_directory
 
 
@@ -15,7 +13,7 @@ from DavidDataScrawler import DavidDataScrawler
 
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(filename="debug.txt",level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 import time
@@ -23,11 +21,19 @@ import time
 
 remote_server = False;
 
-
 if(remote_server):
     root_dir = "/root/alex/myproject/"
 else:
     root_dir = ""
+
+def logTime(func):
+    def func_warpper(parameters):
+        start_time = time.time()
+        result = func(parameters)
+        logger.info(func.__name__ + " lasts--- %s seconds ---" % (time.time() - start_time))
+        return result
+    return func_warpper
+
 
 app = Flask(__name__)
 @app.route('/index', methods=['POST','GET'])
@@ -48,26 +54,20 @@ def index():
         idType = request.form['idType']
         annotCat = request.form['annotCat']
         pVal = request.form['pVal'];
-
         #transform annotation name to number recognized by DAVID(e.g. GOTERM_BP_FAT to 25) .
         annotCat = ','.join([annotCatDict[cat] for cat in annotCat.split(",")])
 
         start_time = time.time()
-
         go,status = getDataFromDavid(inputIds,idType,annotCat,pVal)
-
-        logger.debug("Get data from david lasts--- %s seconds ---" % (time.time() - start_time))
+        logger.info("Get data from david lasts--- %s seconds ---" % (time.time() - start_time))
 
         if status == True:
 
             #check whether the data is valid to create chord diagram
             # if checkGOData(go):
 
-            start_time = time.time()
-
+            
             matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go)
-
-            logger.debug("Process data lasts--- %s seconds ---" % (time.time() - start_time))
 
             if not matrix_count:
                 return "Failure to process data"
@@ -149,7 +149,7 @@ def getDataFromDavid(inputIds,idType,annotCat,pVal):
         return go,True
 
 
-
+@logTime
 def processedData(go):
     '''
     generate necessary data for visualization
@@ -165,10 +165,10 @@ def processedData(go):
         clusterHierData:an array storing hierarcical data use to generated hierarcical tree
     '''
     dataProcess = DataProcess()
-    status = True
 
     try:
         preProcessedData = dataProcess.dataProcess(go)
+
     except Exception as e:
         logger.error(str(e))
     else:
@@ -177,7 +177,7 @@ def processedData(go):
         go_hier = preProcessedData["go_hier"]
         go_inf_reord = preProcessedData["go_inf"]
         clusterHierData = preProcessedData["clusterHierData"]
-    
+        
         return matrix,go_index_reord,go_hier,go_inf_reord,clusterHierData
 
 
