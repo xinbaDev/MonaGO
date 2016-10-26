@@ -26,13 +26,7 @@ if(remote_server):
 else:
     root_dir = ""
 
-def logTime(func):
-    def func_warpper(*arg, **kw):
-        start_time = time.time()
-        result = func(*arg, **kw)
-        logger.info(func.__name__ + " lasts--- %s seconds ---" % (time.time() - start_time))
-        return result
-    return func_warpper
+
 
 
 app = Flask(__name__)
@@ -59,28 +53,24 @@ def index():
 
         go,status = getDataFromDavid(inputIds,idType,annotCat,pVal)
 
-        if status == True:
+        if status == False:
+            return "Failure to get data"
 
             #check whether the data is valid to create chord diagram
             # if checkGOData(go):
 
-            matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go)
+        matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go)
 
-            if not matrix_count:
-                return "Failure to process data"
+        if not matrix_count:
+            return "Failure to process data"
 
-            with open(root_dir+'templates/chord_layout.html',"r") as fr_html:
-                html = "".join(fr_html.readlines())
+        with open(root_dir+'templates/chord_layout.html',"r") as fr_html:
+            html = "".join(fr_html.readlines())
 
-            data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+str(matrix_count)+";"+"var array_order="+str(array_order)+";"\
-            +"var clusterHierData="+str(clusterHierData) +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
+        data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+str(matrix_count)+";"+"var array_order="+str(array_order)+";"\
+        +"var clusterHierData="+str(clusterHierData) +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
 
-            return data+html
-            # else:
-
-            #     return "The number of enriched GO terms is less than two"
-        else:
-            return "Failure to get data"
+        return data+html
         
 
 @app.route('/css/<fileName>')
@@ -120,6 +110,28 @@ def getMyLogo():
         fw.write("remote address: {}  time: {}\n".format(request.remote_addr,datetime.today()))
     return send_from_directory(root_dir+'my/img','my_logo.jpg')
 
+
+
+
+def logTime(func):
+    '''
+    decorator
+
+    Args:
+        take the decorated func 
+    
+    Return:
+        return the wrapped function
+
+    '''
+    def func_warpper(*arg, **kw):
+        start_time = time.time()
+        result = func(*arg, **kw)
+        logger.info(func.__name__ + " lasts--- %s seconds ---" % (time.time() - start_time))
+        return result
+    return func_warpper
+
+
 @logTime
 def getDataFromDavid(inputIds,idType,annotCat,pVal):
     '''
@@ -131,7 +143,7 @@ def getDataFromDavid(inputIds,idType,annotCat,pVal):
         annotcat: type of annotation wanted, such as GO
         pVal: p-value
 
-    return:
+    Return:
         A list of GO terms
     '''
     davidScrawler = DavidDataScrawler()
@@ -154,7 +166,7 @@ def processedData(go):
     Args:
         a list of GO terms
 
-    return:
+    Return:
         matrix:a matrix M where M(i,j) represents the number of intersected genes betweeen GO[i] and GO[j]
         go_index_reord:an array representing the position change of GO terms after hieracical clustering
         go_hier:a list of GO that are ancesters of enriched GO terms.
