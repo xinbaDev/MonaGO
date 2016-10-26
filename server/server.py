@@ -27,9 +27,9 @@ else:
     root_dir = ""
 
 def logTime(func):
-    def func_warpper(parameters):
+    def func_warpper(*arg, **kw):
         start_time = time.time()
-        result = func(parameters)
+        result = func(*arg, **kw)
         logger.info(func.__name__ + " lasts--- %s seconds ---" % (time.time() - start_time))
         return result
     return func_warpper
@@ -57,16 +57,13 @@ def index():
         #transform annotation name to number recognized by DAVID(e.g. GOTERM_BP_FAT to 25) .
         annotCat = ','.join([annotCatDict[cat] for cat in annotCat.split(",")])
 
-        start_time = time.time()
         go,status = getDataFromDavid(inputIds,idType,annotCat,pVal)
-        logger.info("Get data from david lasts--- %s seconds ---" % (time.time() - start_time))
 
         if status == True:
 
             #check whether the data is valid to create chord diagram
             # if checkGOData(go):
 
-            
             matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go)
 
             if not matrix_count:
@@ -123,7 +120,7 @@ def getMyLogo():
         fw.write("remote address: {}  time: {}\n".format(request.remote_addr,datetime.today()))
     return send_from_directory(root_dir+'my/img','my_logo.jpg')
 
-
+@logTime
 def getDataFromDavid(inputIds,idType,annotCat,pVal):
     '''
     send https request to David and get GO information
