@@ -1,4 +1,3 @@
-
 import sys
 
 from datetime import datetime
@@ -6,28 +5,22 @@ from datetime import datetime
 #for praser
 from flask import Flask,render_template,request,send_from_directory
 
-
 #for pre processing the data
 from DataProcess import DataProcess
 from DavidDataScrawler import DavidDataScrawler
 
 import logging
-
-logging.basicConfig(filename="debug.txt",level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 import time
 
 
+logging.basicConfig(filename="debug.txt",level=logging.INFO)
+logger = logging.getLogger(__name__)
 remote_server = False;
 
 if(remote_server):
     root_dir = "/root/alex/myproject/"
 else:
     root_dir = ""
-
-
-
 
 app = Flask(__name__)
 @app.route('/index', methods=['POST','GET'])
