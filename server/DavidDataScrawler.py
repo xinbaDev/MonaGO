@@ -2,6 +2,7 @@ from HTMLParser import HTMLParser
 import re
 from PycurlHelper import PycurlHelper
 from twisted.internet import defer
+import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -50,7 +51,15 @@ class DavidDataScrawler(object):
 
             if not go_processed:
                 raise Exception("get final GO failed")
-                
+            
+
+            #before return, close the connection to DAVID explicitly
+
+            try:
+                pcHelper.close()
+            except Exception as e:
+                logger.error(str(e))
+
 
             return go_processed
 

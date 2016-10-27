@@ -55,6 +55,8 @@ class PycurlHelper:
 
     def close(self):
         self.curl.close()
+        for curl in self.curls:
+            curl.close()
 
 
     def CurlMultiGet(self,urls):
@@ -63,7 +65,7 @@ class PycurlHelper:
 
         m = pycurl.CurlMulti()
 
-        curls = []
+        self.curls = []
 
         for url in urls:
             curl = pycurl.Curl()
@@ -77,11 +79,11 @@ class PycurlHelper:
             curl.setopt(pycurl.CAINFO, certifi.where())
 
             self.buffers.append(mybuffer)
-            curls.append(curl)
+            self.curls.append(curl)
 
         #m.add_handle does not add a Python reference to the Curl object
         #therefore need a container to hold the reference to curl object
-        for curl in curls:
+        for curl in self.curls:
             m.add_handle(curl)         
 
         start_time = time.time()

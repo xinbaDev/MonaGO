@@ -49,9 +49,6 @@ def index():
         if status == False:
             return "Failure to get data"
 
-            #check whether the data is valid to create chord diagram
-            # if checkGOData(go):
-
         matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go)
 
         if not matrix_count:
