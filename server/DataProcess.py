@@ -433,10 +433,14 @@ class DataProcess():
          
         size = len(go_inf)
 
+        print "size:" + str(size)
+
         if size==0:
             raise Exception("go_inf is empty")
 
         matrix = self.createMatrix(go_inf)
+
+        print "matrix"+ str(matrix)
 
         D = np.ndarray(size * (size - 1) / 2,dtype=np.int)
         D = self.pdist(matrix,size)
@@ -447,6 +451,8 @@ class DataProcess():
         nd = self.to_tree(Z)
 
         go_index_reord =  nd.pre_order()#array_order
+
+        print str(go_index_reord)
 
         go_inf_reOrder = self.reOrder(go_index_reord,go_inf)
 

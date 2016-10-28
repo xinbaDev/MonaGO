@@ -12,7 +12,6 @@ from DavidDataScrawler import DavidDataScrawler
 import logging
 import time
 
-
 logging.basicConfig(filename="debug.txt",level=logging.INFO)
 logger = logging.getLogger(__name__)
 remote_server = False;
@@ -36,6 +35,8 @@ def index():
         return render_template("index.html")
     else:
 
+
+
         #parameters needed for querying DAVID
         inputIds = request.form['inputIds']
         idType = request.form['idType']
@@ -48,6 +49,8 @@ def index():
 
         if status == False:
             return "Failure to get data"
+
+        print "go: " + str(go)
 
         matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go)
 
@@ -181,4 +184,4 @@ def processedData(go):
 
 
 if __name__ == '__main__':
-    app.run(debug="true",host="0.0.0.0")
+    app.run(debug="true",host="0.0.0.0",threaded = True)

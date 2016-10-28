@@ -4,7 +4,7 @@ from PycurlHelper import PycurlHelper
 from twisted.internet import defer
 import logging
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.debug)
 logger = logging.getLogger(__name__)
 
 
@@ -28,7 +28,7 @@ class DavidDataScrawler(object):
 
             urls = [url_1,url_2]
 
-            pcHelper.CurlMultiGet(urls)
+            pcHelper.curlMultiGet(urls)
 
             getGO_response,geneList_response = map(lambda x: x.getvalue().decode('iso-8859-1'), pcHelper.buffers)
             
@@ -44,7 +44,11 @@ class DavidDataScrawler(object):
 
             #logger.debug("geneIds:{}".format(geneIds))
 
+            print "go_filtered:" + str(go_filtered)
+
             geneIdNameMapping = self._getGenesNamesByIds(geneIds,geneList)
+
+
 
             #change the gene id into gene name in go
             go_processed = self._changeGeneIdToNameInGO(go_filtered,geneIdNameMapping)
@@ -60,7 +64,7 @@ class DavidDataScrawler(object):
             except Exception as e:
                 logger.error(str(e))
 
-
+            print str(go_processed)
             return go_processed
 
 
@@ -138,7 +142,7 @@ class DavidDataScrawler(object):
 
             go[i]["genes"] = geneNameString[:-1]# strip the last '|'
 
-            return go
+        return go
 
 
     def _getGenesNamesByIds(self,geneIds,genesIdName):

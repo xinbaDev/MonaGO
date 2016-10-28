@@ -18,7 +18,6 @@ class PycurlHelper:
         self.curl = pycurl.Curl()
         self.curls = []#for multicurl
         self.buffers = []
-        self.i = 0
 
         self.s = pycurl.CurlShare()
         self.s.setopt(pycurl.SH_SHARE, pycurl.LOCK_DATA_COOKIE)
@@ -59,7 +58,7 @@ class PycurlHelper:
             curl.close()
 
 
-    def CurlMultiGet(self,urls):
+    def curlMultiGet(self,urls):
 
         SELECT_TIMEOUT = 5.0
 
