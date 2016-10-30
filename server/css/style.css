@@ -325,21 +325,24 @@ path.chord {
 	font: 14px/16px Arial, Helvetica, sans-serif;
 	background: white;
 	background: rgba(255,255,255,0.8);
-  width: 18px;
-  height: 15px;
+
 	box-shadow: 0 0 15px rgba(0,0,0,0.2);
 	border-radius: 5px;
   z-index:2;
 }
 
 .pval-label i {
-
+    width: 18px;
+    height: 15px;
     float: left;
     margin-right: 3px;
     opacity: 0.8;
 }
 
 #control-panel{
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 558px;
   height: 170px;
   box-shadow: 0 0 15px rgba(0,0,0,0.2);

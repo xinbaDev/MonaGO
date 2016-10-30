@@ -464,13 +464,20 @@ function createPvalLabelPanel(fill){
     from = seperated_points[i];
     to = seperated_points[i+1];
     panel.push('<i style="background:' + getColor(from,fill) + '" ></i> ' +
-                from.toString().substring(0, 5) +" - "+ to.toString().substring(0, 5)
+                scienceFormat(from) +" - "+ scienceFormat(to)
     );
+
+    console.log("from:"+from+"-"+"to:"+to);
   }
+
 
   panelLabel = panel.join('<br>');
   $('#pval-label').append(panelLabel);
 
+
+  function scienceFormat(value){
+    return from.toFixed(4).toString();
+  }
 }
 
 function transformIndex(index)
@@ -2107,6 +2114,8 @@ var pVal_sort=[];
 sortGO_inf();
 
 var range = maxpVal-minpVal;
+console.log("maxpVal:"+maxpVal);
+console.log("minpVal:"+minpVal);
 var step = range/10;
 var seperated_points = [];
 var panel=[];
