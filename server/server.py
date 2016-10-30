@@ -50,8 +50,6 @@ def index():
         if status == False:
             return "Failure to get data"
 
-        print "go: " + str(go)
-
         matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go)
 
         if not matrix_count:
