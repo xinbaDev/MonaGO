@@ -1,6 +1,3 @@
-
-</script>
-
 <html ng-app="MonaGO">
 
 <body>
@@ -35,45 +32,46 @@
 	
 </div>
 
-<div id="chart">
-<div id = "pval-label" class="pval-label"></div>
+<div id="chart"></div>
 
 <div>
+  <div id = "pval-label" class="pval-label"></div>
 
-<label style="font-size:16px">Cluster GO term according to the minimum number of common gene(s)</label>
-<div id="slider" class="sliderBar"></div>
-<input type="text" id="input_slider"/>
+  <div id = "control-panel">
 
-
-<table class="RadioBox">
-<tbody>
-  <tr>
-    <td>
-      <input id="labelRadioBox" class="radioButton" type="radio" name="radioBox" value="0" checked>
-    </td>
-    <td>
-      <label for="labelRadioBox">Show GO term name</label>
-    </td>
-  </tr>
-  <tr>
-  <td></td>
-  </tr>
-  <tr>
-    <td>
-      <input id="hierClusterRadioBox"  class="radioButton" type="radio" name="radioBox" value="1" >
-    </td>
-    <td>
-       <label style="width:300px;" for="hierClusterRadioBox">Show hierarchical tree and click on the node to manually cluster the GO term</label>
-    </td>
-      
-  </tr>
-</tbody>
-</table>
+  <label style="font-size:16px">Cluster GO term according to the minimum number of common gene(s)</label>
+    <div id="slider" class="sliderBar"></div>
+    <input type="text" id="input_slider"/>
+      <table class="RadioBox">
+      <tbody>
+        <tr>
+          <td>
+            <input id="labelRadioBox" class="radioButton" type="radio" name="radioBox" value="0" checked>
+          </td>
+          <td>
+            <label for="labelRadioBox">Show GO term name</label>
+          </td>
+        </tr>
+        <tr>
+        <td></td>
+        </tr>
+        <tr>
+          <td>
+            <input id="hierClusterRadioBox"  class="radioButton" type="radio" name="radioBox" value="1" >
+          </td>
+          <td>
+             <label style="width:300px;" for="hierClusterRadioBox">Show hierarchical tree and click on the node to manually cluster the GO term</label>
+          </td>
+            
+        </tr>
+      </tbody>
+      </table>
+    </div>
 
 </div>
 
 
-</div>
+
 
 </body>
 </html>

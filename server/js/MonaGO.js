@@ -998,10 +998,10 @@ function getMinValuePosition(nodePostions){
 
 
 function calculateAClusterNodePosition(firstNodeIndex,secondNodeIndex,status,index,nodeBeingClicked,clusterNodesRadius,collapsedNodeRadius){
-  console.log(array_order);
+/*  console.log(array_order);
   console.log("nodesSize:" + nodesSize)
   console.log(firstNodeIndex);
-  console.log(secondNodeIndex);
+  console.log(secondNodeIndex);*/
 
   //get the node object
   if(firstNodeIndex < nodesSize){
@@ -1022,11 +1022,11 @@ function calculateAClusterNodePosition(firstNodeIndex,secondNodeIndex,status,ind
     secondNode = clusterHierNodesStatus[secondNodeIndex];
   }
 
-  console.log("t:"+firstNodeIndex);
+/*  console.log("t:"+firstNodeIndex);
   console.log("t:"+secondNodeIndex);
   console.log(firstNode);
   console.log(secondNode);
-
+*/
   //console.log(clusterNodesRadius);
 
   //calculate the position of new node(radius,angle)
