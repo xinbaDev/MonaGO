@@ -265,7 +265,7 @@ path.chord {
 
 .main_vis {
   position:relative;
-  float: right;
+  float: left;
   border:2px;
   z-index:1;
 }

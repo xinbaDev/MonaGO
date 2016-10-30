@@ -767,21 +767,23 @@ function drawHierarchicalClustering(clusterHierData){
 
 
 function redraw(transition) {
-
+      if(zoom.scale()<0.5){
+        //reset zoom scale and do nothing
+         zoom.scale(0.5)
+      }else{
         (transition ? svg.transition() : svg)
           .attr("transform", "translate(" + zoom.translate() + ") scale(" + zoom.scale() + ")");
 
         if((zoom.scale()<0.8)&&(0.8<zoomLevel<0.9)){
               textBackground.attr("visibility","hidden");
-          }
+        }
 
-          if(zoom.scale()>=0.7)
-          {
+        if(zoom.scale()>=0.7){
               textBackground.attr("visibility","visible");
-          }
+        }
 
-          zoomLevel = zoom.scale();
-    
+        zoomLevel = zoom.scale();
+      }
 }
 
 
@@ -2037,7 +2039,11 @@ function drawHierCluster(){
 
   drawHierarchicalClustering(clusterHierData);
 
-
+  if(zoom.scale()<0.7){
+     textBackground.attr("visibility","hidden");
+   }else{
+      textBackground.attr("visibility","visible");
+  }
   
 }
 
