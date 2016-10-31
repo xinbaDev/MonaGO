@@ -771,7 +771,7 @@ function redraw(transition) {
         //reset zoom scale and do nothing
          zoom.scale(0.5)
       }else{
-        (transition ? svg.transition() : svg)
+        (transition ? circleSvg.transition() : circleSvg)
           .attr("transform", "translate(" + zoom.translate() + ") scale(" + zoom.scale() + ")");
 
         if((zoom.scale()<0.8)&&(0.8<zoomLevel<0.9)){
@@ -1829,115 +1829,6 @@ function drawLable(){
   groupText.style("display","")
 
   updateLabel();
-/*      .text(function(d) {return d.text});*/
-/*   createSimpleClouds();
-
-   function createSimpleClouds(words,size,$text){
-      words.map(function(d){
-        d3.select($text)
-          .append("svg:text")
-           .attr("x", 8)
-           .attr("dy", ".45em")
-           .attr("text-anchor", function(d) {
-             return d.angle > Math.PI ? "end" : null;
-           })
-           .attr("transform", function(d) {
-             return d.angle > Math.PI ? "rotate(180)translate(-16)" : null;
-           })
-           .text(d.text);
-      });
-   }*/
-/*   var angle = 0;
-    var textPos = [];
-   var sizes = [];
-
-   for(var i =0;i<textPos.length;i++){
-    if(i == textPos.length-1){
-      angleWidth = 2*Math.PI - textPos[i].angle;
-      console.log(angleWidth);
-    }else{
-      angleWidth = textPos[i+1].angle - textPos[i].angle;
-    }
-
-      var width = 2*angleWidth*r1;
-      var height = 2*angleWidth*r1;
-      sizes.push([width,height]);
-   }
-
-   text.each(function(d){
-      var gos = go_inf[d.index].GO_id;
-      var words = [];
-      if(typeof gos == "string"){
-          words.push({"text":gos,"size":10});
-      }else{
-        
-         gos.map(function(d){
-            words.push({"text":d,"size":10});
-        });
-      }
-
-      createClouds(words,sizes[d.index],this);
-   })*/
-
-
- /* if(clouds.length>0){
-
-      cloudsText = svg.append("svg:g")
-       .selectAll("g")
-         .data(clouds)
-        .enter().append("svg:g")
-        .attr("transform", function(d) {
-            return "rotate(" + (d.startAngle * 180 / Math.PI - 90) + ")"
-         + "translate(" + r1 + ",0)";
-        });
-
-        cloudsText.each(function(d){
-          var width = (d.endAngle - d.startAngle)*r1;
-          createClouds(d.words,width,this);
-        });
-        
-  } 
-   */
-
-/*   function createClouds(word,size,$text){
-      var words=[];
-      d3.layout.cloud().size([size*2,size])
-        .words(word)
-        .rotate(function() { return ~~(Math.random() * 2) * 90; })
-        .font("Impact")
-        .fontSize(function(d) {words.push(d); return d.size;})
-        .on("end", function() {draw(words,$text,size)})
-        .start();
-   }
-
-   
-   function draw(words,$text,size) {
-
-    console.log(words);
-
-      d3.select($text)
-      .append("svg")
-        .attr("width", size*2)
-        .attr("height", size)
-        .append("g")
-        .attr("transform", function(d){
-
-          return "translate("+(size)+","+(size/2)+")"
-        })
-      .selectAll("text")
-        .data(words)
-      .enter().append("text")
-        .style("font-size", function(d) { return d.size + "px"; })
-        .style("font-family", "Impact")
-        .style("fill", function(d, i) { return fill(i); })
-         .attr("text-anchor", function(d) {
-           return d.startAngle > Math.PI ? "end" : null;
-         })
-        .attr("transform", function(d) {
-          return  "translate(" + [d.x/2, d.y/2] + ")rotate(" + d.rotate+180 + ")";
-        })
-        .text(function(d) { return d.text; });
-    }*/
 }
 
 
@@ -1962,27 +1853,6 @@ function updateLabel(){
         })
         .text(function(d) {return (typeof go_inf[d.index].GO_id == "string")? go_inf[d.index].GO_name:getMaxLabel(go_inf[d.index].GO_name)+"+"});
 
-
-
-/*  var groups = [];
-  var clouds = [];
-  groupText.data().map(function(d,i){
-   var words = [];
-
-    if(typeof go_inf[i].GO_id == "string"){
-        groups.push({"endAngle":d.endAngle,"startAngle":d.startAngle,"value":d.value,"text":go_inf[i].GO_id});
-    }else{
-      go_inf[i].GO_id.map(function(data){
-        var str = data.toString().split(",");
-        str.map(function(d){
-             words.push({"text":d,"size":Math.ceil(goLabelSize[d])});
-        });
-      });
-      clouds.push({"endAngle":d.endAngle,"startAngle":d.startAngle,"value":d.value,"words":words});
-    }
-
-   
-  });*/
 }
 
 function getMaxLabel(d){
@@ -1998,32 +1868,6 @@ function getMaxLabel(d){
   return d[position];
 }
 
-
-/*  var textClouds = [];
-
-  groups.map(function(d,i){
-    
-    var width = (d.endAngle - d.startAngle)*r1;
-    var size = 0;
-    d.words.map(function(d){
-      size += d.size;
-    });
-
-    k = size/width;
-
-    var size2 = 0;
-    d.words.map(function(word,j){
-        if(j==0){
-          var angle = d.startAngle;
-        }else{
-          var angle = k*size2/r1 + d.startAngle;
-        }
-        textClouds.push({"text":word.text,"size":word.size,"angle":angle});
-        size2 += word.size;
-    });
-
-
-  });*/
 
 function drawHierCluster(){
   labelOff = 1;
@@ -2094,7 +1938,7 @@ var chordMatrix = d3.layout.chord()
    
 var chord = chordMatrix.matrix(matrix);
  
-var w = $(window).width(),
+var w = $(window).width()-475,
      h = $(window).height(),
      r0 = Math.min(w, h) * .25,
      r1 = r0 * 1.1;
@@ -2149,12 +1993,14 @@ var svg = d3.select("#chart")
      .attr("width", w)
      .attr("height", h)
      .call(zoom.on("zoom", redraw))
-   .append("svg:g")
+
+
+var circleSvg =  svg.append("svg:g")
      .attr("id", "circle")
      .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")");
 
 
-svg.append("circle")
+circleSvg.append("circle")
   .attr("r", r1);
 
 
@@ -2166,23 +2012,23 @@ svg.append("circle")
 
  createClusterNodesStatus(clusterHierData,[],"",[]);
 
-var clusterArc = svg.append("svg:g")
+var clusterArc = circleSvg.append("svg:g")
  .selectAll("g")
    .data(clusterHierData)
  .enter().append("path");
 
-var clusterLine1 = svg.append("svg:g")
+var clusterLine1 = circleSvg.append("svg:g")
  .selectAll("g")
    .data(clusterHierData)
  .enter().append("path");
 
-var clusterLine2 = svg.append("svg:g")
+var clusterLine2 = circleSvg.append("svg:g")
  .selectAll("g")
    .data(clusterHierData)
  .enter().append("path");
 
 
-var clusterHierNodeView = svg.append("svg:g")
+var clusterHierNodeView = circleSvg.append("svg:g")
  .selectAll("g")
    .data(clusterHierNodesStatus)
  .enter().append("svg:g");
@@ -2195,7 +2041,7 @@ var circle = clusterHierNodeView.attr("transform", function(d) {
  .append("circle")
  .append("title").text(function(d, i) {return "Click to cluster"});
 
-var clusterHierNodeTextView = svg.append("svg:g")
+var clusterHierNodeTextView = circleSvg.append("svg:g")
  .selectAll("g")
   .data(clusterHierNodesStatus)
  .enter().append("svg:g");
@@ -2204,7 +2050,7 @@ drawHierarchicalClustering(clusterHierData);
 
 
 
-var groupElements = svg.append("svg:g")
+var groupElements = circleSvg.append("svg:g")
  .selectAll("path")
    .data(chord.groups)
    .enter().append("svg:path");
@@ -2215,6 +2061,29 @@ var groupLayout = groupElements
    .attr("d", d3.svg.arc().innerRadius(r0).outerRadius(r1)) //important
    .attr("id","chordGroups")
    .on("mouseover", mouseover_group);
+
+var groupText = circleSvg.append("svg:g")
+     .selectAll("g")
+       .data(chord.groups)
+      .enter().append("svg:g");
+
+var text = groupText
+    .selectAll("g")
+ .data(chord.groups)
+    .enter().append("svg:g")
+ .attr("transform", function(d) {
+   return "rotate(" + ((d.startAngle+d.endAngle)/2 * 180 / Math.PI - 90) + ")"
+       + "translate(" + r1 + ",0)";
+}).append("svg:text")
+   .attr("x", 8)
+   .attr("dy", ".45em")
+   .attr("text-anchor", function(d) {
+     return (d.startAngle+d.endAngle)/2 > Math.PI ? "end" : null;
+   })
+   .attr("transform", function(d) {
+     return (d.startAngle+d.endAngle)/2 > Math.PI ? "rotate(180)translate(-16)" : null;
+   })
+   .text(function(d) {return (typeof go_inf[d.index].GO_id == "string")? go_inf[d.index].GO_name:getMaxLabel(go_inf[d.index].GO_name)+"+"});
 
 
 var goLabelSize = {};
@@ -2229,7 +2098,7 @@ go_inf.map(function(d){
 
 
 
-var chordElements = svg.append("svg:g")
+var chordElements = circleSvg.append("svg:g")
       .selectAll("path")
       .data(chord.chords)
       .enter().append("svg:path");
@@ -2299,28 +2168,7 @@ inputFormat.addEventListener('change',function(){
       updateLabel();
 });
 
-var groupText = svg.append("svg:g")
-     .selectAll("g")
-       .data(chord.groups)
-      .enter().append("svg:g");
 
-var text = groupText
-    .selectAll("g")
- .data(chord.groups)
-    .enter().append("svg:g")
- .attr("transform", function(d) {
-   return "rotate(" + ((d.startAngle+d.endAngle)/2 * 180 / Math.PI - 90) + ")"
-       + "translate(" + r1 + ",0)";
-}).append("svg:text")
-   .attr("x", 8)
-   .attr("dy", ".45em")
-   .attr("text-anchor", function(d) {
-     return (d.startAngle+d.endAngle)/2 > Math.PI ? "end" : null;
-   })
-   .attr("transform", function(d) {
-     return (d.startAngle+d.endAngle)/2 > Math.PI ? "rotate(180)translate(-16)" : null;
-   })
-   .text(function(d) {return (typeof go_inf[d.index].GO_id == "string")? go_inf[d.index].GO_name:getMaxLabel(go_inf[d.index].GO_name)+"+"});
 
 
 
@@ -2361,4 +2209,32 @@ function toggleDetails(){
   
   $('#details').css('margin-right', function(){ return details_opened ? '-475px' : '0'});
   details_opened = !details_opened;
+
+  redrawMain_vis(details_opened)
+}
+
+function redrawMain_vis(details_opened){
+
+  if(!details_opened){
+    d3.select(".main_vis").attr("width",w+475);
+  }else{
+    d3.select(".main_vis").attr("width",w);
+  }
+
+  redrawMain_vis(details_opened);
+
+}
+
+
+function redrawMain_vis(details_opened){
+
+  if(!details_opened){
+    d3.select(".main_vis").attr("width",w+475);
+    circleSvg.transition().attr("transform", "translate(" + (w+475) / 2 + "," + h / 2 + ")");
+  }else{
+    d3.select(".main_vis").attr("width",w);
+    circleSvg.transition().attr("transform", "translate(" + w / 2 + "," + h / 2 + ")");
+  }
+
+
 }
