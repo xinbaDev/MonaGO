@@ -7,6 +7,7 @@ Array.prototype.intersection = function() {
     return o;
 };
 
+
 Array.prototype.getGeneString = function(){
   var str="",l = this.length, k = arguments;
   for(var i=0;i<l;i++){
@@ -16,20 +17,28 @@ Array.prototype.getGeneString = function(){
   return str.slice(0,str.length-1);
 }
 
+Array.prototype.unique = function() {
+    var o = {}, i, l = this.length, r = [];
+    for(i=0; i<l;i+=1) o[this[i]] = this[i];
+    for(i in o) r.push(o[i]);
+    return r;
+};
 
-function createGeneInfo(){
+function createGeneInfo(go_inf){
   gene_info = {};
   go_inf.forEach(function(d,i){
-  var index = i;
-  d["genes"].forEach(function(d,i){
-    if(gene_info[d]!=undefined){
-        var str =   ";"  +  index.toString();
-        gene_info[d] = gene_info[d] + str;
-    }
-    else
-       gene_info[d] = index.toString();
+    var index = i;
+    d["genes"].forEach(function(d,i){
+      if(gene_info[d]!=undefined){
+          var str =   ";"  +  index.toString();
+          gene_info[d] = gene_info[d] + str;
+      }
+      else
+         gene_info[d] = index.toString();
+    });
   });
-});
+
+  return gene_info;
 }
 
 function createInteractionGenes(go_inf){
@@ -49,6 +58,7 @@ function createInteractionGenes(go_inf){
         }
       }
    }
+   return dic
 }
 
 function GOFilter(){
@@ -276,20 +286,9 @@ function drawGraph(struct) {
       d.fixed=true;
       console.log("click");
     });
- 
-/*  var nodeText = go_chart.selectAll("text.node")
-    .data(struct.nodes)
-    .enter().append("text")
-    .attr("class", "node")
-    .attr("displayState",'y')
-    //.style('display','none')
-    .text(function(d) { return d.name;})
-    .call(force.drag);*/
-
-
 
    
-    var nodeText = go_chart.selectAll("text.node")
+  var nodeText = go_chart.selectAll("text.node")
       .data(struct.nodes)
       .enter().append("text")
       .attr("class", "node")
@@ -372,8 +371,6 @@ function update(goid) {
   .size([width, height]);
 
   struct = parentGO(goid);
-/*      immChildren = immediateChildren(goid);
-  struct = struct.concat(immChildren);*/
 
   data = createD3Structure(struct,goid);
 
@@ -396,6 +393,7 @@ function getMaxPval(){
 
 function sortGO_inf(){
 
+  pVal_sort = [];
   for(i=0;i<nodesSize;i++)
       pVal_sort[i] = Number(go_inf[i].pVal);
 
@@ -413,17 +411,19 @@ function sortGO_inf(){
 
   pVal_sort.sort(compare);
 
+  return pVal_sort;
+
 }
 
 
 
 function determineLabelSize(){
-    var GOMinSize = 15;
-    var GOMaxSize = 30;
+  var GOMinSize = 15;
+  var GOMaxSize = 30;
 
-    go_inf.map(function(d){
-          d["size"] = getSize(d.pVal,GOMinSize,GOMaxSize);
-    });
+  go_inf.map(function(d){
+        d["size"] = getSize(d.pVal,GOMinSize,GOMaxSize);
+  });
 
   function getSize(pVal,GOMinSize,GOMaxSize){
     for(i=0;i<seperated_points.length;i++){
@@ -437,10 +437,7 @@ function determineLabelSize(){
 
 
 function getColor(d,fill) {
-/*    if(seperated_points[0] == d)
-        return color_scheme[0];
-*/
-    /*console.log(d);*/
+
     for(i=0;i<seperated_points.length-1;i++){
       if((seperated_points[i] <= d)&&(d < seperated_points[i+1])){
           return color_scheme[i];
@@ -448,10 +445,6 @@ function getColor(d,fill) {
     }
     if(seperated_points[seperated_points.length-1] == d)
       return color_scheme[9];
-
-
-/*    if(seperated_points[seperated_points.length-1] == d)
-        return color_scheme[9];*/
 }
 
 function createPvalLabelPanel(fill){
@@ -480,8 +473,7 @@ function createPvalLabelPanel(fill){
   }
 }
 
-function transformIndex(index)
-{
+function transformIndex(index){
   /*console.log(array_order);*/
 
   return (index < nodesSize)?
@@ -591,9 +583,6 @@ function drawArc(clusterHierData){
   clusterHierDataFiltered.map(function(d){
         var firstNodeIndex = d[0];
         var secondNodeIndex = d[1];
-/*
-        console.log(firstNodeIndex);
-        console.log(secondNodeIndex);*/
 
         if(firstNodeIndex < nodesSize){
           firstNodeIndex = transformIndex(firstNodeIndex);
@@ -611,9 +600,7 @@ function drawArc(clusterHierData){
           secondNodeIndex = transformIndex(secondNodeIndex);
           secondNode = clusterHierNodesStatus[secondNodeIndex];
         }
-  
-    /*    console.log(firstNode);
-        console.log(secondNode);*/
+
         if(firstNode.angle-secondNode.angle>Math.PI){
             startAngle = secondNode.angle;
             endAngle = firstNode.angle;
@@ -845,12 +832,7 @@ function getClusterNodeLevel(nodes){
     return nodesPositions;
 }*/
 
-Array.prototype.unique = function() {
-    var o = {}, i, l = this.length, r = [];
-    for(i=0; i<l;i+=1) o[this[i]] = this[i];
-    for(i in o) r.push(o[i]);
-    return r;
-};
+
 
 function getClusterGenes(nodePositions){
   var clustergenes = [];
@@ -963,10 +945,6 @@ function updateLayout(newMatrix){
      .attr("d", d3.svg.arc().innerRadius(r0).outerRadius(r1)) //important
      .attr("id","chordGroups")
      .on("mouseover", mouseover_group);
-/*     .append("title").text(function(d, i) {
-      console.log(go_inf[d.index].GO_id);
-      return go_inf[d.index].GO_id + "\t"+ go_inf[d.index].GO_name+ " , Num of genes:"+ go_inf[d.index].count + ", p value: " + go_inf[d.index].pVal ;
-    });*/
 
     chordElements = chordElements.data(chord.chords());
 
@@ -1007,10 +985,6 @@ function getMinValuePosition(nodePostions){
 
 
 function calculateAClusterNodePosition(firstNodeIndex,secondNodeIndex,status,index,nodeBeingClicked,clusterNodesRadius,collapsedNodeRadius){
-/*  console.log(array_order);
-  console.log("nodesSize:" + nodesSize)
-  console.log(firstNodeIndex);
-  console.log(secondNodeIndex);*/
 
   //get the node object
   if(firstNodeIndex < nodesSize){
@@ -1031,13 +1005,6 @@ function calculateAClusterNodePosition(firstNodeIndex,secondNodeIndex,status,ind
     secondNode = clusterHierNodesStatus[secondNodeIndex];
   }
 
-/*  console.log("t:"+firstNodeIndex);
-  console.log("t:"+secondNodeIndex);
-  console.log(firstNode);
-  console.log(secondNode);
-*/
-  //console.log(clusterNodesRadius);
-
   //calculate the position of new node(radius,angle)
   angle = (firstNode.angle+secondNode.angle)/2;
 
@@ -1057,7 +1024,6 @@ function calculateAClusterNodePosition(firstNodeIndex,secondNodeIndex,status,ind
 
 function createClusterNodesStatus(clusterHierData,nodeBeingClicked,status,collpasedNodes,clusterNodesRadius,collapsedNodeRadius){
 
-/*  console.log(clusterHierData);*/
   for(i=0;i<clusterHierData.length;i++){
     if(clusterHierData[i]!=undefined){
         firstNode = clusterHierData[i][0];
@@ -1095,10 +1061,6 @@ function removeNodesInArrayOrder(nodePositions){
   //remove nodes in array
       var newArrayOrder = [];
       var removeNodeInArray = [];
-/*
-      console.log("array_order = " + array_order);
-
-      console.log("nodePositions:"+nodePositions);*/
 
       array_order.map(function(d,i){
           if(nodePositions.indexOf(i) == -1 ){
@@ -1163,12 +1125,6 @@ function removeNodesInClusterData(nodePositions,clusterNodesLevel){
 }
 
 function addNodesInClusterData(removedClusterHierData){
-
-/*  clusterHierData.map(function(d,i){
-      if(clusterNodesLevel.indexOf(i)!=-1){
-          clusterHierData[i] = removedClusterHierData
-      }
-  });*/
 
   removedClusterHierData.map(function(d,i){
       clusterHierData[d[2]-maxNodeIndex] = d;
@@ -1237,21 +1193,15 @@ function expandHierClustering(removedClusterHierData,clusterNodesLevel,nodeBeing
 
 function onClusterNodeClick(d,i){
 
-/*  console.log("node being clicked");
-  console.log(d);*/
-
   //transform the index to clusterlevel
 
   var nodeBeingClicked = d["index"];
 
   if(d["status"]=="Expanded"){
-    /*console.log("node going to Collapse");*/
+
     var nodes = getHierNodes(nodeBeingClicked);
-/*    console.log(nodes);*/
 
     var nodePositions = getLeafNodesPosition(nodes["leafNodes"]).unique();
-/*    console.log("array_order:" + array_order);
-    console.log(nodePositions);*/
 
     var clusterNodesLevel = nodes["clusterNodesLevel"];
 
@@ -1301,7 +1251,7 @@ function onClusterNodeClick(d,i){
 
     createInteractionGenes(go_inf);
 
-    createGeneInfo();
+    //createGeneInfo();
 
     matrix = updateMatrix();
 
@@ -1439,12 +1389,6 @@ function getClusterNodesIndexBeingSelected(level){
     var pos = [];
     clusterNodesIndex.reverse().map(function(d1,i){
       if(d1 >= index){
-/*        clusterHierNodesStatus.map(function(d){
-          if(d["index"] == d1){
-            console.log(d1);
-            onClusterNodeClick(d);
-          }
-        });*/
         pos.push(i);
 
         var clusterNode = getClusterNode(d1);
@@ -1510,7 +1454,7 @@ function createGoHier(goid){
 }
 
 
- function mouseover_group(d, i) {
+function mouseover_group(d, i) {
     $('#content').empty();
     chordLayout.classed("fade", function(p) {
       return p.source.index != i
@@ -1529,45 +1473,8 @@ function createGoHier(goid){
 
     var words = [];
 
-/*    if(typeof go_inf[d.index].GO_name != "string"){
-      go_inf[d.index].GO_name.map(function(d) {
-          words.push({text: d, size: goLabelSize[d]});
-      });
 
-      $('#content').append("GO name:");
-      d3.layout.cloud().size([450, 450])
-        .words(words)
-        .rotate(function() { return ~~(Math.random() * 5) * 10; })
-        .font("Impact")
-        .fontSize(function(d) { return d.size; })
-        .on("end", draw)
-        .start();
-
-      function draw(words) {
-        var fill = d3.scale.category20();
-
-        d3.select("#content").append("svg")
-            .attr("width", 450)
-            .attr("height", 450)
-          .append("g")
-            .attr("transform", "translate(225,225)")
-          .selectAll("text")
-            .data(words)
-          .enter().append("text")
-            .style("font-size", function(d) { return d.size + "px"; })
-            .style("font-family", "Impact")
-            .style("fill", function(d, i) { return fill(i); })
-            .attr("text-anchor", "middle")
-            .attr("transform", function(d) {
-              return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-            })
-            .text(function(d) {console.log(d.text); return d.text; });
-      }
-
-      $('#content').append("<p>Genes:\n"+genes);
-    }else{*/
-      $('#content').append(str + "<p>Genes:\n"+genes);
-    //}
+    $('#content').append(str + "<p>Genes:\n"+genes);
 
     if(typeof go_inf[d.index].GO_id == "string"){
       $('#content').append("<div id=\"go_chart\"></div>");
@@ -1835,7 +1742,7 @@ function drawLable(){
 function updateLabel(){
   groupText.remove();
 
-  groupText = svg.append("svg:g")
+  groupText = circleSvg.append("svg:g")
         .selectAll("g")
         .data(chord.groups)
         .enter().append("svg:g")
@@ -1891,103 +1798,149 @@ function drawHierCluster(){
   
 }
 
-var force;
+function toggleDetails(){
+  $('#arrow').css('transform', function(){ return details_opened ? 'rotate(0deg)' : 'rotate(180deg)'})
+  
+  $('#details').css('margin-right', function(){ return details_opened ? '-475px' : '0'});
+  details_opened = !details_opened;
 
-var nodesSize = size;
-var maxNodeIndex = size;
+  redrawMain_vis(details_opened)
+}
 
+function redrawMain_vis(details_opened){
 
-var old_array_order = [];
-var clusterHierDataFiltered = [];
+  if(!details_opened){
+    d3.select(".main_vis").attr("width",w+475);
+  }else{
+    d3.select(".main_vis").attr("width",w);
+  }
 
+  redrawMain_vis(details_opened);
 
-var clusterHierDataStatic = [];
-clusterHierData.map(function(d){
-  clusterHierDataStatic.push([d[2],d[3]]);
-});
-
-var maxNumOfOverlappingGens = clusterHierData[0][3];
-var minNumOfOverlappingGens = clusterHierData[clusterHierData.length-1][3];
-
-var memCache = {};
-var gene_info = {};
-
-var labelOff=0;
-
-var clusterHierNodesStatus = [];//for storing nodes generated Hierarchical clustering
-var chordGroupsNodePosition = [];
+}
 
 
-go_inf.forEach(function(d,i){
-  go_inf[i].genes = d.genes.split("|");
-});
+function redrawMain_vis(details_opened){
 
-createGeneInfo();
+  if(!details_opened){
+    d3.select(".main_vis").attr("width",w+475);
+    circleSvg.transition().attr("transform", "translate(" + (w+475) / 2 + "," + h / 2 + ") scale(" + zoom.scale() + ")");
+  }else{
+    d3.select(".main_vis").attr("width",w);
+    circleSvg.transition().attr("transform", "translate(" + w / 2 + "," + h / 2 + ") scale(" + zoom.scale() + ")");
+  }
 
 
-var dic = {};// for storing gene intersection information
-createInteractionGenes(go_inf);
+}
 
 
-/*GOFilter();
-updateMatrix();*/
+function init(size,go_inf,clusterHierData){
+  var force;
+  var nodesSize = size;
+  var maxNodeIndex = size;
 
-var chordMatrix = d3.layout.chord()
+  var old_array_order = [];
+  var clusterHierDataFiltered = [];
+  var clusterHierDataStatic = [];
+
+  var memCache = {};
+  
+
+  var labelOff=0;
+
+  var clusterHierNodesStatus = [];//for storing nodes generated Hierarchical clustering
+  var chordGroupsNodePosition = [];
+
+  var maxNumOfOverlappingGens = clusterHierData[0][3];
+  var minNumOfOverlappingGens = clusterHierData[clusterHierData.length-1][3];
+
+  var gene_info = {};//gene name for each GO term e.g. gene_info[i] = [...]
+  var dic = {};// gene intersection information
+
+  var maxpVal;
+  var minpVal;
+  var pVal_sort=[];
+  var range;
+  var step;
+  var seperated_points = [];
+  var panel=[];
+
+  var fill = d3.scale.ordinal()
+       .domain(d3.range(12).reverse())
+       .rangeRoundPoints([1,255]);
+
+  var color_scheme = ["#1249C9","#0F399B","#0A2B76","#0F2147","#2C3645","#82733D","#E1C03B","#E6AE29","#F2AB1C","#FFAB00"].reverse();
+
+
+  var chordMatrix;
+  var chord;
+  var w = $(window).width()-475,
+       h = $(window).height(),
+       r0 = Math.min(w, h) * .25,
+       r1 = r0 * 1.1;
+
+
+
+  var svg ;
+  var go_chart;
+  var circleSvg;
+  var goLabelSize = {};
+
+  var width = 400;
+  var height = 600;
+  var force = d3.layout.force()
+    .charge(-3000)
+    .linkDistance(50)
+    .theta(0.2)
+    .gravity(1)
+    .size([width, height]);
+
+  var zoom = d3.behavior.zoom().translate([w/2, h/2]);
+
+
+  clusterHierData.map(function(d){
+    clusterHierDataStatic.push([d[2],d[3]]);
+  });
+
+  go_inf.forEach(function(d,i){
+    go_inf[i].genes = d.genes.split("|");
+  });
+
+
+  maxpVal = getMaxPval();
+  minpVal = getMinPval();
+
+  pVal_sort = sortGO_inf();
+
+  range = maxpVal-minpVal;
+  step = range/10;
+
+//////////////////////////////////////////////////
+  chordMatrix = d3.layout.chord()
    .padding(.03)
    .sortSubgroups(d3.descending);
    
-var chord = chordMatrix.matrix(matrix);
- 
-var w = $(window).width()-475,
-     h = $(window).height(),
-     r0 = Math.min(w, h) * .25,
-     r1 = r0 * 1.1;
+  chord = chordMatrix.matrix(matrix);
 
-var width = 400;
-var height = 600;
-var force = d3.layout.force()
-  .charge(-3000)
-  .linkDistance(50)
-  .theta(0.2)
-  .gravity(1)
-  .size([width, height]);
-var svg ;
-var go_chart;
+  //store the nodes for hierarchical clustering visualzaition
+  chord.groups().forEach(function(d,i){
+    nodeObj = {"index":d.index,"angle":(d.startAngle+d.endAngle)/2,"radius":r1};
+    chordGroupsNodePosition.push(nodeObj);
+  });
+   
+  for(i=0;i<11;i++){
+    seperated_points.push(minpVal+step*i);
+  }
 
 
-var maxpVal = getMaxPval();
 
-var minpVal = getMinPval();
+  gene_info = createGeneInfo(go_inf);
+  dic = createInteractionGenes(go_inf);
+  createPvalLabelPanel(fill);
+  createClusterNodesStatus(clusterHierData,[],"",[]);
+  drawHierarchicalClustering(clusterHierData);
 
-var pVal_sort=[];
-
-sortGO_inf();
-
-var range = maxpVal-minpVal;
-console.log("maxpVal:"+maxpVal);
-console.log("minpVal:"+minpVal);
-var step = range/10;
-var seperated_points = [];
-var panel=[];
-
-
-for(i=0;i<11;i++){
-  seperated_points.push(minpVal+step*i);
-}
-
-var fill = d3.scale.ordinal()
-     .domain(d3.range(12).reverse())
-     .rangeRoundPoints([1,255]);
-
-var color_scheme = ["#1249C9","#0F399B","#0A2B76","#0F2147","#2C3645","#82733D","#E1C03B","#E6AE29","#F2AB1C","#FFAB00"].reverse();
-
-
-createPvalLabelPanel(fill);
-
-var zoom = d3.behavior.zoom().translate([w/2, h/2]);
-
-
-var svg = d3.select("#chart")
+  svg = d3.select("#chart")
    .append("svg:svg")
      .attr("class","main_vis")
      .attr("width", w)
@@ -1995,107 +1948,122 @@ var svg = d3.select("#chart")
      .call(zoom.on("zoom", redraw))
 
 
-var circleSvg =  svg.append("svg:g")
+  circleSvg = svg.append("svg:g")
      .attr("id", "circle")
-     .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")");
-
-
-circleSvg.append("circle")
-  .attr("r", r1);
-
-
- //store the nodes for hierarchical clustering visualzaition
- chord.groups().forEach(function(d,i){
-  nodeObj = {"index":d.index,"angle":(d.startAngle+d.endAngle)/2,"radius":r1};
-  chordGroupsNodePosition.push(nodeObj);
- });
-
- createClusterNodesStatus(clusterHierData,[],"",[]);
-
-var clusterArc = circleSvg.append("svg:g")
- .selectAll("g")
-   .data(clusterHierData)
- .enter().append("path");
-
-var clusterLine1 = circleSvg.append("svg:g")
- .selectAll("g")
-   .data(clusterHierData)
- .enter().append("path");
-
-var clusterLine2 = circleSvg.append("svg:g")
- .selectAll("g")
-   .data(clusterHierData)
- .enter().append("path");
-
-
-var clusterHierNodeView = circleSvg.append("svg:g")
- .selectAll("g")
-   .data(clusterHierNodesStatus)
- .enter().append("svg:g");
-
-var circle = clusterHierNodeView.attr("transform", function(d) {
-     return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
-         + "translate(" + (d.radius+5) + ",0)";
-   })
- .attr("id","clusterNode")
- .append("circle")
- .append("title").text(function(d, i) {return "Click to cluster"});
-
-var clusterHierNodeTextView = circleSvg.append("svg:g")
- .selectAll("g")
-  .data(clusterHierNodesStatus)
- .enter().append("svg:g");
-
-drawHierarchicalClustering(clusterHierData);
-
-
-
-var groupElements = circleSvg.append("svg:g")
- .selectAll("path")
-   .data(chord.groups)
-   .enter().append("svg:path");
-
-var groupLayout = groupElements
-   .style("fill", function(d) { return getColor(Number(go_inf[d.index].pVal),fill); })
-   .style("stroke", function(d) { return getColor(Number(go_inf[d.index].pVal),fill); })
-   .attr("d", d3.svg.arc().innerRadius(r0).outerRadius(r1)) //important
-   .attr("id","chordGroups")
-   .on("mouseover", mouseover_group);
-
-var groupText = circleSvg.append("svg:g")
+     .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")")
+    .append("circle")
+     .attr("r", r1);
+  
+  var clusterArc = circleSvg.append("svg:g")
      .selectAll("g")
-       .data(chord.groups)
-      .enter().append("svg:g");
+       .data(clusterHierData)
+     .enter().append("path");
 
-var text = groupText
-    .selectAll("g")
- .data(chord.groups)
-    .enter().append("svg:g")
- .attr("transform", function(d) {
-   return "rotate(" + ((d.startAngle+d.endAngle)/2 * 180 / Math.PI - 90) + ")"
-       + "translate(" + r1 + ",0)";
-}).append("svg:text")
-   .attr("x", 8)
-   .attr("dy", ".45em")
-   .attr("text-anchor", function(d) {
-     return (d.startAngle+d.endAngle)/2 > Math.PI ? "end" : null;
-   })
-   .attr("transform", function(d) {
-     return (d.startAngle+d.endAngle)/2 > Math.PI ? "rotate(180)translate(-16)" : null;
-   })
-   .text(function(d) {return (typeof go_inf[d.index].GO_id == "string")? go_inf[d.index].GO_name:getMaxLabel(go_inf[d.index].GO_name)+"+"});
+  var clusterLine1 = circleSvg.append("svg:g")
+   .selectAll("g")
+     .data(clusterHierData)
+   .enter().append("path");
+
+  var clusterLine2 = circleSvg.append("svg:g")
+   .selectAll("g")
+     .data(clusterHierData)
+   .enter().append("path");
 
 
-var goLabelSize = {};
+  var clusterHierNodeView = circleSvg.append("svg:g")
+   .selectAll("g")
+     .data(clusterHierNodesStatus)
+   .enter().append("svg:g")
+     .attr("transform", function(d) {
+       return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+           + "translate(" + (d.radius+5) + ",0)";
+     })
+   .attr("id","clusterNode")
+   .append("circle")
+   .append("title").text(function(d, i) {return "Click to cluster"});
 
-determineLabelSize();
+
+  var clusterHierNodeTextView = circleSvg.append("svg:g")
+   .selectAll("g")
+    .data(clusterHierNodesStatus)
+   .enter().append("svg:g");
+
+  var groupElements = circleSvg.append("svg:g")
+   .selectAll("path")
+     .data(chord.groups)
+     .enter().append("svg:path");
+
+  var groupLayout = groupElements
+     .style("fill", function(d) { return getColor(Number(go_inf[d.index].pVal),fill); })
+     .style("stroke", function(d) { return getColor(Number(go_inf[d.index].pVal),fill); })
+     .attr("d", d3.svg.arc().innerRadius(r0).outerRadius(r1)) //important
+     .attr("id","chordGroups")
+     .on("mouseover", mouseover_group);
+
+  var groupText = circleSvg.append("svg:g")
+       .selectAll("g")
+         .data(chord.groups)
+        .enter().append("svg:g");
+
+  determineLabelSize();
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 go_inf.map(function(d){
   if(goLabelSize[d.GO_name] == undefined){
     goLabelSize[d.GO_name] = d.size;
   }
 })
-
 
 
 var chordElements = circleSvg.append("svg:g")
@@ -2110,14 +2078,6 @@ var chordLayout = chordElements
       .attr("d", d3.svg.chord().radius(r0))
       .attr("id","chordChords")
       .on("mouseover", mouseover_chord);
-
-/*chordLayout.append("title").text(function(d, i) {
-
-    var index = d.source.index+"-"+d.source.subindex;
-  
-    //return "Overlapping genes between "+ "Cluster " +( d.source.index+1) +" and " +"Cluster " +  (d.source.subindex+1) + ", num of genes:"+dic[index].split("|").length;
-
-});*/
 
 
 var range = document.getElementById('slider');
@@ -2154,10 +2114,6 @@ range.noUiSlider.on('change', function( values, handle ) {
       updateLabel();
 });
 
-/*range.noUiSlider.on('change', function(values) {
-    var level = getLevelFromNumOfOverlappingGenes(values);
-    getClusterNodesIndexBeingSelected(level);
-});*/
 
 inputFormat.addEventListener('change',function(){
     range.noUiSlider.set(this.value);
@@ -2167,8 +2123,6 @@ inputFormat.addEventListener('change',function(){
     if(labelOff==0)
       updateLabel();
 });
-
-
 
 
 
@@ -2192,7 +2146,6 @@ $('#filter').keydown(function(event ){
 });
 
 
-
 $('#filter_button').click(function(){
   refreshDetailPanel();
 });
@@ -2204,37 +2157,3 @@ $('#arrow').click(function(){
 
 });
 
-function toggleDetails(){
-  $('#arrow').css('transform', function(){ return details_opened ? 'rotate(0deg)' : 'rotate(180deg)'})
-  
-  $('#details').css('margin-right', function(){ return details_opened ? '-475px' : '0'});
-  details_opened = !details_opened;
-
-  redrawMain_vis(details_opened)
-}
-
-function redrawMain_vis(details_opened){
-
-  if(!details_opened){
-    d3.select(".main_vis").attr("width",w+475);
-  }else{
-    d3.select(".main_vis").attr("width",w);
-  }
-
-  redrawMain_vis(details_opened);
-
-}
-
-
-function redrawMain_vis(details_opened){
-
-  if(!details_opened){
-    d3.select(".main_vis").attr("width",w+475);
-    circleSvg.transition().attr("transform", "translate(" + (w+475) / 2 + "," + h / 2 + ")");
-  }else{
-    d3.select(".main_vis").attr("width",w);
-    circleSvg.transition().attr("transform", "translate(" + w / 2 + "," + h / 2 + ")");
-  }
-
-
-}
