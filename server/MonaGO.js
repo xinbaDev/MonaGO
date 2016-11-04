@@ -201,6 +201,8 @@
       return goids;
     }
 
+
+
     //creates a D3 structure that can be inputted into the force-directed graph layout
     function createD3Structure(goids, target) {
 
@@ -307,6 +309,20 @@
       return goids
     }
 
+    /*    function immediateChildren(goid) {
+      current = GO(goid);
+      childrenIndeces = current['c'];
+
+      goids = [];
+      for (var i = 0, count = childrenIndeces.length ; i < count; i ++ ) {
+        childIndex = childrenIndeces[i][0];
+        goids.push(goNodes[childIndex]['i']);
+      }
+
+      return goids;
+    }*/
+
+
     function getUniqueGoid(goids){
       var dic={},r=[];
       for(i=0;i<goids.length;i++){
@@ -318,6 +334,8 @@
       }
       return r;
     }
+
+
 
     //drawing the graph
     function drawGraph(struct) {
@@ -352,6 +370,7 @@
         .call(force.drag)
         .on('click',function(d,i) {
           d.fixed=true;
+          console.log("click");
         });
 
        
@@ -407,7 +426,7 @@
                   }
               }
 
-            };
+          };
 
     //fixing and unfixing the nodes
     function fixAllNodes() {
@@ -421,6 +440,9 @@
         if (force.nodes()[i]['is'] == "node") force.nodes()[i].fixed = false;
       }
     }
+
+    //initializing statements
+
 
     //recreate data structures and redraw graph with new nodes
     function update(goid) {
@@ -479,6 +501,8 @@
 
     }
 
+
+
     function determineLabelSize(){
       var GOMinSize = 15;
       var GOMaxSize = 30;
@@ -496,6 +520,7 @@
 
       }
     }
+
 
     function getColor(d,fill) {
 
@@ -520,6 +545,8 @@
         panel.push('<i style="background:' + getColor(from,fill) + '" ></i> ' +
                     scienceFormat(from) +" - "+ scienceFormat(to)
         );
+
+        console.log("from:"+from+"-"+"to:"+to);
       }
 
 
@@ -567,6 +594,7 @@
 
     function darwClusterNodes(){
 
+
       clusterHierNodeView = clusterHierNodeView.data(clusterHierNodesStatus,function(d){return d.index;});
 
       clusterHierNodeView.enter().append("g");
@@ -585,6 +613,9 @@
         return (d["status"]=="Expanded")?"rgb(94, 141, 141)":"red";
       }).on("click",onClusterNodeClick)
       .append("title").text(function(d, i) {return "Click to cluster"});
+
+
+
 
       clusterHierNodeTextView.selectAll("text").remove();
 
@@ -698,6 +729,9 @@
         });
     }
 
+
+     
+
     function drawLine(clusterHierData){
       var clusterHierDataFiltered = [];
       var line1Data = [];
@@ -804,6 +838,7 @@
         
     }
 
+
     function redraw(transition) {
           if(zoom.scale()<0.5){
             //reset zoom scale and do nothing
@@ -874,6 +909,17 @@
       return clusterNodesLevel.unique();
     }
 
+    /*function getClusterNodesPosition(nodes){
+
+        console.log(nodes[nodes.length-1]["level"]);
+        var nodesPositions = [];
+
+        
+        return nodesPositions;
+    }*/
+
+
+
     function getClusterGenes(nodePositions){
       var clustergenes = [];
 
@@ -885,6 +931,7 @@
       
       return clustergenes.unique();
     }
+
 
     function calculateNewPvalue(removeGO){
       var pVal = 0;
@@ -937,6 +984,7 @@
       
     }
 
+
     function updateMatrix(){
       var newMatrix = [];
       var newArray = [];
@@ -965,6 +1013,7 @@
       }
       return newMatrix;
     }
+
 
     function updateLayout(newMatrix){
 
@@ -1003,6 +1052,8 @@
 
     }
 
+
+
     function getMinValuePosition(nodePostions){
       var position = 0;
       var min = array_order[nodePostions[0]];
@@ -1017,6 +1068,7 @@
       return position;
 
     }
+
 
     function calculateAClusterNodePosition(firstNodeIndex,secondNodeIndex,status,index,nodeBeingClicked,clusterNodesRadius,collapsedNodeRadius){
 
@@ -1316,6 +1368,10 @@
       }
     }
 
+    //draw lines,arcs,node
+
+
+
     function moveOutHierCluster(){
       var clusterNode = d3.selectAll(".clusterNode");
 
@@ -1381,6 +1437,7 @@
       });
     }
 
+
     function getLevelFromNumOfOverlappingGenes(numOfOverlappingGenes){
       var level = -1;
       clusterHierDataStatic.map(function(d,i){
@@ -1390,6 +1447,8 @@
 
       return level;
     }
+
+
 
     function getClusterNodesIndexBeingSelected(level){
 
@@ -1480,6 +1539,7 @@
       update(goid);
     }
 
+
     function mouseover_group(d, i) {
         $('#content').empty();
         chordLayout.classed("fade", function(p) {
@@ -1508,7 +1568,7 @@
         }
     }
 
-    function mouseover_chord(d, i) {
+     function mouseover_chord(d, i) {
         $('#content').empty();
         var index = d.source.index+"-"+d.source.subindex;
 
@@ -1522,6 +1582,9 @@
         $('#content').append("<p>Overlapping genes between " + that.go_inf[d.source.index].GO_id +" and " +  that.go_inf[d.source.subindex].GO_id+":\n</p>"+str);
 
     }
+
+
+
 
     function createOnClick(num_array){
       while(num_array.length!=0){
@@ -1613,6 +1676,8 @@
       go_contents.sort(compare);
     }
 
+
+
     function resetVis(){
         //text.transition().duration(500).text(function(d){return go_inf[d.index].GO_id;}).attr("x",8);
         groupLayout.transition().duration(500).attr("d",d3.svg.arc().innerRadius(r0).outerRadius(r1));
@@ -1682,67 +1747,68 @@
           //moveHierCluster();
         }
       }else{//for genes
-        var indexs = that.gene_info[searchTerm];
+      var indexs = that.gene_info[searchTerm];
 
-        
-        if(indexs!=undefined)
-        {
+      
+      if(indexs!=undefined)
+      {
 
-            var index_array = indexs.split(";");
-            var go_contents = [];
-            var num_array= [];
+          var index_array = indexs.split(";");
+          var go_contents = [];
+          var num_array= [];
 
-            for(i=0;i<index_array.length;i++){
+          for(i=0;i<index_array.length;i++){
 
-              var num = parseInt(index_array[i]);
-              num_array.push(num);
-              
-              go_contents.push(num);
-            }
+            var num = parseInt(index_array[i]);
+            num_array.push(num);
+            
+            go_contents.push(num);
+          }
 
-            sortGOcontent(go_contents);
+          sortGOcontent(go_contents);
 
-            $('#content').append(renderGOTerm(go_contents));
+          $('#content').append(renderGOTerm(go_contents));
 
-            createOnClick(num_array);
+          createOnClick(num_array);
 
-            var arrayList=[];
-            for(i in index_array){
-              var num = parseInt(index_array[i]);
-              arrayList.push(num);
-            }
+          var arrayList=[];
+          for(i in index_array){
+            var num = parseInt(index_array[i]);
+            arrayList.push(num);
+          }
 
-       /*     text.transition().duration(500).text(function(d){
-              if(arrayList.indexOf(d.index)==-1)
-                return go_inf[d.index].GO_id;
-              else
-                return "["+go_inf[d.index].GO_id+"]";
-              
-              
-            }).attr("x",function(d){
-              if(arrayList.indexOf(d.index)!=-1){
-                  return d.angle > Math.PI ? 1:16;
-                }else
-                {
-                  return 8;
-                }
-               });*/
+     /*     text.transition().duration(500).text(function(d){
+            if(arrayList.indexOf(d.index)==-1)
+              return go_inf[d.index].GO_id;
+            else
+              return "["+go_inf[d.index].GO_id+"]";
+            
+            
+          }).attr("x",function(d){
+            if(arrayList.indexOf(d.index)!=-1){
+                return d.angle > Math.PI ? 1:16;
+              }else
+              {
+                return 8;
+              }
+             });*/
 
-            groupLayout.transition().attr("d",
-                 d3.svg.arc().innerRadius(function(d){return (arrayList.indexOf(d.index)==-1)? r0:r0+5;}).outerRadius(
-                  function(d,i){return (arrayList.indexOf(d.index)==-1)? r1:r1+5;}));
+          groupLayout.transition().attr("d",
+               d3.svg.arc().innerRadius(function(d){return (arrayList.indexOf(d.index)==-1)? r0:r0+5;}).outerRadius(
+                function(d,i){return (arrayList.indexOf(d.index)==-1)? r1:r1+5;}));
 
-            chordLayout.transition().attr("d",d3.svg.chord().radius(function(d){return (arrayList.indexOf(d.index)==-1)? r0:r0+5;}));
+          chordLayout.transition().attr("d",d3.svg.chord().radius(function(d){return (arrayList.indexOf(d.index)==-1)? r0:r0+5;}));
 
-         /*   if(arrayList.length!=0)
-              moveOutHierCluster();*/
-        }
-        else{
-          resetVis();
-         
-        }
+       /*   if(arrayList.length!=0)
+            moveOutHierCluster();*/
+      }
+      else{
+        resetVis();
+       
       }
     }
+    }
+
 
     function drawLable(){
 
@@ -1757,6 +1823,7 @@
 
       updateLabel();
     }
+
 
     function updateLabel(){
       groupText.remove();
@@ -1794,6 +1861,7 @@
       return d[position];
     }
 
+
     function drawHierCluster(){
       labelOff = 1;
       clusterArc.style("display","");
@@ -1804,6 +1872,7 @@
 
 
       groupText.style("display","none");
+      //cloudsText.style("display","none");
 
       drawHierarchicalClustering(clusterHierData);
 
@@ -1836,6 +1905,7 @@
 
     }
 
+
     function redrawMain_vis(details_opened){
 
       if(!details_opened){
@@ -1850,7 +1920,7 @@
     }
 
     function setUpRangeSlider(range,minNumOfOverlappingGens,maxNumOfOverlappingGens){
-      noUiSlider.create(range, {
+        noUiSlider.create(range, {
         start: [ maxNumOfOverlappingGens+1 ], // Handle start position
         step: 1, // Slider moves in increments of '10'
         margin: 0, // Handles must be more than '20' apart
@@ -1928,7 +1998,8 @@
       circleSvg = svg.append("svg:g")
          .attr("id", "circle")
          .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")")
-
+        .append("circle")
+         .attr("r", r1);
       
       clusterArc = circleSvg.append("svg:g")
          .selectAll("g")
@@ -1950,7 +2021,14 @@
        .selectAll("g")
          .data(clusterHierNodesStatus)
        .enter().append("svg:g")
-        .attr("id","clusterNode")
+         .attr("transform", function(d) {
+           return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+               + "translate(" + (d.radius+5) + ",0)";
+         })
+       .attr("id","clusterNode")
+       .append("circle")
+       .append("title").text(function(d, i) {return "Click to cluster"});
+
 
       clusterHierNodeTextView = circleSvg.append("svg:g")
        .selectAll("g")
@@ -2017,6 +2095,7 @@
 
       step = (maxpVal-minpVal)/10;
 
+    //////////////////////////////////////////////////
       chordMatrix = d3.layout.chord()
        .padding(.03)
        .sortSubgroups(d3.descending);
@@ -2041,6 +2120,7 @@
       createPvalLabelPanel(fill);
       createClusterNodesStatus(clusterHierData,[],"",[]);
       setUpView();
+      drawHierarchicalClustering(clusterHierData);
       determineLabelSize();
       drawLable();
       setUpListener();
@@ -2050,6 +2130,7 @@
   }
 
   var monaGO = new MonaGO();
+  console.log(monaGO);
   monaGO.init(size,go_inf,clusterHierData);
 
 
