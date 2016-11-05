@@ -1,3 +1,7 @@
+asd = new Array();
+
+console.log(asd);
+
 (function(){
 
   Array.prototype.intersection = function() {
@@ -25,6 +29,8 @@
       for(i in o) r.push(o[i]);
       return r;
   };
+
+  console.log(asd);
 
   var MonaGO = function(){
     var force;
@@ -2049,8 +2055,7 @@
 
   }
 
-  var monaGO = new MonaGO();
-  monaGO.init(size,go_inf,clusterHierData);
+  new MonaGO().init(size,go_inf,clusterHierData);
 
 
 })();
