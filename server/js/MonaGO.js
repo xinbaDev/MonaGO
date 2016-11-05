@@ -1,6 +1,3 @@
-asd = new Array();
-
-console.log(asd);
 
 (function(){
 
@@ -29,8 +26,6 @@ console.log(asd);
       for(i in o) r.push(o[i]);
       return r;
   };
-
-  console.log(asd);
 
   var MonaGO = function(){
     var force;
@@ -96,12 +91,11 @@ console.log(asd);
       .size([width, height]);
 
     var zoom = d3.behavior.zoom().translate([w/2, h/2]);
+    var zoomLevel = 1;
 
     
     var level_g = 0;
     var clusterNodesIndex = [];
-    var range = document.getElementById('slider');
-    var inputFormat = document.getElementById('input_slider');
     var details_opened = true;
 
     var clusterArc;
@@ -114,6 +108,7 @@ console.log(asd);
     var groupText;
     var chordElements;
     var chordLayout;
+    var textBackground;
 
 
     function createGeneInfo(){
@@ -818,13 +813,16 @@ console.log(asd);
             (transition ? circleSvg.transition() : circleSvg)
               .attr("transform", "translate(" + zoom.translate() + ") scale(" + zoom.scale() + ")");
 
-            if((zoom.scale()<0.8)&&(0.8<zoomLevel<0.9)){
+            if(textBackground){
+                if((zoom.scale()<0.8)&&(0.8<zoomLevel<0.9)){
                   textBackground.attr("visibility","hidden");
             }
 
-            if(zoom.scale()>=0.7){
-                  textBackground.attr("visibility","visible");
+                if(zoom.scale()>=0.7){
+                      textBackground.attr("visibility","visible");
+                }
             }
+
 
             zoomLevel = zoom.scale();
           }
@@ -1812,12 +1810,14 @@ console.log(asd);
       groupText.style("display","none");
 
       drawHierarchicalClustering(clusterHierData);
-
-      if(zoom.scale()<0.7){
-         textBackground.attr("visibility","hidden");
-       }else{
-          textBackground.attr("visibility","visible");
+      if(textBackground){
+        if(zoom.scale()<0.7){
+            textBackground.attr("visibility","hidden");
+        }else{
+            textBackground.attr("visibility","visible");
+        }
       }
+
       
     }
 
@@ -1827,19 +1827,8 @@ console.log(asd);
       $('#details').css('margin-right', function(){ return details_opened ? '-475px' : '0'});
       details_opened = !details_opened;
 
-      redrawMain_vis(details_opened)
-    }
-
-    function redrawMain_vis(details_opened){
-
-      if(!details_opened){
-        d3.select(".main_vis").attr("width",w+475);
-      }else{
-        d3.select(".main_vis").attr("width",w);
-      }
-
       redrawMain_vis(details_opened);
-
+      movePvalPanel(details_opened);
     }
 
     function redrawMain_vis(details_opened){
@@ -1851,12 +1840,39 @@ console.log(asd);
         d3.select(".main_vis").attr("width",w);
         circleSvg.transition().attr("transform", "translate(" + w / 2 + "," + h / 2 + ") scale(" + zoom.scale() + ")");
       }
-
-
     }
 
-    function setUpRangeSlider(range,minNumOfOverlappingGens,maxNumOfOverlappingGens){
-      noUiSlider.create(range, {
+    function movePvalPanel(details_opened){
+      if(!details_opened){
+        d3.select(".pval-label").transition().style("margin-left",-190);
+      }else{
+        d3.select(".pval-label").transition().style("margin-left",-660);
+      }
+    }
+
+    function setUpControlPanel(){
+
+      var element = '<label style="font-size:16px">Cluster GO term according to the minimum number of common gene(s)</label> \
+          <div id="slider" class="sliderBar"></div>\
+          <input type="text" id="input_slider"/>\
+            <table class="RadioBox">\
+            <tbody><tr><td>\
+                  <input id="labelRadioBox" class="radioButton" type="radio" name="radioBox" value="0" checked>\
+                </td><td><label for="labelRadioBox">Show GO term name</label>\
+                </td></tr><tr><td></td></tr><tr><td>\
+                  <input id="hierClusterRadioBox"  class="radioButton" type="radio" name="radioBox" value="1" >\
+                </td><td>\
+                   <label style="width:300px;" for="hierClusterRadioBox">Show hierarchical tree and click on the node to manually cluster the GO term</label>\
+                </td></tr></tbody></table>';
+
+      $("#control-panel").append(element);
+      var ranger = document.getElementById('slider');
+      var inputFormat = document.getElementById('input_slider');
+      setUpRangeSlider(ranger,inputFormat,minNumOfOverlappingGens,maxNumOfOverlappingGens);
+    }
+
+    function setUpRangeSlider(ranger,inputFormat,minNumOfOverlappingGens,maxNumOfOverlappingGens){
+      noUiSlider.create(ranger, {
         start: [ maxNumOfOverlappingGens+1 ], // Handle start position
         step: 1, // Slider moves in increments of '10'
         margin: 0, // Handles must be more than '20' apart
@@ -1869,11 +1885,11 @@ console.log(asd);
         }
       });
 
-      range.noUiSlider.on('update',function(values,handle){
+      ranger.noUiSlider.on('update',function(values,handle){
           inputFormat.value = values[handle];
       });
 
-      range.noUiSlider.on('change', function( values, handle ) {
+      ranger.noUiSlider.on('change', function( values, handle ) {
           var level = getLevelFromNumOfOverlappingGenes(inputFormat.value);
           getClusterNodesIndexBeingSelected(level);
 
@@ -1883,7 +1899,7 @@ console.log(asd);
       });
 
       inputFormat.addEventListener('change',function(){
-          range.noUiSlider.set(this.value);
+          ranger.noUiSlider.set(this.value);
           var level = getLevelFromNumOfOverlappingGenes(this.value);
           getClusterNodesIndexBeingSelected(level);
 
@@ -1898,16 +1914,12 @@ console.log(asd);
           refreshDetailPanel();
       });
 
-
       $('#filter_button').click(function(){
         refreshDetailPanel();
       });
 
-
-
       $('#arrow').click(function(){
         toggleDetails();
-
       });
 
       $('.radioButton').change(function(){
@@ -1963,6 +1975,8 @@ console.log(asd);
         .data(clusterHierNodesStatus)
        .enter().append("svg:g");
 
+
+
       groupElements = circleSvg.append("svg:g")
        .selectAll("path")
          .data(chord.groups)
@@ -2000,7 +2014,7 @@ console.log(asd);
             .attr("id","chordChords")
             .on("mouseover", mouseover_chord);
 
-      setUpRangeSlider(range,minNumOfOverlappingGens,maxNumOfOverlappingGens);
+      setUpControlPanel();
     }
 
     this.init = function(size,go_inf,clusterHierData){
