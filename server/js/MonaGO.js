@@ -1,4 +1,3 @@
-
 (function(){
 
   Array.prototype.intersection = function() {
@@ -1524,7 +1523,6 @@
         });
 
         $('#content').append("<p>Overlapping genes between " + that.go_inf[d.source.index].GO_id +" and " +  that.go_inf[d.source.subindex].GO_id+":\n</p>"+str);
-
     }
 
     function createOnClick(num_array){
@@ -1947,6 +1945,7 @@
          .attr("id", "circle")
          .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")")
 
+      circleSvg.append("circle").attr("r",r0);
       
       clusterArc = circleSvg.append("svg:g")
          .selectAll("g")
@@ -1974,7 +1973,6 @@
        .selectAll("g")
         .data(clusterHierNodesStatus)
        .enter().append("svg:g");
-
 
 
       groupElements = circleSvg.append("svg:g")
