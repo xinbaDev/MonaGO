@@ -64,7 +64,8 @@
          .rangeRoundPoints([1,255]);
 
     var color_scheme = ["#1249C9","#0F399B","#0A2B76","#0F2147","#2C3645","#82733D","#E1C03B","#E6AE29","#F2AB1C","#FFAB00"].reverse();
-
+    var pValLevel = ["p-1","p-2","p-3","p-4","p-5","p-6","p-7","p-8","p-9","p-10"];
+    var preElement = "p-1";
 
     var chordMatrix;
     var chord;
@@ -517,7 +518,7 @@
       {
         from = seperated_points[i];
         to = seperated_points[i+1];
-        panel.push('<i style="background:' + getColor(from,fill) + '" ></i> ' +
+        panel.push('<i id="'+pValLevel[i]+'" style="background:' + getColor(from,fill) + '" ></i> ' +
                     scienceFormat(from) +" - "+ scienceFormat(to)
         );
       }
@@ -528,7 +529,7 @@
 
 
       function scienceFormat(value){
-        return from.toFixed(4).toString();
+        return value.toFixed(4).toString();
       }
     }
 
@@ -1509,6 +1510,31 @@
           $('#content').append("<div id=\"go_chart\"></div>");
           createGoHier(that.go_inf[d.index].GO_id);
         }
+
+        changePvalPanel(d.index);
+    }
+
+    function changePvalPanel(index){
+        var levelElement = getPvalLevel(that.go_inf[index].pVal);
+        setlevelElement(levelElement);
+    }
+
+    function getPvalLevel(pVal){
+        for(i=0;i<seperated_points.length-1;i++){
+          if((seperated_points[i] <= pVal)&&(pVal < seperated_points[i+1])){
+              return pValLevel[i];
+          }
+        }
+        if(seperated_points[seperated_points.length-1] == pVal)
+          return pValLevel[9];
+    }
+
+    function setlevelElement(element){
+
+      $('#'+preElement).css("border","0");
+      $('#'+element).css("border","solid 1px red");
+      preElement = element;
+
     }
 
     function mouseover_chord(d, i) {
