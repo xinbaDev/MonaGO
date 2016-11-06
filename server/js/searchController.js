@@ -29,6 +29,12 @@ app.controller('searchCtrl', ['$scope', 'go_inf', function($scope,go_inf) {
     $scope.setSearchBox = function(GO_id){
     	$scope.searchText = GO_id;
         $('#searchBox').remove();
-    	
+
+        setTimeout(function(){
+            var e = jQuery.Event("keydown");
+            e.which = 13; 
+            $('#filter').trigger(e);
+        }, 100);
+ 
     }
 }]);

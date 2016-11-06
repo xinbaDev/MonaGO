@@ -1907,7 +1907,7 @@
     }
 
     function setUpListener(){
-      $('#filter').keydown(function(event ){
+      $('#filter').keydown(function(event){
         if(event.which == 13)
           refreshDetailPanel();
       });
