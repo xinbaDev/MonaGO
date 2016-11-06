@@ -15,8 +15,10 @@
      <div >
       <div id="searchBox" ng-if="isNotEmpty(searchText)" class="scrollable list-group dropdown dropdown-menu">
         <div ng-repeat="GO in goArr|filter:searchText">
-	        <div class="search-suggestion-item" ng-click="setSearchBox(GO.id)">
-	        	{{GO.id}} {{GO.name}}
+
+	        <div class="search-suggestion-item" ng-click="setSearchBox(GO)">
+
+	        	{{GO.id}} {{GO.name}} {{GO.gene}}
 	        </div>
 	    </div>
       </div>
@@ -25,7 +27,7 @@
 	<div style ="position: absolute;">
      
 	    <div id="content">
-	      <p>The visualisation on the left will help you to explore all the intersection between different GO terms(Data comes from <strong>demolist1</strong> on David)</p>
+	      <p>The visualisation on the left will help you to explore all the intersection between different GO terms(Data comes from <a href="david.ncifcrf.gov" target="_blank">DAVID</a>)</p>
 	      
 	    </div>
 	    
