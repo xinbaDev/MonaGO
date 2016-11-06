@@ -422,3 +422,8 @@ a {
   transform: rotate(180deg);
   -webkit-transform: rotate(180deg);
 }
+
+#searchBox{
+    position: absolute;
+    top: 45px;
+}

@@ -15,9 +15,7 @@
      <div >
       <div id="searchBox" ng-if="isNotEmpty(searchText)" class="scrollable list-group dropdown dropdown-menu">
         <div ng-repeat="GO in goArr|filter:searchText">
-
 	        <div class="search-suggestion-item" ng-click="setSearchBox(GO)">
-
 	        	{{GO.id}} {{GO.name}} {{GO.gene}}
 	        </div>
 	    </div>

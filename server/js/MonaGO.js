@@ -1934,12 +1934,16 @@
 
     function setUpListener(){
       $('#filter').keydown(function(event){
-        if(event.which == 13)
+        if(event.which == 13){
           refreshDetailPanel();
+          $('#searchBox').remove();
+        }
+
       });
 
       $('#filter_button').click(function(){
         refreshDetailPanel();
+        $('#searchBox').remove();
       });
 
       $('#arrow').click(function(){
