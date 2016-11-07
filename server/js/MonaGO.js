@@ -1489,7 +1489,6 @@
 
       geneListInHtml += "<div class='gene_content'>";
       that.go_inf[index].genes.forEach(function(d,i){
-            console.log(d);
            var tmp = "<li>" + (i+1) +"."+"<n class='gene_name'>"+ d + "</n> "+ "</li>";
            geneListInHtml+=tmp;
       });
@@ -1498,18 +1497,47 @@
       return geneListInHtml;
     }
 
+    function getNumOfGOTerms(goid){
+
+        if(typeof goid === "string" ){
+          return 1;
+        }
+
+        return goid.length;
+    }
+
+    function createGOList(go_names){
+      var goList = "<div class='go_List'>";
+      go_names.forEach(function(d,i){
+           var tmp = "<li>" + (i+1) +"."+"<n class='Go_name'>"+ d + "</n> "+ "</li>";
+           goList+=tmp;
+      });
+      goList += "</div>";
+      return goList;
+    }
+
     function createDetailPanelTempl(i){
         var detailPanelTempl = "";
 
-        var goInfTempl = "<p> <a class='prop-field'> GO_id: </a>" + that.go_inf[i].GO_id + "</p>" + 
-                "<p> <a class='prop-field'>GO_Name: </a>"+ that.go_inf[i].GO_name + "</p>" + 
-                " <p> <a class='prop-field'>Num of genes: </a>"+ that.go_inf[i].count + "</p>" +
-                "<p> <a class='prop-field'>P-value: </a>" + that.go_inf[i].pVal + "</p>";
+        var numOfGOTerms = getNumOfGOTerms(that.go_inf[i].GO_id);
+        console.log(numOfGOTerms);
+        var goInfTempl = "<p> <a class='prop-field'> GO_id: </a>" + that.go_inf[i].GO_id + "</p>";
+
+        if(numOfGOTerms == 1){
+           goInfTempl += "<p> <a class='prop-field'>GO_Name: </a>"+ that.go_inf[i].GO_name + "</p>";
+        }else{
+           goInfTempl += "<a class='prop-field go_dropmenu'> GO_name: <b id='caret_GO' class='caret rotate180'></b></a>" + 
+                          createGOList(that.go_inf[i].GO_name) + "<p>";
+        }
+
+         goInfTempl += " <p> <a class='prop-field'>Num of genes: </a>"+ that.go_inf[i].count + "</p>" +
+                       "<p> <a class='prop-field'>P-value: </a>" + that.go_inf[i].pVal + "</p>";
 
         var geneListInHtml = createGeneListHtml(i);
-        var genesListTempl = "<a class='prop-field gene_dropmenu'>Genes:<b class='caret rotate180'></b></a>"+geneListInHtml+"</p>";
+        var genesListTempl = "<a class='prop-field gene_dropmenu'>Genes:<b id='caret_gene' class='caret rotate180'></b></a>"+geneListInHtml+"</p>";
 
-        var chartTempl = "<p><a class='prop-field'>GO Hierarchy:</a></p> <div id='go_chart'></div> ";
+
+        var chartTempl = (numOfGOTerms == 1)?"<p><a class='prop-field'>GO Hierarchy:</a></p> <div id='go_chart'></div> ":"";
 
         detailPanelTempl += goInfTempl + genesListTempl + chartTempl;
 
@@ -1518,9 +1546,10 @@
 
     function setUpDetailPanelListener(){
         var genes_shown = true;
+        var go_shown = true;
         $('.gene_dropmenu').click(function(d){
               
-          $('.caret').css('transform', function(){ return genes_shown ? 'rotate(0deg)' : 'rotate(180deg)'})
+          $('#caret_GO').css('transform', function(){ return genes_shown ? 'rotate(0deg)' : 'rotate(180deg)'})
           genes_shown = !genes_shown;
 
           $geneList = $(this).next();
@@ -1530,6 +1559,15 @@
         $('.gene_name').click(function(){
             $('#filter').val($(this).html());
             refreshDetailPanel();
+        });
+
+        $('.go_dropmenu').click(function(d){
+              
+          $('#caret_gene').css('transform', function(){ return go_shown ? 'rotate(0deg)' : 'rotate(180deg)'})
+          go_shown = !go_shown;
+
+          $goList = $(this).next();
+          $goList.slideToggle(500);
         });
     }
 
@@ -1781,7 +1819,6 @@
             sortGOcontent(go_contents);
 
             $('#content').append(renderGOTerm(go_contents));
-            
             $('.gene_name').click(function(){
                 $('#filter').val($(this).html());
                 refreshDetailPanel();
@@ -1845,7 +1882,6 @@
              return (d.startAngle+d.endAngle)/2 > Math.PI ? "rotate(180)translate(-16)" : null;
             })
             .text(function(d) {return (typeof that.go_inf[d.index].GO_id == "string")? that.go_inf[d.index].GO_name:getMaxLabel(that.go_inf[d.index].GO_name)+"+"});
-
     }
 
     function getMaxLabel(d){
@@ -1880,8 +1916,6 @@
             textBackground.attr("visibility","visible");
         }
       }
-
-      
     }
 
     function toggleDetails(){
@@ -2009,7 +2043,6 @@
          .attr("height", h)
          .call(zoom.on("zoom", redraw))
 
-
       circleSvg = svg.append("svg:g")
          .attr("id", "circle")
          .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")")
@@ -2031,7 +2064,6 @@
          .data(clusterHierData)
        .enter().append("path");
 
-
       clusterHierNodeView = circleSvg.append("svg:g")
        .selectAll("g")
          .data(clusterHierNodesStatus)
@@ -2042,7 +2074,6 @@
        .selectAll("g")
         .data(clusterHierNodesStatus)
        .enter().append("svg:g");
-
 
       groupElements = circleSvg.append("svg:g")
        .selectAll("path")
@@ -2066,7 +2097,6 @@
           goLabelSize[d.GO_name] = d.size;
         }
       })
-
 
       chordElements = circleSvg.append("svg:g")
             .selectAll("path")
