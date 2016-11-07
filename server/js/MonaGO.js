@@ -1484,27 +1484,66 @@
       update(goid);
     }
 
+    function createGeneListHtml(index){
+      var geneListInHtml = "";
+
+      geneListInHtml += "<div class='gene_content'>";
+      that.go_inf[index].genes.forEach(function(d,i){
+            console.log(d);
+           var tmp = "<li>" + (i+1) +"."+"<n class='gene_name'>"+ d + "</n> "+ "</li>";
+           geneListInHtml+=tmp;
+      });
+      geneListInHtml += "</div>";
+
+      return geneListInHtml;
+    }
+
+    function createDetailPanelTempl(i){
+        var detailPanelTempl = "";
+
+        var goInfTempl = "<p> <a class='prop-field'> GO_id: </a>" + that.go_inf[i].GO_id + "</p>" + 
+                "<p> <a class='prop-field'>GO_Name: </a>"+ that.go_inf[i].GO_name + "</p>" + 
+                " <p> <a class='prop-field'>Num of genes: </a>"+ that.go_inf[i].count + "</p>" +
+                "<p> <a class='prop-field'>P-value: </a>" + that.go_inf[i].pVal + "</p>";
+
+        var geneListInHtml = createGeneListHtml(i);
+        var genesListTempl = "<a class='prop-field gene_dropmenu'>Genes:<b class='caret rotate180'></b></a>"+geneListInHtml+"</p>";
+
+        var chartTempl = "<p><a class='prop-field'>GO Hierarchy:</a></p> <div id='go_chart'></div> ";
+
+        detailPanelTempl += goInfTempl + genesListTempl + chartTempl;
+
+        return detailPanelTempl;
+    }
+
+    function setUpDetailPanelListener(){
+        var genes_shown = true;
+        $('.gene_dropmenu').click(function(d){
+              
+          $('.caret').css('transform', function(){ return genes_shown ? 'rotate(0deg)' : 'rotate(180deg)'})
+          genes_shown = !genes_shown;
+
+          $geneList = $(this).next();
+          $geneList.slideToggle(500);
+        });
+
+        $('.gene_name').click(function(){
+            $('#filter').val($(this).html());
+            refreshDetailPanel();
+        });
+    }
+
     function mouseover_group(d, i) {
         $('#content').empty();
         chordLayout.classed("fade", function(p) {
           return p.source.index != i
               && p.target.index != i;
         });
-        var genes = "";
+        
+        var detailPanelTempl = createDetailPanelTempl(i);
+        $('#content').append(detailPanelTempl);
 
-        that.go_inf[d.index].genes.forEach(function(d,i){
-
-           var tmp = "<p>" + (i+1) +"."+ d + "</p>";
-           genes+=tmp;
-        });
-
-        var str = "<p> GO_id: " + that.go_inf[d.index].GO_id + "<p> GO_Name: "+ that.go_inf[d.index].GO_name+ " <p> Num of genes: "+ that.go_inf[d.index].count + "<p> P-value: " + that.go_inf[d.index].pVal;
-
-
-        var words = [];
-
-
-        $('#content').append(str + "<p>Genes:\n"+genes);
+        setUpDetailPanelListener();
 
         if(typeof that.go_inf[d.index].GO_id == "string"){
           $('#content').append("<div id=\"go_chart\"></div>");
@@ -1584,12 +1623,16 @@
     }
 
     function getGenesFromACluster(num){
-      var genes = "";
+      var genes = "<div class='gene_content'>";
+
       that.go_inf[num].genes.forEach(function(d,i){
 
-           var tmp = "<p>" + (i+1) +"."+ d + "</p>";
+           var tmp = "<li>" + (i+1) +".<n class='gene_name'>"+ d + "</n></li>";
            genes+=tmp;
         });
+
+      genes += "</div>";
+
       return genes;
     }
 
@@ -1598,11 +1641,14 @@
       for(i=0;i<go_num_array.length;i++){
         num = go_num_array[i];
         Go = that.go_inf[num].GO_id + " " + that.go_inf[num].GO_name;
+
         var line = "<button class=\"dropbtn\""+ "id=GO_button_"+ num +">" + Go + "</button>";
-        line += "<div class=\"Go_content\">" + "<p> P-value: " + that.go_inf[num].pVal + " <p> Num of genes: "+ that.go_inf[num].count +
-        "<p>Genes: " +  getGenesFromACluster(num) + "</div>";
+        line += "<div class=\"Go_content\">" + "<p><a class='prop-field'> P-value:</a> " + that.go_inf[num].pVal + 
+        " <p><a class='prop-field'> Num of genes: </a>"+ that.go_inf[num].count +
+        "<p><a class='prop-field'>Genes: </a>" +  getGenesFromACluster(num) + "</div>";
         GOterms += line; 
-       }
+
+      }
       return GOterms;
     }
 
@@ -1689,10 +1735,14 @@
         
 
         if(i != undefined){
-        
-          str = "<p> GO_id: " + that.go_inf[i].GO_id + "<p> GO_Name: "+ that.go_inf[i].GO_name+ " <p> Num of genes: "+ that.go_inf[i].count + "<p> P-value: " + that.go_inf[i].pVal ;
+
           genes = getGenesFromACluster(i);
-          $('#content').append(str + "<p>Genes:\n"+genes+"<div id=\"go_chart\"></div>");
+        
+          var detailPanelTempl = createDetailPanelTempl(i);
+          $('#content').append(detailPanelTempl);
+
+          setUpDetailPanelListener();
+
           createGoHier(that.go_inf[i].GO_id);
 
           chordLayout.classed("fade", function(p) {
@@ -1731,6 +1781,11 @@
             sortGOcontent(go_contents);
 
             $('#content').append(renderGOTerm(go_contents));
+            
+            $('.gene_name').click(function(){
+                $('#filter').val($(this).html());
+                refreshDetailPanel();
+            });
 
             createOnClick(num_array);
 
@@ -1739,22 +1794,6 @@
               var num = parseInt(index_array[i]);
               arrayList.push(num);
             }
-
-       /*     text.transition().duration(500).text(function(d){
-              if(arrayList.indexOf(d.index)==-1)
-                return go_inf[d.index].GO_id;
-              else
-                return "["+go_inf[d.index].GO_id+"]";
-              
-              
-            }).attr("x",function(d){
-              if(arrayList.indexOf(d.index)!=-1){
-                  return d.angle > Math.PI ? 1:16;
-                }else
-                {
-                  return 8;
-                }
-               });*/
 
             groupLayout.transition().attr("d",
                  d3.svg.arc().innerRadius(function(d){return (arrayList.indexOf(d.index)==-1)? r0:r0+5;}).outerRadius(

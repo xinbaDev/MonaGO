@@ -122,21 +122,6 @@ body, html{
 	padding: 10px 25px;
 }
 
-#details a{
-	color: #15B59C;
-	transition: all 0.2s;
-}
-
-#details a:hover{
-	color: #337AB7 !important;
-	text-decoration: none;
-}
-
-#details a:hover{
-	color: #15B59C;
-
-}
-
 .dispUri {
 	padding-top: 0px;
 	padding-bottom: 20px;
@@ -171,7 +156,9 @@ ul.skoslabel{
 
 li{
 	list-style: none;
+
 }
+
 
 .resProp{
 	line-height: 1.7;
@@ -249,8 +236,10 @@ path.chord {
 
 
 #details a{
-  color: #15B59C;
-  transition: all 0.2s;
+  color: #333;
+  font-weight: bold;
+  text-transform: capitalize;
+  text-decoration: none;
 }
 
 
@@ -426,4 +415,28 @@ a {
 #searchBox{
     position: absolute;
     top: 45px;
+}
+
+.prop-field {
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.gene_dropmenu{
+  cursor:pointer;
+}
+
+.gene_content li{
+    padding-left: 40px;
+}
+
+.gene_content li n {
+    color: #15B59C;
+    transition: all 0.2s;
+}
+
+
+.gene_content li n:hover {
+    color: #15B59C;
+    cursor:pointer;
 }
