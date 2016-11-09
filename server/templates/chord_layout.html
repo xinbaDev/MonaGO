@@ -25,7 +25,7 @@
 	<div style ="position: absolute;">
      
 	    <div id="content">
-	      <p>The visualisation on the left will help you to explore all the intersection between different GO terms(Data comes from <a href="david.ncifcrf.gov" target="_blank">DAVID</a>)</p>
+	      <p>The visualisation on the left will help you to explore all the intersection between different GO terms(Data comes from <a href="https://david.ncifcrf.gov" target="_blank">DAVID</a>)</p>
 	      
 	    </div>
 	    
@@ -40,13 +40,17 @@
   <div id = "pval-label" class="pval-label"></div>
 
   <div id = "control-panel"></div>
-
+  <button id = "editor_save" style="top:200px;position: absolute; z-index:100">save</button>
 </div>
 
 </div>
 
-
+<div id='svgdataurl'></div>
+<canvas width="1920" height="1080" style="display:none"></canvas>
 </body>
+
+
+
 </html>
 
 <link rel="stylesheet" href="css/nouislider.min.css">

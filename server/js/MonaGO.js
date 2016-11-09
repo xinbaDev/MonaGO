@@ -1520,7 +1520,6 @@
         var detailPanelTempl = "";
 
         var numOfGOTerms = getNumOfGOTerms(that.go_inf[i].GO_id);
-        console.log(numOfGOTerms);
         var goInfTempl = "<p> <a class='prop-field'> GO_id: </a>" + that.go_inf[i].GO_id + "</p>";
 
         if(numOfGOTerms == 1){
@@ -1549,7 +1548,7 @@
         var go_shown = true;
         $('.gene_dropmenu').click(function(d){
               
-          $('#caret_GO').css('transform', function(){ return genes_shown ? 'rotate(0deg)' : 'rotate(180deg)'})
+          $('#caret_gene').css('transform', function(){ return genes_shown ? 'rotate(0deg)' : 'rotate(180deg)'})
           genes_shown = !genes_shown;
 
           $geneList = $(this).next();
@@ -1563,7 +1562,7 @@
 
         $('.go_dropmenu').click(function(d){
               
-          $('#caret_gene').css('transform', function(){ return go_shown ? 'rotate(0deg)' : 'rotate(180deg)'})
+          $('#caret_GO').css('transform', function(){ return go_shown ? 'rotate(0deg)' : 'rotate(180deg)'})
           go_shown = !go_shown;
 
           $goList = $(this).next();
@@ -2032,11 +2031,49 @@
                   drawHierCluster();
                   break;
           }            
+      });
+
+      $("#editor_save").click(function() {
+
+          var svg = d3.select('.main_vis')
+                    .attr("version", 1.1)
+                    .attr("xmlns", "http://www.w3.org/2000/svg")
+                    .node().parentNode.innerHTML;
+
+
+
+          var imgsrc = 'data:image/svg+xml;base64,'+ btoa(svg);
+
+          console.log(svg)
+
+          var canvas = document.querySelector("canvas");
+          var context = canvas.getContext("2d");
+
+          var image = new Image();
+          image.src = imgsrc;
+
+          image.onload = function() {
+            context.drawImage(image, 0, 0);
+
+            var canvasdata = canvas.toDataURL("image/png");
+
+            var a = document.createElement("a");
+            a.download = "sample.png";
+            a.href = canvasdata;
+            a.click();
+          };
+
+
+
+
         });
     }
 
     function setUpView(){
-      svg = d3.select("#chart")
+
+      main_div = d3.select("#chart").append("div");
+
+      svg = main_div
        .append("svg:svg")
          .attr("class","main_vis")
          .attr("width", w)
@@ -2047,7 +2084,7 @@
          .attr("id", "circle")
          .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")")
 
-      circleSvg.append("circle").attr("r",r0);
+      circleSvg.append("circle").attr("r",r0).style("opacity", "0");
       
       clusterArc = circleSvg.append("svg:g")
          .selectAll("g")
