@@ -97,6 +97,7 @@
     var level_g = 0;
     var clusterNodesIndex = [];
     var details_opened = true;
+    var control_opened = true;
 
     var clusterArc;
     var clusterLine1;
@@ -1647,14 +1648,7 @@
           $content = $header.next();
 
           //open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
-          $content.slideToggle(500, function () {
-              //execute this after slideToggle is done
-              //change text of header based on visibility of content div
-      /*        $header.text(function () {
-                  //change text based on condition
-                  return $content.is(":visible") ? "Collapse" : "Expand";
-              });*/
-          });
+          $content.slideToggle(500);
         });
 
     }
@@ -1918,13 +1912,20 @@
     }
 
     function toggleDetails(){
-      $('#arrow').css('transform', function(){ return details_opened ? 'rotate(0deg)' : 'rotate(180deg)'})
+      $('#arrow_detailedPanel').css('transform', function(){ return details_opened ? 'rotate(0deg)' : 'rotate(180deg)'});
       
       $('#details').css('margin-right', function(){ return details_opened ? '-475px' : '0'});
       details_opened = !details_opened;
 
       redrawMain_vis(details_opened);
       movePvalPanel(details_opened);
+    }
+
+    function toggleControl(){
+      $('#arrow_controlPanel').css('transform', function(){ return control_opened ? 'rotate(180deg)' : 'rotate(0deg)'});
+      
+      $('#control-panel').css('margin-left', function(){ return control_opened ? '-540px' : '0'});
+      control_opened = !control_opened;
     }
 
     function redrawMain_vis(details_opened){
@@ -1940,9 +1941,9 @@
 
     function movePvalPanel(details_opened){
       if(!details_opened){
-        d3.select(".pval-label").transition().style("margin-left",-190);
+        d3.select(".pval-label").transition().duration(300).style("margin-left",-190);
       }else{
-        d3.select(".pval-label").transition().style("margin-left",-660);
+        d3.select(".pval-label").transition().duration(300).style("margin-left",-660);
       }
     }
 
@@ -1961,11 +1962,22 @@
                    <label style="width:300px;" for="hierClusterRadioBox">Show hierarchical tree and click on the node to manually cluster the GO term</label>\
                 </td></tr></tbody></table>';
 
+      //add save image button
+      element += '<button id="editor_save" class="btn" z-index:100">Save image</button>';
+
+      //add toggle button
+      element +=  '<button id="arrow_controlPanel" class="arrowBar arrow"></button>';
+
+
+
       $("#control-panel").append(element);
       var ranger = document.getElementById('slider');
       var inputFormat = document.getElementById('input_slider');
       setUpRangeSlider(ranger,inputFormat,minNumOfOverlappingGens,maxNumOfOverlappingGens);
     }
+
+
+          
 
     function setUpRangeSlider(ranger,inputFormat,minNumOfOverlappingGens,maxNumOfOverlappingGens){
       noUiSlider.create(ranger, {
@@ -2018,8 +2030,12 @@
         $('#searchBox').remove();
       });
 
-      $('#arrow').click(function(){
+      $('#arrow_detailedPanel').click(function(){
         toggleDetails();
+      });
+
+      $('#arrow_controlPanel').click(function(){
+        toggleControl();
       });
 
       $('.radioButton').change(function(){
@@ -2040,11 +2056,7 @@
                     .attr("xmlns", "http://www.w3.org/2000/svg")
                     .node().parentNode.innerHTML;
 
-
-
           var imgsrc = 'data:image/svg+xml;base64,'+ btoa(svg);
-
-          console.log(svg)
 
           var canvas = document.querySelector("canvas");
           var context = canvas.getContext("2d");
@@ -2053,6 +2065,9 @@
           image.src = imgsrc;
 
           image.onload = function() {
+            //clean the context for redrawing
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
             context.drawImage(image, 0, 0);
 
             var canvasdata = canvas.toDataURL("image/png");
@@ -2062,9 +2077,6 @@
             a.href = canvasdata;
             a.click();
           };
-
-
-
 
         });
     }

@@ -175,20 +175,47 @@ li{
 	font-size: 1.2em;
 }
 
-#arrow{
+.arrow{
 	background: url('../img/arrow.png');
 	background-size: 12px 10px;
 	transition: 0.3s;
 	opacity: 0.2;
-	-webkit-transform: rotate(180deg);
-	transform: rotate(180deg);
 	border: 0;
 	height: 10px;
 	cursor: pointer;
 	position: absolute;
   z-index:100;
-	top: 50%;
-	left: 5px;
+
+}
+
+.arrowBar{
+  height:inherit;
+  background-color: #15B59C;
+  position: absolute;
+  right:0px;
+  top:0px;
+}
+
+#arrow_controlPanel{
+    background-position: 0px 80px;
+    background-repeat: no-repeat;
+    opacity: 1;
+}
+
+.arrow_inArrowBar{
+
+  right:0px;
+  top:50%;
+  position:absolute;
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+#arrow_detailedPanel{
+  top: 50%;
+  left: 5px;
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
 }
 
 .caret{
@@ -339,6 +366,7 @@ path.chord {
   z-index:3;
   background: white;
   background: rgba(255,255,255,0.8);
+  transition: 0.3s ease-in-out;
 }
 
 #input_slider{
@@ -449,4 +477,10 @@ a {
 
 .go_dropmenu{
   cursor:pointer;
+}
+
+#editor_save {
+  float:right;
+  right: 20px;
+  position: relative;
 }
