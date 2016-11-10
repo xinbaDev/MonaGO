@@ -11,7 +11,9 @@
 	float: right;
 }
 
-
+#LISTBox{
+	width:500px;
+}
 
 .header-img{
 	width:800px;
@@ -64,6 +66,14 @@
     100% { transform: rotate(360deg); }
 }
 
+.example_gene{
+    position: relative;
+    width: 300px;
+    left: 10px;
+    float: right;
+    margin-top: -125px;
+    cursor:pointer;
+}
 /* .bg-img{
 	width: auto;
 	height: ;
