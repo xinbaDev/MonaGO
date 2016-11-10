@@ -1561,6 +1561,12 @@
             refreshDetailPanel();
         });
 
+        $('.go_id').click(function(){
+            $('#filter').val($(this).html());
+            refreshDetailPanel();
+        });
+        
+
         $('.go_dropmenu').click(function(d){
               
           $('#caret_GO').css('transform', function(){ return go_shown ? 'rotate(0deg)' : 'rotate(180deg)'})
@@ -1614,19 +1620,33 @@
 
     }
 
+
+    function createChordTempl(index,d){
+        
+        var geneListInHtml = "<div class='gene_content'>";
+        dic[index].split("|").forEach(function(d,i){
+             var tmp = "<li>" + (i+1) +"."+"<n class='gene_name'>"+ d + "</n> "+ "</li>";
+             geneListInHtml+=tmp;
+        });
+        geneListInHtml += "</div>";
+
+        templ="<p>Overlapping genes between <n class='go_id'>" + that.go_inf[d.source.index].GO_id + 
+        "</n> and <n class='go_id'>" +  that.go_inf[d.source.subindex].GO_id+"</n>:\n</p>"+geneListInHtml;
+
+        return templ;
+    }
+
     function mouseover_chord(d, i) {
         $('#content').empty();
+
         var index = d.source.index+"-"+d.source.subindex;
 
-        var str = "";
+        var chordTempl = createChordTempl(index,d);
 
-        dic[index].split("|").forEach(function(d,i){
-           var tmp = "<p>" + (i+1) +"."+ d + "</p>";
-           str+=tmp;
-        });
-
-        $('#content').append("<p>Overlapping genes between " + that.go_inf[d.source.index].GO_id +" and " +  that.go_inf[d.source.subindex].GO_id+":\n</p>"+str);
+        $('#content').append(chordTempl);
+        setUpDetailPanelListener();
     }
+
 
     function createOnClick(num_array){
       while(num_array.length!=0){

@@ -460,13 +460,13 @@ a {
     padding-left: 40px;
 }
 
-.gene_content li n {
+n {
     color: #15B59C;
     transition: all 0.2s;
 }
 
 
-.gene_content li n:hover {
+n:hover {
     color: #15B59C;
     cursor:pointer;
 }
