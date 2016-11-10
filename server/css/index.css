@@ -19,6 +19,51 @@
 	background-size: contain;
 }
 
+
+.background{
+	top: 0;
+    height: 100%;
+    width: 100%;
+    position:absolute;
+    z-index: 100;
+	opacity: 0.4;
+	background-color:black;
+}
+
+.loadingBar{
+	position: absolute;
+	width: 380px;
+    height: 120px;
+    left: 50%;
+    top: 50%;
+    margin-left: -183px;
+    margin-top: -80px;
+    opacity: 0.8;
+    border-radius: 10px;
+    background: url('../img/loadingBar2.png');
+	z-index:100;
+}
+
+.loading_icon{
+	position: absolute;
+    width: 100px;
+    height: 100px;
+    left: 50%;
+    top: 50%;
+	margin-left: 90px;
+    margin-top: -50px;
+    z-index: 999;
+    border: 14px solid #f3f3f3; /* Light grey */
+    border-top: 14px solid #f58929; /* orange */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 /* .bg-img{
 	width: auto;
 	height: ;

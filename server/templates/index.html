@@ -118,7 +118,7 @@
 					<br>
 					
 
-					<div class="btn btn-success btn-rounded btn-lg submit-btn" onclick="uploadList()" 
+					<div class="btn btn-success btn-rounded btn-lg submit-btn" onclick="submitClicked()" 
 			            >Submit</div>
 
 					
@@ -133,6 +133,18 @@
 		document.frmManager.inputIds.value="";
 	}
 
+	function submitClicked(){
+		var res = uploadList();
+		res = true;
+		if(res) showLoadingIcon();
+	}
+
+	function showLoadingIcon(){
+		if($("body .background").length==0){
+			var $backGround = $("body").append('<div class="background"/>');
+			$backGround.append('<div class="loadingBar"><div class="loading_icon"/></div>');
+		}
+	}
 
 	function uploadList(){
 
@@ -182,7 +194,7 @@
 
 		if(FM.inputIds.value == ""){
 			alert("Error: Please paste a list in step 1.");
-			return;
+			return false;
 		}
 
 		
@@ -190,7 +202,7 @@
 		if(FM.annotCat.value == ""){
 			alert("Error: Please select annotation type in step 4.");
 
-			return;
+			return false;
 		}
 
 		
@@ -204,6 +216,7 @@
 		FM.submit();
 
 		$(".submit-btn").attr('disabled','disabled'); 
+		return true;
 
 	}
 
@@ -222,3 +235,4 @@
 		return idString;
 	}
 </script>
+
