@@ -48,6 +48,7 @@ class Test(unittest.TestCase):
         with self.assertRaises(Exception):
             yield self.davidScrawler.run()
 
+    
 
 if __name__ == '__main__':
     unittest.main()
