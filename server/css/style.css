@@ -484,3 +484,8 @@ n:hover {
   right: 20px;
   position: relative;
 }
+
+.go_detail_content{
+  padding-left: 50px;
+  display: none;
+}

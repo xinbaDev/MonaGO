@@ -49,6 +49,7 @@
     this.gene_info = {};//gene name for each GO term e.g. gene_info[i] = [...]
     this.dic = {};// gene intersection information
     this.go_inf = [];
+
     var that = this;
 
     var maxpVal;
@@ -322,7 +323,7 @@
     }
 
     //drawing the graph
-    function drawGraph(struct) {
+    function drawGraph(struct,svg) {
       force
         .nodes(struct.nodes)
         .links(struct.links);
@@ -330,14 +331,14 @@
       var strokeColor = d3.scale.category10();
       var radiusScale = d3.scale.linear().domain([0,d3.max(struct.nodes,function(d) {return d.r;})]).range([5,10]);
 
-      var link = go_chart.selectAll("line.link")
+      var link = svg.selectAll("line.link")
         .data(struct.links)
         .enter().append("line")
         .attr("class", "link")
         .style('stroke', function(d, i ) { return strokeColor(d.type);})
         .style("stroke-width", 2);
      
-      var node = go_chart.selectAll("circle.node")
+      var node = svg.selectAll("circle.node")
         .data(struct.nodes)
         .enter().append("circle")
         .attr("class", "node")
@@ -357,7 +358,7 @@
         });
 
        
-      var nodeText = go_chart.selectAll("text.node")
+      var nodeText = svg.selectAll("text.node")
           .data(struct.nodes)
           .enter().append("text")
           .attr("class", "node")
@@ -425,7 +426,7 @@
     }
 
     //recreate data structures and redraw graph with new nodes
-    function update(goid) {
+    function update(goid,svg) {
 
       force = {};
       
@@ -440,11 +441,11 @@
 
       data = createD3Structure(struct,goid);
 
-      go_chart.selectAll("line.link").remove();
-      go_chart.selectAll("circle.node").remove();
-      go_chart.selectAll("text.node").remove();
+      svg.selectAll("line.link").remove();
+      svg.selectAll("circle.node").remove();
+      svg.selectAll("text.node").remove();
 
-      drawGraph(data);
+      drawGraph(data,svg);
     }
 
     function getMaxPval(){
@@ -1469,9 +1470,12 @@
       return node;
     }
 
-    function createGoHier(goid){
+    function createGoHierifNecessary(goid){
+
+      if(typeof goid == "string"){
+          $('#content').append("<div id=\"go_chart\"></div>");
       
-      go_chart = d3.select("#go_chart").append("svg")
+      var go_chart = d3.select("#go_chart").append("svg")
         .attr("width", width)
         .attr("height", height);
       go_chart.append('rect')
@@ -1482,20 +1486,80 @@
         .attr('x',0)
         .attr('y',0);
 
-      update(goid);
+      update(goid,go_chart);
+
+      }
+
+      
     }
 
-    function createGeneListHtml(index){
+    function replaceCommaWithUnderline(term){
+        return term.replace(":","_");
+    }
+
+    function createGoHierByGOId(goid){
+
+      var goid_target = replaceCommaWithUnderline(goid);
+
+      var go_chart = d3.select('#'+goid_target).append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+      go_chart.append('rect')
+        .style('fill','white')
+        .style('stroke','gray')
+        .attr('width',width)
+        .attr('height',height)
+        .attr('x',0)
+        .attr('y',0);
+
+      update(goid,go_chart);
+    }
+
+    function createGeneListHtml(go){
       var geneListInHtml = "";
 
       geneListInHtml += "<div class='gene_content'>";
-      that.go_inf[index].genes.forEach(function(d,i){
-           var tmp = "<li>" + (i+1) +"."+"<n class='gene_name'>"+ d + "</n> "+ "</li>";
+      go.genes.forEach(function(d,i){
+           var tmp = "<p>" + (i+1) +"."+"<n class='gene_name'>"+ d + "</n> "+ "</p>";
            geneListInHtml+=tmp;
       });
       geneListInHtml += "</div>";
 
       return geneListInHtml;
+    }
+
+    function getGODetailByName(goName){
+        var goDetailArr={};
+
+        that.go_inf_ori.forEach(function(d,i){
+          if(d.GO_name == goName){
+            goDetailArr = d;
+          }
+        });
+
+        return goDetailArr;
+    }
+
+    function createGOdetailTempl(goName){
+      var goDetail = "";
+
+      var goDetailArr = getGODetailByName(goName);
+
+      goDetail += "<div class='go_detail_content'>";
+      goDetail += "<p> <a class='prop-field'> GO_id: </a>" + goDetailArr.GO_id + "</p>";
+      goDetail += " <p> <a class='prop-field'>Num of genes: </a>"+ goDetailArr.count + "</p>" +
+                       "<p> <a class='prop-field'>P-value: </a>" + goDetailArr.pVal + "</p>";
+
+      var geneListInHtml = createGeneListHtml(goDetailArr);
+      var genesListTempl = "<a class='prop-field gene_dropmenu'>Genes:</a><b id='caret_gene' class='caret rotate180'></b>"+geneListInHtml+"</p>";
+
+      goDetail += genesListTempl;
+      goDetail += "<div id='"+ replaceCommaWithUnderline(goDetailArr.GO_id) +"'>" +"</div>";
+
+      goDetail += "</div>";
+
+      return goDetail;
     }
 
     function getNumOfGOTerms(goid){
@@ -1509,10 +1573,16 @@
 
     function createGOList(go_names){
       var goList = "<div class='go_List'>";
+
       go_names.forEach(function(d,i){
-           var tmp = "<li>" + (i+1) +"."+"<n class='Go_name'>"+ d + "</n> "+ "</li>";
-           goList+=tmp;
+           var goDetail = createGOdetailTempl(d);
+
+           var tmp = "<li>" + (i+1) +"."+"<n class='Go_name go_detail_dropmenu'>"+ d + 
+           "</n> <b id='caret_GO_details' class='caret'></b>"+ goDetail + "</li>";
+           goList += tmp;
       });
+
+
       goList += "</div>";
       return goList;
     }
@@ -1530,11 +1600,11 @@
                           createGOList(that.go_inf[i].GO_name) + "<p>";
         }
 
-         goInfTempl += " <p> <a class='prop-field'>Num of genes: </a>"+ that.go_inf[i].count + "</p>" +
+        goInfTempl += " <p> <a class='prop-field'>Num of genes: </a>"+ that.go_inf[i].count + "</p>" +
                        "<p> <a class='prop-field'>P-value: </a>" + that.go_inf[i].pVal + "</p>";
 
-        var geneListInHtml = createGeneListHtml(i);
-        var genesListTempl = "<a class='prop-field gene_dropmenu'>Genes:<b id='caret_gene' class='caret rotate180'></b></a>"+geneListInHtml+"</p>";
+        var geneListInHtml = createGeneListHtml(that.go_inf[i]);
+        var genesListTempl = "<a class='prop-field gene_dropmenu'>Genes:</a><b id='caret_gene' class='caret rotate180'></b>"+geneListInHtml+"</p>";
 
 
         var chartTempl = (numOfGOTerms == 1)?"<p><a class='prop-field'>GO Hierarchy:</a></p> <div id='go_chart'></div> ":"";
@@ -1544,15 +1614,40 @@
         return detailPanelTempl;
     }
 
+    function getCaretStatus(element){
+
+      if(d3.select(element).node().attr("status")==undefined){
+        return false;
+      };
+
+      if(d3.select(element).node().attr("status")=="true"){
+        return true;
+      }
+
+      return false;
+    }
+
+    function setCaretStatus(element,status){
+      if (status == true){
+        d3.select(element).node().attr("status","false");
+      }else{
+         d3.select(element).node().attr("status","true");
+      }
+    }
+
     function setUpDetailPanelListener(){
         var genes_shown = true;
         var go_shown = true;
-        $('.gene_dropmenu').click(function(d){
-              
-          $('#caret_gene').css('transform', function(){ return genes_shown ? 'rotate(0deg)' : 'rotate(180deg)'})
-          genes_shown = !genes_shown;
+        var go_detail_shown = true;
 
-          $geneList = $(this).next();
+        $('.gene_dropmenu').click(function(d){
+          
+          var status = getCaretStatus($(this));
+
+          $(this).next().css('transform', function(){ return !status ? 'rotate(0deg)' : 'rotate(180deg)'});
+          setCaretStatus($(this),status);
+
+          $geneList = $(this).next().next();
           $geneList.slideToggle(500);
         });
 
@@ -1569,12 +1664,23 @@
 
         $('.go_dropmenu').click(function(d){
               
-          $('#caret_GO').css('transform', function(){ return go_shown ? 'rotate(0deg)' : 'rotate(180deg)'})
+          $('#caret_GO').css('transform', function(){ return go_shown ? 'rotate(0deg)' : 'rotate(180deg)'});
           go_shown = !go_shown;
 
           $goList = $(this).next();
           $goList.slideToggle(500);
         });
+
+        $('.go_detail_dropmenu').click(function(d){
+
+          var status = getCaretStatus($(this));
+          $(this).next().css('transform', function(){ return status ? 'rotate(0deg)' : 'rotate(180deg)'});
+          setCaretStatus($(this),status);
+
+          $goList = $(this).next().next();
+          $goList.slideToggle(500);
+        });
+        
     }
 
     function mouseover_group(d, i) {
@@ -1589,10 +1695,8 @@
 
         setUpDetailPanelListener();
 
-        if(typeof that.go_inf[d.index].GO_id == "string"){
-          $('#content').append("<div id=\"go_chart\"></div>");
-          createGoHier(that.go_inf[d.index].GO_id);
-        }
+        createGoHierifNecessary(that.go_inf[i].GO_id);
+
 
         changePvalPanel(d.index);
     }
@@ -1625,13 +1729,13 @@
         
         var geneListInHtml = "<div class='gene_content'>";
         dic[index].split("|").forEach(function(d,i){
-             var tmp = "<li>" + (i+1) +"."+"<n class='gene_name'>"+ d + "</n> "+ "</li>";
+             var tmp = "<li>" + "<a class='gene_name'>"+ (i+1) +"."+ d + "</a> "+ "</li>";
              geneListInHtml+=tmp;
         });
         geneListInHtml += "</div>";
 
-        templ="<p>Overlapping genes between <n class='go_id'>" + that.go_inf[d.source.index].GO_id + 
-        "</n> and <n class='go_id'>" +  that.go_inf[d.source.subindex].GO_id+"</n>:\n</p>"+geneListInHtml;
+        templ="<p>Overlapping genes between <a class='go_id'>" + that.go_inf[d.source.index].GO_id + 
+        "</a> and <a class='go_id'>" +  that.go_inf[d.source.subindex].GO_id+"</a>:\n</p>"+geneListInHtml;
 
         return templ;
     }
@@ -2183,9 +2287,19 @@
       setUpControlPanel();
     }
 
+    function copyGOInfFrom(go_inf){
+      var go_inf_ori = [];
+      go_inf.forEach(function(d,i){
+        go_inf_ori.push(d);
+      });
+      return go_inf_ori;
+
+    }
+
     this.init = function(size,go_inf,clusterHierData){
 
       that.go_inf = go_inf;
+      that.go_inf_ori = copyGOInfFrom(go_inf);
 
       clusterHierData.map(function(d){
         clusterHierDataStatic.push([d[2],d[3]]);
