@@ -70,7 +70,13 @@
 
     var chordMatrix;
     var chord;
-    var detailPanelWidth = $(window).width()*0.25
+    var detailPanelWidth = $(window).width()*0.25;
+
+    var controlPanelWidth = $(window).width()*0.25;
+    if(controlPanelWidth<512) controlPanelWidth = 512;
+
+    var controlPanelHeight = 170;
+
     var w = $(window).width()-detailPanelWidth,
          h = $(window).height(),
          r0 = Math.min(w, h) * .20,
@@ -2049,7 +2055,8 @@
     function toggleControl(){
       $('#arrow_controlPanel').css('transform', function(){ return control_opened ? 'rotate(180deg)' : 'rotate(0deg)'});
       
-      $('#control-panel').css('margin-left', function(){ return control_opened ? '-540px' : '0'});
+      var shiftleft = controlPanelWidth - 20;
+      $('#control-panel').css('margin-left', function(){ return control_opened ? '-' + shiftleft+ 'px' : '0'});
       control_opened = !control_opened;
     }
 
@@ -2212,6 +2219,8 @@
 
       $("#details").css("width",detailPanelWidth);
       $("#pval-label").css("margin-left",-detailPanelWidth-150);
+      $("#control-panel").css("width",controlPanelWidth);
+      $("#control-panel").css("height",controlPanelHeight);
 
       svg = main_div
        .append("svg:svg")
