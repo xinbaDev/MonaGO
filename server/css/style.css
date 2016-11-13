@@ -361,7 +361,7 @@ path.chord {
   top: 0;
   left: 0;
   width: 558px;
-  height: 170px;
+  height: 160px;
   box-shadow: 0 0 15px rgba(0,0,0,0.2);
   z-index:3;
   background: white;
@@ -432,7 +432,7 @@ a {
   height:20px;
   width:200px;
   left:20px;
-  top:50px;
+  top: 30px;
   position:relative;
   margin-top: auto;
 }

@@ -70,9 +70,10 @@
 
     var chordMatrix;
     var chord;
-    var w = $(window).width()-475,
+    var detailPanelWidth = $(window).width()*0.25
+    var w = $(window).width()-detailPanelWidth,
          h = $(window).height(),
-         r0 = Math.min(w, h) * .25,
+         r0 = Math.min(w, h) * .20,
          r1 = r0 * 1.1;
 
 
@@ -82,7 +83,7 @@
     var circleSvg;
     var goLabelSize = {};
 
-    var width = 400;
+    var width = detailPanelWidth-70;
     var height = 600;
     var force = d3.layout.force()
       .charge(-3000)
@@ -142,7 +143,6 @@
               var genes_j = that.go_inf[j]["genes"];
               var intersectionGenes = genes_i.intersection(genes_j);
               
-
               dic[i+"-"+j] = intersectionGenes.getGeneString("|");
             }
           }
@@ -1898,7 +1898,7 @@
 
           setUpDetailPanelListener();
 
-          createGoHier(that.go_inf[i].GO_id);
+          createGoHierifNecessary(that.go_inf[i].GO_id);
 
           chordLayout.classed("fade", function(p) {
                   return p.source.index != i
@@ -2037,8 +2037,9 @@
 
     function toggleDetails(){
       $('#arrow_detailedPanel').css('transform', function(){ return details_opened ? 'rotate(0deg)' : 'rotate(180deg)'});
-      
-      $('#details').css('margin-right', function(){ return details_opened ? '-475px' : '0'});
+      var shiftRight = detailPanelWidth - 50;
+
+      $('#details').css('margin-right', function(){ return details_opened ? '-'+ shiftRight +'px' : '0'});
       details_opened = !details_opened;
 
       redrawMain_vis(details_opened);
@@ -2055,8 +2056,8 @@
     function redrawMain_vis(details_opened){
 
       if(!details_opened){
-        d3.select(".main_vis").attr("width",w+475);
-        circleSvg.transition().attr("transform", "translate(" + (w+475) / 2 + "," + h / 2 + ") scale(" + zoom.scale() + ")");
+        d3.select(".main_vis").attr("width",w+detailPanelWidth);
+        circleSvg.transition().attr("transform", "translate(" + (w+detailPanelWidth) / 2 + "," + h / 2 + ") scale(" + zoom.scale() + ")");
       }else{
         d3.select(".main_vis").attr("width",w);
         circleSvg.transition().attr("transform", "translate(" + w / 2 + "," + h / 2 + ") scale(" + zoom.scale() + ")");
@@ -2208,6 +2209,9 @@
     function setUpView(){
 
       main_div = d3.select("#chart").append("div");
+
+      $("#details").css("width",detailPanelWidth);
+      $("#pval-label").css("margin-left",-detailPanelWidth-150);
 
       svg = main_div
        .append("svg:svg")
