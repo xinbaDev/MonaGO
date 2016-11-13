@@ -1942,6 +1942,8 @@
             sortGOcontent(go_contents);
 
             $('#content').append(renderGOTerm(go_contents));
+            $('.dropbtn').css("width",detailPanelWidth-50);
+
             $('.gene_name').click(function(){
                 $('#filter').val($(this).html());
                 refreshDetailPanel();
@@ -2221,6 +2223,7 @@
       $("#pval-label").css("margin-left",-detailPanelWidth-150);
       $("#control-panel").css("width",controlPanelWidth);
       $("#control-panel").css("height",controlPanelHeight);
+
 
       svg = main_div
        .append("svg:svg")
