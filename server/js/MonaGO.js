@@ -82,7 +82,7 @@
          r0 = Math.min(w, h) * .20,
          r1 = r0 * 1.1;
 
-
+    var goNameArr = [];
 
     var svg ;
     var go_chart;
@@ -432,7 +432,7 @@
     }
 
     //recreate data structures and redraw graph with new nodes
-    function update(goid,svg) {
+    function update(goid,svg,width,height) {
 
       force = {};
       
@@ -1492,7 +1492,7 @@
         .attr('x',0)
         .attr('y',0);
 
-      update(goid,go_chart);
+      update(goid,go_chart,width,height);
 
       }
 
@@ -1519,7 +1519,7 @@
         .attr('x',0)
         .attr('y',0);
 
-      update(goid,go_chart);
+      update(goid,go_chart,width,height);
     }
 
     function createGeneListHtml(go){
@@ -1579,9 +1579,12 @@
 
     function createGOList(go_names){
       var goList = "<div class='go_List'>";
+      goNameArr = [];
 
       go_names.forEach(function(d,i){
            var goDetail = createGOdetailTempl(d);
+
+           goNameArr.push(d);
 
            var tmp = "<li>" + (i+1) +"."+"<n class='Go_name go_detail_dropmenu'>"+ d + 
            "</n> <b id='caret_GO_details' class='caret'></b>"+ goDetail + "</li>";
@@ -1689,6 +1692,32 @@
         
     }
 
+    function createGOHierForClusterGO(){
+      goNameArr.forEach(function(d,i){
+
+        goDetail = getGODetailByName(d)
+        var goNameID = replaceCommaWithUnderline(goDetail.GO_id);
+
+        var hierHeight = height-20;
+        var hierWidth = width-50;
+
+        var go_chart = d3.select("#"+goNameID).append("svg")
+        .attr("width", hierWidth)
+        .attr("height", hierHeight);
+
+        go_chart.append('rect')
+          .style('fill','white')
+          .style('stroke','gray')
+          .attr('width',hierWidth)
+          .attr('height',hierHeight)
+          .attr('x',0)
+          .attr('y',0);
+
+        update(goDetail.GO_id,go_chart,hierWidth,hierHeight);
+
+      })
+    }
+
     function mouseover_group(d, i) {
         $('#content').empty();
         chordLayout.classed("fade", function(p) {
@@ -1702,7 +1731,7 @@
         setUpDetailPanelListener();
 
         createGoHierifNecessary(that.go_inf[i].GO_id);
-
+        createGOHierForClusterGO();
 
         changePvalPanel(d.index);
     }
@@ -2110,9 +2139,6 @@
       setUpRangeSlider(ranger,inputFormat,minNumOfOverlappingGens,maxNumOfOverlappingGens);
     }
 
-
-          
-
     function setUpRangeSlider(ranger,inputFormat,minNumOfOverlappingGens,maxNumOfOverlappingGens){
       noUiSlider.create(ranger, {
         start: [ maxNumOfOverlappingGens+1 ], // Handle start position
@@ -2348,8 +2374,6 @@
       for(i=0;i<11;i++){
         seperated_points.push(minpVal+step*i);
       }
-
-
 
       that.gene_info = createGeneInfo();
       that.dic = createInteractionGenes();

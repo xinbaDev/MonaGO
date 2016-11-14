@@ -457,7 +457,7 @@ a {
 }
 
 .gene_content li{
-    padding-left: 40px;
+    padding-left: 20px;
 }
 
 n {
@@ -486,6 +486,6 @@ n:hover {
 }
 
 .go_detail_content{
-  padding-left: 50px;
+  padding-left: 20px;
   display: none;
 }
