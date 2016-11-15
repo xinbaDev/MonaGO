@@ -75,7 +75,7 @@
     var controlPanelWidth = $(window).width()*0.25;
     if(controlPanelWidth<512) controlPanelWidth = 512;
 
-    var controlPanelHeight = 170;
+    var controlPanelHeight = 150;
 
     var w = $(window).width()-detailPanelWidth,
          h = $(window).height(),
@@ -2121,7 +2121,7 @@
 
     function setUpControlPanel(){
 
-      var element = '<label style="font-size:16px">Cluster GO term according to the minimum number of common gene(s)</label> \
+      var element = '<label>Cluster GO term according to the minimum number of common gene(s)</label> \
           <div id="slider" class="sliderBar"></div>\
           <input type="text" id="input_slider"/>\
             <table class="RadioBox">\
