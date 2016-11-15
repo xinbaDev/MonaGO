@@ -120,21 +120,22 @@
     var textBackground;
 
 
+    //associate genes with go,cluster(using index in go_inf)
     function createGeneInfo(){
-      gene_info = {};
+      that.gene_info = {};
       that.go_inf.forEach(function(d,i){
         var index = i;
         d["genes"].forEach(function(d,i){
-          if(gene_info[d]!=undefined){
+          if(that.gene_info[d]!=undefined){
               var str =   ";"  +  index.toString();
-              gene_info[d] = gene_info[d] + str;
+              that.gene_info[d] = that.gene_info[d] + str;
           }
-          else
-             gene_info[d] = index.toString();
+          else{
+            that.gene_info[d] = index.toString();
+          }
         });
       });
 
-      return gene_info;
     }
 
     function createInteractionGenes(){
@@ -1297,7 +1298,7 @@
 
         createInteractionGenes();
 
-        //createGeneInfo();
+        createGeneInfo();
 
         matrix = updateMatrix();
 
@@ -1828,11 +1829,15 @@
 
     function renderGOTerm(go_num_array){
       var GOterms="";
+      var num = 0;
+      var GO = "";
       for(i=0;i<go_num_array.length;i++){
-        num = go_num_array[i];
-        Go = that.go_inf[num].GO_id + " " + that.go_inf[num].GO_name;
+        var num = go_num_array[i];
+        console.log(go_num_array);
+        console.log(num);
+        GO = that.go_inf[num].GO_id + " " + that.go_inf[num].GO_name;
 
-        var line = "<button class=\"dropbtn\""+ "id=GO_button_"+ num +">" + Go + "</button>";
+        var line = "<button class=\"dropbtn\""+ "id=GO_button_"+ num +">" + GO + "</button>";
         line += "<div class=\"Go_content\">" + "<p><a class='prop-field'> P-value:</a> " + that.go_inf[num].pVal + 
         " <p><a class='prop-field'> Num of genes: </a>"+ that.go_inf[num].count +
         "<p><a class='prop-field'>Genes: </a>" +  getGenesFromACluster(num) + "</div>";
@@ -1968,7 +1973,11 @@
               go_contents.push(num);
             }
 
-            sortGOcontent(go_contents);
+            if(go_contents.length > 1){//only sort if two go and more exist
+              sortGOcontent(go_contents);
+            }
+            
+            console.log(go_contents);
 
             $('#content').append(renderGOTerm(go_contents));
             $('.dropbtn').css("width",detailPanelWidth-50);
@@ -2375,7 +2384,7 @@
         seperated_points.push(minpVal+step*i);
       }
 
-      that.gene_info = createGeneInfo();
+      createGeneInfo();
       that.dic = createInteractionGenes();
 
       createPvalLabelPanel(fill);
