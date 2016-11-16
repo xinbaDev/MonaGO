@@ -5,7 +5,7 @@
 <body>
 <div id="details" ng-controller="searchCtrl">
     <div class="input-group" >
-      <input type="text" id="filter" class="form-control" ng-model="searchText" ng-init="searchText=''" placeholder="Enter the gene name or GO term">
+      <input type="text" id="filter" class="form-control" ng-model="searchText" ng-init="searchText=''" placeholder="Enter the gene name or GO term" clear-btn>
       <span class="input-group-btn">
         <button class="btn btn-primary" id="filter_button" type="button"><span class="glyphicon glyphicon-search"></span></button>
       </span>
@@ -55,6 +55,7 @@
 <link rel="stylesheet" href="css/nouislider.min.css">
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/font-awesome-4.6.3/css/font-awesome.min.css">
 
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
@@ -63,3 +64,42 @@
 <script src="js/Queue.js"></script>
 <script src="js/nouislider.min.js"></script>
 <script src="js/MonaGO.js"></script>
+<script>
+
+var app = angular.module('MonaGO');
+
+app.directive('clearBtn', ['$parse', function ($parse) {
+    return {
+        link: function (scope, elm, attr, ngModelCtrl) {
+
+            elm.wrap("<div style='position: relative'></div>");
+            var btn = '<i class="searchclear ng-hide fa fa-close"></i>';
+            var angularBtn = angular.element(btn);
+
+            angularBtn.css('top', 10);
+            elm.after(angularBtn);
+
+            //clear the input
+            angularBtn.on("click", function () {
+                scope.searchText = "";
+                scope.focusOnText();
+                angularBtn.addClass("ng-hide");
+                scope.$apply();
+            });
+
+            // show  clear btn  on focus
+            elm.bind('focus keyup change paste propertychange', function (blurEvent) {
+                if (elm.val() && elm.val().length > 0) {
+                    angularBtn.removeClass("ng-hide");
+
+                } else {
+                    angularBtn.addClass("ng-hide");
+                }
+            });
+
+
+
+        }
+    };
+}]);
+</script>

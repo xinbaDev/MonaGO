@@ -68,6 +68,14 @@ def index():
 def getCss(fileName):
     return send_from_directory(root_dir+'css', fileName)
 
+@app.route('/css/font-awesome-4.6.3/css/<fileName>')
+def getFontAwesome(fileName):
+    return send_from_directory(root_dir+'css/font-awesome-4.6.3/css/', fileName)
+
+@app.route('/css/font-awesome-4.6.3/fonts/<fileName>')
+def getFont(fileName):
+    return send_from_directory(root_dir+'css/font-awesome-4.6.3/fonts/', fileName)
+
 @app.route('/img/<fileName>')
 def getImg(fileName):
     return send_from_directory(root_dir+'img',fileName)
