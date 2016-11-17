@@ -76,13 +76,13 @@ app.directive('clearBtn', ['$parse', function ($parse) {
             var btn = '<i class="searchclear ng-hide fa fa-close"></i>';
             var angularBtn = angular.element(btn);
 
-            angularBtn.css('top', 10);
+            angularBtn.css('top', 15);
             elm.after(angularBtn);
 
             //clear the input
             angularBtn.on("click", function () {
                 scope.searchText = "";
-                scope.focusOnText();
+                $('#filter').focus();
                 angularBtn.addClass("ng-hide");
                 scope.$apply();
             });
