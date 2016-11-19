@@ -81,3 +81,14 @@
 	background-size: contain;
 	
 } */
+
+.sliderBar {
+
+    width: 500px;
+}
+
+#input_slider{
+    width: 50;
+    padding-left: 10px;
+    margin-left: 10px;
+}
