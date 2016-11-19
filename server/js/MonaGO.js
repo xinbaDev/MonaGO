@@ -118,6 +118,43 @@
     var chordElements;
     var chordLayout;
     var textBackground;
+    var app = angular.module('MonaGO');
+
+    app.directive('clearBtn', ['$parse', function ($parse) {
+        return {
+            link: function (scope, elm, attr, ngModelCtrl) {
+
+                elm.wrap("<div style='position: relative'></div>");
+                var btn = '<i class="searchclear ng-hide fa fa-close"></i>';
+                var angularBtn = angular.element(btn);
+
+                angularBtn.css('top', 15);
+                elm.after(angularBtn);
+
+                //clear the input
+                angularBtn.on("click", function () {
+                    scope.searchText = "";
+                    $('#filter').val("");
+                    $('#filter').focus();
+                    refreshDetailPanel();
+                    if($('#searchBox')) $('#searchBox').remove();
+                    angularBtn.addClass("ng-hide");
+                    scope.$apply();
+                });
+
+                // show  clear btn  on focus
+                elm.bind('focus keyup change paste propertychange', function (blurEvent) {
+                    if (elm.val() && elm.val().length > 0) {
+                        angularBtn.removeClass("ng-hide");
+
+                    } else {
+                        angularBtn.addClass("ng-hide");
+                    }
+                });
+
+            }
+        };
+    }]);
 
 
     //associate genes with go,cluster(using index in go_inf)
@@ -1755,7 +1792,7 @@
     function setlevelElement(element){
 
       $('#'+preElement).css("border","0");
-      $('#'+element).css("border","solid 1px red");
+      $('#'+element).css("border","solid 3px red");
       preElement = element;
 
     }
@@ -1892,6 +1929,8 @@
     function refreshDetailPanel(){
       $('#content').empty();
 
+      
+
       function isGO(searchTerm){
         if(isNum(searchTerm)||searchTerm.split(":")[0].toUpperCase()=="GO")
           return true;
@@ -1907,6 +1946,7 @@
       }
       
       var searchTerm = $('#filter').val(); 
+      console.log(searchTerm);
 
       if(isGO(searchTerm)){//for GO
         resetVis();
@@ -1977,7 +2017,6 @@
               sortGOcontent(go_contents);
             }
             
-            console.log(go_contents);
 
             $('#content').append(renderGOTerm(go_contents));
             $('.dropbtn').css("width",detailPanelWidth-50);
@@ -2401,8 +2440,8 @@
   new MonaGO().init(size,go_inf,clusterHierData);
 
 
-})();
 
+})();
 
 
 
