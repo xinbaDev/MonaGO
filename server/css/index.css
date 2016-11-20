@@ -30,7 +30,7 @@
     height: 100%;
     width: 100%;
     position:absolute;
-    z-index: 100;
+    z-index: 1000;
 	opacity: 0.4;
 	background-color:black;
 }
@@ -46,7 +46,7 @@
     opacity: 0.8;
     border-radius: 10px;
     background: url('../img/loadingBar2.png');
-	z-index:100;
+	z-index:2000;
 }
 
 .loading_icon{
@@ -57,7 +57,7 @@
     top: 50%;
 	margin-left: 90px;
     margin-top: -50px;
-    z-index: 999;
+    z-index: 9999;
     border: 14px solid #f3f3f3; /* Light grey */
     border-top: 14px solid #f58929; /* orange */
     border-radius: 50%;
