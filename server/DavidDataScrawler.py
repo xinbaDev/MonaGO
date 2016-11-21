@@ -19,12 +19,14 @@ class DavidDataScrawler(object):
 
         #d = Deferred()#init defer
 
-        res = self._uploadGene(pcHelper,self.idType,self.inputIds)
+        res = self._uploadGene(pcHelper,self.idType,sgeelf.inputIds)
+
+        print res
 
         if self._checkSuccess(res):
 
-            url_1 = 'https://david.ncifcrf.gov/chartReport.jsp?annot={0}&currentList=0'.format(self.annotCat)
-            url_2 = 'https://david.ncifcrf.gov/list.jsp'
+            url_1 = 'https://david-d.ncifcrf.gov/chartReport.jsp?annot={0}&currentList=0'.format(self.annotCat)
+            url_2 = 'https://david-d.ncifcrf.gov/list.jsp'
 
             urls = [url_1,url_2]
 
@@ -118,7 +120,7 @@ class DavidDataScrawler(object):
                          ('sublist',''),('rowids',''),('convertedListName','null'),('convertedPopName','null'),
                          ('pasteBox',inputIds),('Identifier',idType) , ('rbUploadType','list')]
 
-        return pcHelper.sendMultipart(url="https://david.ncifcrf.gov/tools.jsp",data=data)
+        return pcHelper.sendMultipart(url="https://david-d.ncifcrf.gov/tools.jsp",data=data)
 
 
 
@@ -217,7 +219,7 @@ class DavidDataScrawler(object):
             if tag == "a":
                 m = re.search('(data/download/chart_\w+.txt)',attrs[0][1])
                 if m!=None:
-                    url = 'https://david.ncifcrf.gov/'+m.group(0)
+                    url = 'https://david-d.ncifcrf.gov/'+m.group(0)
                     res = self.pcHelper.get(url)
                     self._parseGO(res)
 
