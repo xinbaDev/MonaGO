@@ -1641,13 +1641,15 @@
 
         if(numOfGOTerms == 1){
            goInfTempl += "<p> <a class='prop-field'>GO_Name: </a>"+ that.go_inf[i].GO_name + "</p>";
+           goInfTempl += " <p> <a class='prop-field'>Num of genes: </a>"+ that.go_inf[i].count + "</p>"+
+           "<p> <a class='prop-field'>P-value: </a>" + that.go_inf[i].pVal + "</p>";
         }else{
            goInfTempl += "<a class='prop-field go_dropmenu'> GO_name: <b id='caret_GO' class='caret rotate180'></b></a>" + 
                           createGOList(that.go_inf[i].GO_name) + "<p>";
+           goInfTempl += " <p> <a class='prop-field'>Num of genes: </a>"+ that.go_inf[i].count + "</p>"+
+           "<p> <a class='prop-field'>P-value(Average): </a>" + that.go_inf[i].pVal + "</p>";
         }
-
-        goInfTempl += " <p> <a class='prop-field'>Num of genes: </a>"+ that.go_inf[i].count + "</p>" +
-                       "<p> <a class='prop-field'>P-value: </a>" + that.go_inf[i].pVal + "</p>";
+           
 
         var geneListInHtml = createGeneListHtml(that.go_inf[i]);
         var genesListTempl = "<a class='prop-field gene_dropmenu'>Genes:</a><b id='caret_gene' class='caret rotate180'></b>"+geneListInHtml+"</p>";
@@ -1869,13 +1871,13 @@
       var GO = "";
       for(i=0;i<go_num_array.length;i++){
         var num = go_num_array[i];
-        console.log(go_num_array);
-        console.log(num);
         GO = that.go_inf[num].GO_id + " " + that.go_inf[num].GO_name;
 
+        var numOfGOTerms = getNumOfGOTerms(that.go_inf[num].GO_id);
+
         var line = "<button class=\"dropbtn\""+ "id=GO_button_"+ num +">" + GO + "</button>";
-        line += "<div class=\"Go_content\">" + "<p><a class='prop-field'> P-value:</a> " + that.go_inf[num].pVal + 
-        " <p><a class='prop-field'> Num of genes: </a>"+ that.go_inf[num].count +
+        line += "<div class=\"Go_content\">" + "<p><a class='prop-field'>" + ((numOfGOTerms == 1)?" P-value:</a> ":" P-value(Average):</a>")
+         + that.go_inf[num].pVal + " <p><a class='prop-field'> Num of genes: </a>"+ that.go_inf[num].count +
         "<p><a class='prop-field'>Genes: </a>" +  getGenesFromACluster(num) + "</div>";
         GOterms += line; 
 
@@ -1945,7 +1947,6 @@
       }
       
       var searchTerm = $('#filter').val(); 
-      console.log(searchTerm);
 
       if(isGO(searchTerm)){//for GO
         resetVis();
