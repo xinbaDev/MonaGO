@@ -146,6 +146,10 @@
 
 <script>
 
+	if($("body .background").length!=0){
+		$("body .background").remove();
+	}
+
 	var ranger = document.getElementById('slider');
 	var inputFormat = document.getElementById('input_slider');
 	setUpRangeSlider(ranger,inputFormat);

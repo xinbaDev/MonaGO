@@ -25,8 +25,8 @@ class DavidDataScrawler(object):
 
         res = self._uploadGene(pcHelper,self.idType,self.inputIds)
 
-        with open('test.html',"w") as fr_html:
-            fr_html.write(res) 
+        # with open('test.html',"w") as fr_html:
+        #     fr_html.write(res) 
 
         if self._checkSuccess(res):
 
@@ -43,14 +43,14 @@ class DavidDataScrawler(object):
             #logger.debug("geneList_response:{}".format(geneList_response))
 
             go,geneIds = self._parseGO(getGO_response, pcHelper)
-            with open("go","w") as fw:
-                fw.write(str(go))
+            # with open("go","w") as fw:
+            #     fw.write(str(go))
             geneList = self._parseGenes(geneList_response)
                 
 
             go_filtered = self._filterGO(self.pVal,go)
-            with open("go_filtered","w") as fw:
-                fw.write(str(go_filtered))
+            # with open("go_filtered","w") as fw:
+            #     fw.write(str(go_filtered))
             geneIds = self._getUniqueGeneIds(geneIds)
 
             #logger.debug("geneIds:{}".format(geneIds))
