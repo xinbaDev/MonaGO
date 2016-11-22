@@ -512,3 +512,8 @@ hr {
     margin-top: 5px;
     margin-bottom: 5px; 
 }
+
+.highlight {
+    stroke: rgb(244, 54, 54)!important;
+    stroke-width: 2px;;
+}

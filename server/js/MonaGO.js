@@ -1852,6 +1852,24 @@
 
     }
 
+    function createOnHover(num_array){
+
+      $(".dropbtn").mouseover(function (d) {
+/*        console.log($(this)[0].id);
+        console.log(d.target.id);*/
+        var num = getTargetGONum(d.target.id);
+        groupLayout.classed("highlight", function(p){
+          return p.index==num;
+        })
+      });
+
+    }
+
+    function getTargetGONum(id){
+      var id_arr = id.split("_");
+      return id_arr[id_arr.length-1];
+    }
+
     function getGenesFromACluster(num){
       var genes = "<div class='gene_content'>";
 
@@ -2028,6 +2046,7 @@
             });
 
             createOnClick(num_array);
+            createOnHover(num_array);
 
             var arrayList=[];
             for(i in index_array){
