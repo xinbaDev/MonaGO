@@ -5,7 +5,11 @@ from twisted.internet import defer
 import logging
 
 logging.basicConfig(level=logging.debug)
+hdlr = logging.FileHandler('myapp.log')
+
 logger = logging.getLogger(__name__)
+logger.addHandler(hdlr) 
+
 
 
 class DavidDataScrawler(object):
@@ -19,14 +23,15 @@ class DavidDataScrawler(object):
 
         #d = Deferred()#init defer
 
-        res = self._uploadGene(pcHelper,self.idType,sgeelf.inputIds)
+        res = self._uploadGene(pcHelper,self.idType,self.inputIds)
 
-        print res
+        with open('test.html',"w") as fr_html:
+            fr_html.write(res) 
 
         if self._checkSuccess(res):
 
-            url_1 = 'https://david-d.ncifcrf.gov/chartReport.jsp?annot={0}&currentList=0'.format(self.annotCat)
-            url_2 = 'https://david-d.ncifcrf.gov/list.jsp'
+            url_1 = 'https://david.ncifcrf.gov/chartReport.jsp?annot={0}&currentList=0'.format(self.annotCat)
+            url_2 = 'https://david.ncifcrf.gov/list.jsp'
 
             urls = [url_1,url_2]
 
@@ -38,15 +43,17 @@ class DavidDataScrawler(object):
             #logger.debug("geneList_response:{}".format(geneList_response))
 
             go,geneIds = self._parseGO(getGO_response, pcHelper)
+            with open("go","w") as fw:
+                fw.write(str(go))
             geneList = self._parseGenes(geneList_response)
                 
 
             go_filtered = self._filterGO(self.pVal,go)
+            with open("go_filtered","w") as fw:
+                fw.write(str(go_filtered))
             geneIds = self._getUniqueGeneIds(geneIds)
 
             #logger.debug("geneIds:{}".format(geneIds))
-
-            print "go_filtered:" + str(go_filtered)
 
             geneIdNameMapping = self._getGenesNamesByIds(geneIds,geneList)
 
@@ -66,7 +73,6 @@ class DavidDataScrawler(object):
             except Exception as e:
                 logger.error(str(e))
 
-            print str(go_processed)
             return go_processed
 
 
@@ -120,7 +126,7 @@ class DavidDataScrawler(object):
                          ('sublist',''),('rowids',''),('convertedListName','null'),('convertedPopName','null'),
                          ('pasteBox',inputIds),('Identifier',idType) , ('rbUploadType','list')]
 
-        return pcHelper.sendMultipart(url="https://david-d.ncifcrf.gov/tools.jsp",data=data)
+        return pcHelper.sendMultipart(url="https://david.ncifcrf.gov/tools.jsp",data=data)
 
 
 
@@ -219,7 +225,7 @@ class DavidDataScrawler(object):
             if tag == "a":
                 m = re.search('(data/download/chart_\w+.txt)',attrs[0][1])
                 if m!=None:
-                    url = 'https://david-d.ncifcrf.gov/'+m.group(0)
+                    url = 'https://david.ncifcrf.gov/'+m.group(0)
                     res = self.pcHelper.get(url)
                     self._parseGO(res)
 

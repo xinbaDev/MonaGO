@@ -434,21 +434,30 @@ class DataProcess():
         self.clusterHierData = [] ##clear clusterHierData
          
         size = len(go_inf)
+        print size
+
+        print str(go_inf)
 
         if size==0:
             raise Exception("go_inf is empty")
 
         matrix = self.createMatrix(go_inf)
 
+        print str(matrix)
+
         D = np.ndarray(size * (size - 1) / 2,dtype=np.int)
         D = self.pdist(matrix,size)
         Z = np.zeros((size - 1, 3))
         Z = self.linkage(D,Z,size,0)
 
+        print str(Z)
+
         nd = [None] * (size * 2 - 1)
         nd = self.to_tree(Z)
 
         go_index_reord =  nd.pre_order()#array_order
+
+        print go_index_reord
 
         go_inf_reOrder = self.reOrder(go_index_reord,go_inf)
 
