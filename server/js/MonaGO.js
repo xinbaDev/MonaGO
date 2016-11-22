@@ -1862,6 +1862,14 @@
           return p.index==num;
         })
       });
+/*
+      $(".dropbtn").mouseleave(function(d){
+
+          var num = getTargetGONum(d.target.id);
+          groupLayout.style("stroke-width", function(p){
+            if(p.index==num) return 0;
+        })
+      });*/
 
     }
 
@@ -2174,7 +2182,7 @@
       if(!details_opened){
         d3.select(".pval-label").transition().duration(300).style("margin-left",-210);
       }else{
-        d3.select(".pval-label").transition().duration(300).style("margin-left",-detailPanelWidth-140);
+        d3.select(".pval-label").transition().duration(300).style("margin-left",-detailPanelWidth-160);
       }
     }
 
@@ -2314,7 +2322,7 @@
       main_div = d3.select("#chart").append("div");
 
       $("#details").css("width",detailPanelWidth);
-      $("#pval-label").css("margin-left",-detailPanelWidth-140);
+      $("#pval-label").css("margin-left",-detailPanelWidth-160);
       $("#control-panel").css("width",controlPanelWidth);
       $("#control-panel").css("height",controlPanelHeight);
 

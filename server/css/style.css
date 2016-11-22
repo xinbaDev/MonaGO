@@ -517,3 +517,10 @@ hr {
     stroke: rgb(244, 54, 54)!important;
     stroke-width: 2px;;
 }
+
+
+.backToIndexImg {
+     position: relative;
+    float: right;
+    margin-right: 170px;
+}
