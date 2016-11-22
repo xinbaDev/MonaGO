@@ -72,8 +72,7 @@
     var chord;
     var detailPanelWidth = $(window).width()*0.25;
 
-    var controlPanelWidth = $(window).width()*0.25;
-    if(controlPanelWidth<512) controlPanelWidth = 512;
+    var controlPanelWidth = 512;
 
     var controlPanelHeight = 150;
 
