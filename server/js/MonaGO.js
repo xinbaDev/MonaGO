@@ -555,9 +555,10 @@
     }
 
     function createPvalLabelPanel(fill){
-      titie = "p-value";
-      panel.push(titie);
-      panel.push("---------------------");
+      var panelTitle = [];
+      var panel = [];
+      panelTitle.push("p-value");
+      panelTitle.push("<hr></hr>");
       //create panel
       for(i=0;i<seperated_points.length-1;i++)
       {
@@ -569,7 +570,7 @@
       }
 
 
-      panelLabel = panel.join('<br>');
+      panelLabel = panelTitle + panel.join('<br>');
       $('#pval-label').append(panelLabel);
 
 
@@ -2152,9 +2153,9 @@
 
     function movePvalPanel(details_opened){
       if(!details_opened){
-        d3.select(".pval-label").transition().duration(300).style("margin-left",-190);
+        d3.select(".pval-label").transition().duration(300).style("margin-left",-210);
       }else{
-        d3.select(".pval-label").transition().duration(300).style("margin-left",-660);
+        d3.select(".pval-label").transition().duration(300).style("margin-left",-detailPanelWidth-140);
       }
     }
 
@@ -2294,7 +2295,7 @@
       main_div = d3.select("#chart").append("div");
 
       $("#details").css("width",detailPanelWidth);
-      $("#pval-label").css("margin-left",-detailPanelWidth-150);
+      $("#pval-label").css("margin-left",-detailPanelWidth-140);
       $("#control-panel").css("width",controlPanelWidth);
       $("#control-panel").css("height",controlPanelHeight);
 

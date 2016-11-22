@@ -506,3 +506,9 @@ label {
     z-index: 1001;
 }
 
+hr {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin-top: 5px;
+    margin-bottom: 5px; 
+}
