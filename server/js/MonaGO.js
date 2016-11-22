@@ -2160,17 +2160,17 @@
 
     function setUpControlPanel(){
 
-      var element = '<label>Cluster GO term according to the minimum number of common gene(s)</label> \
+      var element = '&nbsp<label>Cluster GO term according to the minimum number of common gene(s)</label> \
           <div id="slider" class="sliderBar"></div>\
           <input type="text" id="input_slider"/>\
             <table class="RadioBox">\
             <tbody><tr><td>\
                   <input id="labelRadioBox" class="radioButton" type="radio" name="radioBox" value="0" checked>\
-                </td><td><label for="labelRadioBox">Show GO term name</label>\
+                </td><td><label style="padding-left:10px" for="labelRadioBox">Show GO term name</label>\
                 </td></tr><tr><td></td></tr><tr><td>\
                   <input id="hierClusterRadioBox"  class="radioButton" type="radio" name="radioBox" value="1" >\
                 </td><td>\
-                   <label style="width:300px;" for="hierClusterRadioBox">Show hierarchical tree and click on the node to manually cluster the GO term</label>\
+                   <label style="width:300px;padding-left:10px" for="hierClusterRadioBox">Show hierarchical tree and click on the node to manually cluster the GO term</label>\
                 </td></tr></tbody></table>';
 
       //add save image button
