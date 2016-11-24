@@ -1702,6 +1702,7 @@
 
         $('.gene_name').click(function(){
             $('#filter').val($(this).html());
+            $('#filter').focus();
             refreshDetailPanel();
         });
 
