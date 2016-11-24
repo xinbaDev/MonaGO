@@ -1862,14 +1862,14 @@
           return p.index==num;
         })
       });
-/*
+
       $(".dropbtn").mouseleave(function(d){
 
           var num = getTargetGONum(d.target.id);
-          groupLayout.style("stroke-width", function(p){
-            if(p.index==num) return 0;
+          groupLayout.classed("", function(p){
+            return p.index==num;
         })
-      });*/
+      });
 
     }
 
