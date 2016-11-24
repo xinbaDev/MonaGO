@@ -1951,6 +1951,7 @@
         //text.transition().duration(500).text(function(d){return go_inf[d.index].GO_id;}).attr("x",8);
         groupLayout.transition().duration(500).attr("d",d3.svg.arc().innerRadius(r0).outerRadius(r1));
         chordLayout.transition().duration(500).attr("d",d3.svg.chord().radius(r0));
+        groupText.transition().duration(500).attr("x",8);
         //moveInHierCluster();
     }
 
@@ -2013,10 +2014,22 @@
                 });
 
           groupLayout.transition().attr("d",
-               d3.svg.arc().innerRadius(function(d){return (d.index!=i)? r0:r0+5;}).outerRadius(
-                function(d){return (d.index!=i)? r1:r1+5;}));
+               d3.svg.arc().innerRadius(function(d){return (d.index!=i)? r0:r0+10;}).outerRadius(
+                function(d){return (d.index!=i)? r1:r1+10;}));
 
-          chordLayout.transition().attr("d",d3.svg.chord().radius(function(d){return (d.index!=i)? r0:r0+5;}));
+          groupText.transition().attr("x",function(d){
+            if(d.index==i){
+              if ((d.startAngle+d.endAngle)/2 < 3.1415)
+                return 20;
+              else
+                return -10;
+            }else{
+              return 8;
+            }
+          });
+
+
+          chordLayout.transition().attr("d",d3.svg.chord().radius(function(d){return (d.index!=i)? r0:r0+10;}));
 
           
           //moveHierCluster();
@@ -2065,6 +2078,17 @@
             groupLayout.transition().attr("d",
                  d3.svg.arc().innerRadius(function(d){return (arrayList.indexOf(d.index)==-1)? r0:r0+5;}).outerRadius(
                   function(d,i){return (arrayList.indexOf(d.index)==-1)? r1:r1+5;}));
+
+            groupText.transition().attr("x",function(d){
+              if(arrayList.indexOf(d.index)!=-1){
+                if ((d.startAngle+d.endAngle)/2 < 3.1415)
+                  return 20;
+                else
+                  return -10;
+              }else{
+                return 8;
+              }
+            });
 
             chordLayout.transition().attr("d",d3.svg.chord().radius(function(d){return (arrayList.indexOf(d.index)==-1)? r0:r0+5;}));
 
