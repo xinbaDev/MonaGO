@@ -287,24 +287,26 @@ class DataProcess():
         for k in range(n - 1):
             # find two closest clusters x, y (x < y)
             current_max = 0
+
+            #get the max value of interconnection between different nodes/clusters
             for i in range(n - 1):
+                #if the node is dropped, skip this node
                 if id_map[i] == -1:
                     continue
 
+                #get the max value of interconnection between id_map[i] node and other nodes/clusters
                 i_start = self.condensed_index(n, i, i + 1)
                 for j in range(n - i - 1):
-                    if D[i_start + j] > current_max:
+                    if D[i_start + j] >= current_max:
                         current_max = D[i_start + j]
                         x = i
                         y = i + j + 1
 
-            if current_max < 1:
-                break
-
+            #get the real index for the two nodes with maximun value
             id_x = id_map[x]
             id_y = id_map[y]
 
-
+            #update the index for two nodes
             id_map[x] = -1  # cluster x will be dropped
             id_map[y] = n + k  # cluster y will be replaced with the new cluster
 
@@ -340,6 +342,13 @@ class DataProcess():
             self.clusterHierData.append(level)
 
         return Z
+
+    def calRealDis():
+        """
+        calculate the real distance between different clusters based on the number of different genes.
+        Instad of using the max value of two clusters/node for approxiamte estimation.
+        """
+        return 0
 
 
     def getGODependency(self,GO_inf):

@@ -612,7 +612,12 @@
       return [x,y];
     }
 
-    function darwClusterNodes(){
+    function drawClusterNodes(){
+      var clusterNodes = [];
+      clusterHierNodesStatus.map(function(d){
+        if(d["numOfOverlappingGenes"]>0)
+          clusterNodes.push(d);
+      })
 
       clusterHierNodeView = clusterHierNodeView.data(clusterHierNodesStatus,function(d){return d.index;});
 
@@ -627,6 +632,7 @@
       circle = clusterHierNodeView.append("circle");
 
       circle.attr("r",function(d){
+        if((d["numOfOverlappingGenes"] > 0)||(d["numOfOverlappingGenes"]==undefined))
         return 6;
       }).style("fill", function(d){
         return (d["status"]=="Expanded")?"rgb(94, 141, 141)":"red";
@@ -652,6 +658,7 @@
       text.attr('height', 'auto')
         .attr('text-anchor', 'middle')
         .text(function(d){
+          if((d["numOfOverlappingGenes"] > 0)||(d["numOfOverlappingGenes"]==undefined))
           return d["numOfOverlappingGenes"];
         }).attr('style', 'text-align:center;padding:2px;margin:2px;fill:white')
         .on("click",onClusterNodeClick)
@@ -678,7 +685,7 @@
       var arcData = [];
 
       clusterHierData.map(function(d){
-          if(d!=undefined)
+          if((d!=undefined) && (d[3]!=0))
             clusterHierDataFiltered.push(d);
       });
       
@@ -751,7 +758,7 @@
       var line2Data = [];
       
       clusterHierData.map(function(d){
-          if(d!=undefined)
+          if((d!=undefined) && (d[3]!=0))
             clusterHierDataFiltered.push(d);
       })
 
@@ -847,7 +854,7 @@
         
         drawArc(clusterHierData);
         drawLine(clusterHierData);
-        darwClusterNodes();
+        drawClusterNodes();
         
     }
 
@@ -1115,6 +1122,7 @@
             index = clusterHierData[i][2];
             numOfOverlappingGenes = clusterHierData[i][3];
 
+            
             position = calculateAClusterNodePosition(firstNode,secondNode,status,index,nodeBeingClicked,clusterNodesRadius,collapsedNodeRadius);
             //create new cluster node based on the position
             if(nodeBeingClicked == index){
@@ -1133,6 +1141,8 @@
             }
             
             clusterHierNodesStatus.push(nodeObj);
+            
+            
           }
         }
     }
@@ -1203,7 +1213,7 @@
             }
         });    
 
-        /*console.log(newClusterHierData);*/
+        console.log(newClusterHierData);
 
         return newClusterHierData;
     }
