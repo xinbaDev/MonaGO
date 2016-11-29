@@ -1644,19 +1644,37 @@
       return goList;
     }
 
+    function recursiveGetArrays(arrsSource){
+      var arrDest = [];
+
+      recursiveGet(arrsSource);
+
+      function recursiveGet(arrsSource){
+        if (typeof arrsSource == 'string'){
+          arrDest.push(arrsSource);
+        }else{
+          arrsSource.forEach(function(d){
+              recursiveGet(d);
+          });
+        }
+      }
+      
+      return arrDest;
+    }
+
     function createDetailPanelTempl(i){
         var detailPanelTempl = "";
 
-        var numOfGOTerms = getNumOfGOTerms(that.go_inf[i].GO_id);
-        var goInfTempl = "<p> <a class='prop-field'> GO_id: </a>" + that.go_inf[i].GO_id + "</p>";
+        var numOfGOTerms = getNumOfGOTerms(recursiveGetArrays(that.go_inf[i].GO_id));
+        var goInfTempl = "<p> <a class='prop-field'> GO_id: </a>" + recursiveGetArrays(that.go_inf[i].GO_id) + "</p>";
 
         if(numOfGOTerms == 1){
-           goInfTempl += "<p> <a class='prop-field'>GO_Name: </a>"+ that.go_inf[i].GO_name + "</p>";
+           goInfTempl += "<p> <a class='prop-field'>GO_Name: </a>"+ recursiveGetArrays(that.go_inf[i].GO_name) + "</p>";
            goInfTempl += " <p> <a class='prop-field'>Num of genes: </a>"+ that.go_inf[i].count + "</p>"+
            "<p> <a class='prop-field'>P-value: </a>" + that.go_inf[i].pVal + "</p>";
         }else{
            goInfTempl += "<a class='prop-field go_dropmenu'> GO_name: <b id='caret_GO' class='caret rotate180'></b></a>" + 
-                          createGOList(that.go_inf[i].GO_name) + "<p>";
+                          createGOList(recursiveGetArrays(that.go_inf[i].GO_name)) + "<p>";
            goInfTempl += " <p> <a class='prop-field'>Num of genes: </a>"+ that.go_inf[i].count + "</p>"+
            "<p> <a class='prop-field'>P-value(Average): </a>" + that.go_inf[i].pVal + "</p>";
         }
