@@ -1805,6 +1805,11 @@
         changePvalPanel(d.index);
     }
 
+    function mouseleave_group(){
+
+    }
+    
+
     function changePvalPanel(index){
         var levelElement = getPvalLevel(that.go_inf[index].pVal);
         setlevelElement(levelElement);
@@ -1890,16 +1895,24 @@
         groupLayout.classed("highlight", function(p){
           return p.index==num;
         })
+
+        changePvalPanel(num);
       });
 
       $(".dropbtn").mouseleave(function(d){
-
           var num = getTargetGONum(d.target.id);
           groupLayout.classed("highlight",false,function(d){
               return d.index==num;
           });
+
+          resetPvaluePanel(num);
       });
 
+    }
+
+    function resetPvaluePanel(index){
+      var levelElement = getPvalLevel(that.go_inf[index].pVal);
+      $('#'+levelElement).css("border","0");
     }
 
     function getTargetGONum(id){
