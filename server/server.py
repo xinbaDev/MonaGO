@@ -48,7 +48,7 @@ def index():
         go,status = getDataFromDavid(inputIds,idType,annotCat,pVal)
 
         if status == False:
-            return "Failure to get data"
+            return "Failure to get data, please make sure the identifier is correct"
 
         matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go)
 
