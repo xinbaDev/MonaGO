@@ -1666,7 +1666,7 @@
         var detailPanelTempl = "";
 
         var numOfGOTerms = getNumOfGOTerms(recursiveGetArrays(that.go_inf[i].GO_id));
-        var goInfTempl = "<p> <a class='prop-field'> GO_id: </a>" + recursiveGetArrays(that.go_inf[i].GO_id) + "</p>";
+        var goInfTempl = "<p> <a class='prop-field'> GO_id: </a>" + recursiveGetArrays(that.go_inf[i].GO_id).join(", ") + "</p>";
 
         if(numOfGOTerms == 1){
            goInfTempl += "<p> <a class='prop-field'>GO_Name: </a>"+ recursiveGetArrays(that.go_inf[i].GO_name) + "</p>";
