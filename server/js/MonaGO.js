@@ -1895,9 +1895,9 @@
       $(".dropbtn").mouseleave(function(d){
 
           var num = getTargetGONum(d.target.id);
-          groupLayout.classed("", function(p){
-            return p.index==num;
-        })
+          groupLayout.classed("highlight",false,function(d){
+              return d.index==num;
+          });
       });
 
     }
