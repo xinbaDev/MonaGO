@@ -110,6 +110,9 @@ def getMyLogo():
     return send_from_directory(root_dir+'my/img','my_logo.jpg')
 
 
+@app.route('/help.html')
+def getHelp():
+    return send_from_directory(root_dir+'templates','help.html')
 
 
 def logTime(func):

@@ -330,6 +330,8 @@ class DataProcess():
                     D[self.condensed_index(n, i, x)],
                     D[self.condensed_index(n, i, y)])
 
+                #D[self.condensed_index(n, i, y)] = calRealDis(i,x,y)
+
                 if i < x:
                     D[self.condensed_index(n, i, x)] = -1
 
@@ -343,11 +345,14 @@ class DataProcess():
 
         return Z
 
-    def calRealDis():
+    def calRealDis(i,x,y):
         """
         calculate the real distance between different clusters based on the number of different genes.
         Instad of using the max value of two clusters/node for approxiamte estimation.
         """
+        # go_inf[x].genes
+
+
         return 0
 
 
@@ -443,23 +448,18 @@ class DataProcess():
         self.clusterHierData = [] ##clear clusterHierData
          
         size = len(go_inf)
-        print size
 
-        print str(go_inf)
+        print go_inf
 
         if size==0:
             raise Exception("go_inf is empty")
 
         matrix = self.createMatrix(go_inf)
 
-        print str(matrix)
-
         D = np.ndarray(size * (size - 1) / 2,dtype=np.int)
         D = self.pdist(matrix,size)
         Z = np.zeros((size - 1, 3))
         Z = self.linkage(D,Z,size,0)
-
-        print str(Z)
 
         nd = [None] * (size * 2 - 1)
         nd = self.to_tree(Z)
