@@ -10,6 +10,12 @@
 
 }
 
+.footer{
+    margin: auto;
+    width: 850px;
+    margin-top: 10px;
+}
+
 .submit-btn{
 	float: right;
 }

@@ -22,7 +22,7 @@
 <div class="dummy_header"></div>
 
 <center class="header-index ">
-	<img src="../img/header.png" class="img-fluid header-img" alt="Responsive image">
+	<img src="../img/header.png" class="img-fluid header-img" alt="Responsive image" title="Visualization tool for Gene Ontology enrichment analysis">
 </center>
 
 <div class="submitFormCentered">
@@ -30,13 +30,13 @@
 				<div class="main_section">
 
 					<div class="step1">
-						<h2><span class="label label-primary">Step 1: Enter Gene List</span></h2>
+						<h2><span class="label label-primary" title="paste a list of genes seperated by comma,newline or space">Step 1: Enter Gene List</span></h2>
 		
 						<font class="regular"> Paste a list</font>
 						
 						<div >
 							<textarea rows="6" id="LISTBox" class="form-control" name="inputIds"></textarea>
-							<div class="example_gene" onclick="copyDemoGenes()"><p>Demo genes:</p> 
+							<div class="example_gene" onclick="copyDemoGenes()"><p>Demo genes(click to paste):</p> 
 							38926_at,38236_at,35367_at,1910_s_at,1391_s_at,
 							<br>38674_at,31576_at,606_at,34703_f_at,34233_i_at,
 							<br>40959_at,822_s_at,966_at,39469_s_at,41489_at,
@@ -50,7 +50,7 @@
 
 					<div class="step2">
 
-						<h2><span class="label label-primary">Step 2: Select Identifier</span></h2>
+						<h2><span class="label label-primary" title="select gene identifier">Step 2: Select Identifier</span></h2>
 			
 									<br>
 									  <select class="selectpicker" data-width="300px" name="idType">
@@ -102,7 +102,7 @@
 
 					<div class="step2">		
 						
-						<h2><span class="label label-primary">Step 3: Choose p-value</span></h2>
+						<h2><span class="label label-primary" title="choose p-value">Step 3: Choose p-value</span></h2>
 
 						<br>
 
@@ -119,7 +119,7 @@
 
 					<div class="step4">
 
-	        			<h2><span class="label label-primary">Step 4: Choose Annotation Type</span></h2>
+	        			<h2><span class="label label-primary" title="choose Gene Ontology annotation type">Step 4: Choose Annotation Type</span></h2>
 
 	        			<br>
 						
@@ -139,10 +139,17 @@
 					<div class="btn btn-success btn-rounded btn-lg submit-btn" onclick="submitClicked()">Submit</div>
 
 				</div>
-			           
+			 
 </form>
 
+  
+
 </div>
+
+   <div class="footer">
+		<p>MonaGO is a visualization tool for Gene Ontology(GO) enrichment analysis. It makes use of GO annotation information from <a href="https://david.ncifcrf.gov/">DAVID</a>. For more information please check <a href="https://david.ncifcrf.gov/">Help page</a>.</p>
+	</div>     
+
 
 <script>
 
@@ -202,6 +209,7 @@
 			$(".background").css("height",bodyHeight);
 
 			$backGround.append('<div class="loadingBar"><div class="loading_icon"/></div>');
+			$(".loadingBar").css("top",bodyHeight/2);
 		}
 	}
 
