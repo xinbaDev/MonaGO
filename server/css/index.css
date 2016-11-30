@@ -19,8 +19,8 @@
 }
 
 .header-img{
-    width: 1000px;
-    height: 467px;
+    width: 800px;
+    height: 300px;
 	background-size: contain;
 }
 
@@ -87,7 +87,7 @@
 
 .sliderBar {
     
-    width: 485px;
+    width: 415px;
 }
 
 #input_slider{
