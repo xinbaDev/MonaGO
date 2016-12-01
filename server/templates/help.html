@@ -1,5 +1,149 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<style>
+	@font-face {
+    font-family: 'Candal';
+    src: url(./fonts/Candal.ttf);
+}
+body{
+    font-family:Verdana, Geneva, sans-serif;
+    background: #ffb5c5;
+    background: #DDA0DD;
+}
+fieldset{
+    background: #ffebff;
+}
+h1{
+    font-family:"Candal", sans-serif;
+    text-align: center;
+    font-size: 48px;
+    color: rgb(76, 78, 239);
+}
+h2{
+    color: darkorchid;
+}
+h3{
+    color: darkorchid;
+}
+ul#navMenu{
+    padding:0;
+    margin-bottom:7px;
+    margin-left: 7px;
+}
+ul#navMenu li{
+    display:inline;
+}
+ul#navMenu li a{
+    background-color: #A98DD8; /*black;*/
+    color: #27537A; /*white;*/
+    padding: 7px 10px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 12px
+    height: 18px;
+    /*border-radius: 4px 4px 0 0;*/
+}
+ul#navMenu li a:hover, ul#navMenu li a:active{
+    background-color:#ab82ff; /*gray;*/
+}
+ul#email li{
+    display:inline;
+}
+ul#opt_menu li {
+    list-style-type:none;
+    padding:2px 10px;
+}
+legend{
+    font-size:24px;
+}
+div#form{
+    background: #ffebff;
+    padding: 10px 25px 10px 25px;
+}
+input[type="submit"] {
+    font-size: 14px;
+    color: #ffffff;
+    padding: 2px 15px;
+    background: -moz-linear-gradient(
+    top,
+    #73a1e6 0%,
+    #0342ff);
+    background: -webkit-gradient(
+    linear, left top, left bottom,
+    from(darkgray),
+    to(lightgray));
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    border: 4px solid #5586c2;
+    border: 2px solid #545454;
+    -moz-box-shadow:
+    0px 0px 0px rgba(000,000,000,0),
+    inset 0px 0px 0px rgba(087,087,087,0);
+    -webkit-box-shadow:
+    0px 0px 0px rgba(000,000,000,0),
+    inset 0px 0px 0px rgba(087,087,087,0);
+    box-shadow:
+    0px 0px 0px rgba(000,000,000,0),
+    inset 0px 0px 0px rgba(087,087,087,0);
+    text-shadow:
+    0px 1px 0px rgba(000,000,000,0.4),
+    0px -1px 0px rgba(255,255,255,0.3);
+    align:center;
+}
+div#sampleBED{
+    margin: 10px;
+    margin: 0 auto;
+    width: 200px;
+    padding: 5px;
+    height: 60px;
+    border: 2px solid black;
+    text-align:center;
+}
+label#sampleBED{
+    padding-top:1px;
+    font-family:courier;
+    font-style:italic;
+    font-size:14px;
+    float:none;
+}
+label{
+    display:block;
+    float:left;
+}
+textarea{
+    background:#F1F1F1;
+}
+.demo{
+	color:blue;
+	text-decoration: underline;
+}
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 150px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    font-size:12px;
+    border-radius: 6px;
+    padding: 5px 0;
+    
+    /* Position the tooltip */
+    position: absolute;
+    left: 0;
+    z-index: 1;
+}
+.tooltip {
+    text-decoration: none;
+    color: black;
+}
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+</style>
+
+
 <link  rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 <link  rel="stylesheet" type="text/css" href="css/bootstrap-select.min.css">
 
@@ -9,3 +153,115 @@
 <script type="text/javascript" src="js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/bootstrap-select.min.js"></script>
 
+<html>
+    <head>
+        <title>MonaGO: visualization tool for GO enrichment analysis</title>
+        <title>MonaGO: Help</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    </head>
+    <body>
+        <div class="header">
+           <!--  <img src="../img/logo.png" alt="MonaGO_logo" style="width:300px;height:50px" usemap="#bannermap"> -->
+                <map name="bannermap">
+                    <area shape="rect" coords="0,0,155,50" alt="Monash" href="http://www.monash.edu/" target="blank">
+
+                </map>
+
+                <h1>
+                    <a href="./index.html" style="text-decoration:none;color:blue">
+                        ManaGO
+                    </a>
+                </h1>
+
+        </div>
+        <div id="form">
+            <h2>
+                <strong>Help/Information</strong>
+            </h2>
+	   
+	    <h3>Usage</h3>
+            <p>MonaGO is a visualization tool for Gene Ontology(GO) enrichement analysis and designed with biologists in mind. It facilitates biologists to better understand the GO enrichment result by using inovative visualization techniques. The basic workflow is as following:<p>
+            <div style="padding-left: 50px">
+            	<p>(1)input a list of genes that the user want to enrich with
+            	<p>(2)select the gene identifier given
+            	<p>(3)choose p-value to filter the enrichment result
+            	<p>(4)choose the GO annotation type(Biological Process,Molecular Function ,Celluar Component)
+            </div>
+
+
+            <p>The GO annotation data are from <a href="https://david.ncifcrf.gov" target="blank">DAVID</a>.</p>
+            
+		
+		<h3>Interface<h3>
+			<img src="../img/interface.png" style="width:600px">
+		<h4>1. Main visualization panel</h4>
+
+		<p>The main visualization component is the chord diagram, which has auxiliary visual elements attached to it, including the GO term labels and the hierarchical clustering tree.</p>
+
+		<h5>1.1 The chord diagram</h5>
+
+		<p>Each element in the chord diagram represents a GO term or a cluster of GO terms. The edges inside the chord diagram between two elements denotes the fact that there are common genes between them. </p>
+
+
+		<p>Additionally, on each element two types of information, controlled by the toggle (radio buttons) on the top-left:
+		Name of the GO term, or, for a cluster, the name of the GO term with the lowest p-value, and 
+		The hierarchical clustering tree that allows the collapsing/expansion of GO terms.</p>
+		Note that the size and the position of the chord diagram can be changed.
+
+		<h5>1.2 Hierarchical clustering tree</h5>
+		<p>Clustering can be performed systematically or manually using the hierarchical clustering tree:
+		The slider on the top left allows systematic clustering of GO terms based on a threshold of the minimum number of common genes.
+		Alternatively, the nodes in the hierarchical clustering tree can be clicked to manually collapse GO /terms/clusters and expand clusters. </p>
+
+
+		<h4>2. Details panel</h4>
+
+		<p>The details panel shows detailed information about a GO term or a cluster in the main visualization panel. The details panel is activated when the mouse hovers over a GO term/cluster in the chord diagram. </p>
+
+
+		<p>The following information is shown in the details panel.
+
+
+		<p>For a GO term:
+		<div style="padding-left: 50px">
+			<p>Its ID,
+			<p>Its name,
+			<p>The p-value,
+			<p>The list of genes expressed for this term, and
+			<p>The part of the GO hierarchy from this term to the top term (Biological Process, Cellular Component, or Molecular Function).
+		</div>
+
+		<p>For a cluster:
+		<div style="padding-left: 50px">
+			<p>The IDs of GO terms in the cluster, separated by commas,
+			<p>The names of GO terms in the cluster, separated by commas,
+			<p>The number of common genes among the GO terms in the cluster,
+			<p>The average p-value of all GO terms in the cluster, and
+			<p>The list of names of all common genes.
+		</div>
+
+
+		<h4>3. Search panel</h4>
+		<p>The search panel allows the search of GO terms by gene names, and IDs or names of GO terms. (Please search by its full name for now)
+
+
+		<p>All GO terms/clusters relevant to a search query will be highlighted (popping out) on the chord diagram in the  main visualization panel. Moreover, relevant GO terms/clusters will be listed in the details panel. 
+
+
+
+
+		<p>As the tool is still under heavy development, any feedback about how to improve it will be highly appreciated!  Please do not hesitate to contact me zxin9@student.monash.edu for any question/comments about this tool. Thank you for your time!
+
+
+		<p>Because of the limited time, this tool is only tested on google chrome, so please use google chrome as the browser to achieve best performance. 
+
+		<h2>Contacts:</h2>
+		<p>Yuan-Fang Li: <a href="mailto:yuanfang.li@monash.edu">yuanfang.li@monash.edu</a></p>
+		<p>Mirana Ramialison: <a href="mailto:mirana.ramialison@monash.edu">mirana.ramialison@monash.edu</a></p>
+		<p>Alex Xin: <a href="mailto:zxin9@student.monash.edu">zxin9@student.monash.edu</a></p>
+		
+		<h2>Source code</h2>
+		<p>The source code is available on <a href="https://github.com/xinba123/MonaGO">gitHub</a>.</p>
+        </div>
+            </body>
+</html>
