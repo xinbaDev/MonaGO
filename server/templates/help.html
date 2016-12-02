@@ -1,14 +1,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-	@font-face {
-    font-family: 'Candal';
-    src: url(./fonts/Candal.ttf);
-}
+
 body{
     font-family:Verdana, Geneva, sans-serif;
-    background: #ffb5c5;
-    background: #DDA0DD;
+	font-size: 20px;
 }
 fieldset{
     background: #ffebff;
@@ -144,14 +140,7 @@ textarea{
 </style>
 
 
-<link  rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-<link  rel="stylesheet" type="text/css" href="css/bootstrap-select.min.css">
-
 <link rel="icon" type="image/x-icon" href="data:image/png;base64,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">
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script type="text/javascript" src="js/bootstrap.min.js"></script>
-<script type="text/javascript" src="js/bootstrap-select.min.js"></script>
 
 <html>
     <head>
@@ -168,7 +157,7 @@ textarea{
                 </map>
 
                 <h1>
-                    <a href="./index.html" style="text-decoration:none;color:blue">
+                    <a href="./index" style="text-decoration:none;color:orange">
                         ManaGO
                     </a>
                 </h1>
@@ -180,20 +169,23 @@ textarea{
             </h2>
 	   
 	    <h3>Usage</h3>
-            <p>MonaGO is a visualization tool for Gene Ontology(GO) enrichement analysis and designed with biologists in mind. It facilitates biologists to better understand the GO enrichment result by using inovative visualization techniques. The basic workflow is as following:<p>
+            <p>MonaGO is a visualization tool for Gene Ontology(GO) enrichement analysis and it is designed with biologists in mind. It facilitates biologists to better understand the GO enrichment result by using inovative visualization techniques. The basic workflow is as following:<p>
             <div style="padding-left: 50px">
-            	<p>(1)input a list of genes that the user want to enrich with
-            	<p>(2)select the gene identifier given
-            	<p>(3)choose p-value to filter the enrichment result
-            	<p>(4)choose the GO annotation type(Biological Process,Molecular Function ,Celluar Component)
+            	<p>(1)Input a list of genes that the user want to enrich with.
+            	<p>(2)Select the gene identifier given.
+            	<p>(3)Choose p-value to filter the enrichment result.
+            	<p>(4)Choose the GO annotation type(Biological Process,Molecular Function ,Celluar Component).
+            		The GO annotation data are from <a href="https://david.ncifcrf.gov" target="blank">DAVID</a>.
             </div>
 
 
-            <p>The GO annotation data are from <a href="https://david.ncifcrf.gov" target="blank">DAVID</a>.</p>
+            <p></p>
             
 		
 		<h3>Interface<h3>
+		<center>
 			<img src="../img/interface.png" style="width:600px">
+		</center>
 		<h4>1. Main visualization panel</h4>
 
 		<p>The main visualization component is the chord diagram, which has auxiliary visual elements attached to it, including the GO term labels and the hierarchical clustering tree.</p>
@@ -248,12 +240,7 @@ textarea{
 		<p>All GO terms/clusters relevant to a search query will be highlighted (popping out) on the chord diagram in the  main visualization panel. Moreover, relevant GO terms/clusters will be listed in the details panel. 
 
 
-
-
 		<p>As the tool is still under heavy development, any feedback about how to improve it will be highly appreciated!  Please do not hesitate to contact me zxin9@student.monash.edu for any question/comments about this tool. Thank you for your time!
-
-
-		<p>Because of the limited time, this tool is only tested on google chrome, so please use google chrome as the browser to achieve best performance. 
 
 		<h2>Contacts:</h2>
 		<p>Yuan-Fang Li: <a href="mailto:yuanfang.li@monash.edu">yuanfang.li@monash.edu</a></p>
