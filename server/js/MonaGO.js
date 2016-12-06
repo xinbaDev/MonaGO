@@ -1033,7 +1033,7 @@
 
         groupElements.exit().remove();
 
-        groupLayout =groupElements
+        groupLayout = groupElements
          .style("fill", function(d) { return getColor(Number(that.go_inf[d.index].pVal),fill); })
          .style("stroke", function(d) { return getColor(Number(that.go_inf[d.index].pVal),fill); })
          .attr("d", d3.svg.arc().innerRadius(r0).outerRadius(r1)) //important
@@ -1213,7 +1213,7 @@
             }
         });    
 
-        console.log(newClusterHierData);
+        //console.log(newClusterHierData);
 
         return newClusterHierData;
     }

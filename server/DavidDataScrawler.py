@@ -93,7 +93,6 @@ class DavidDataScrawler(object):
 
 
     def _checkSuccess(self,res):
-        print res
         if res.find("DAVID: Functional Annotation Tools")==-1:
             return False
         else:
@@ -181,7 +180,7 @@ class DavidDataScrawler(object):
 
         for i in range(0,len(genesIdName)-1,2):#ugly way, need improve
             geneIds = genesIdName[i].split(",")
-            if len(geneIds) > 1:
+            if len(geneIds) > 1:#if multiple gene ids
                 for j in geneIds:
                     geneIdNameMapping[j.strip().lower()] = genesIdName[i+1]
             else:

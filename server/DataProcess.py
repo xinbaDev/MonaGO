@@ -326,11 +326,12 @@ class DataProcess():
 
                 # ni = 1 if id_i < n else <int>Z[id_i - n, 3]
 
-                D[self.condensed_index(n, i, y)] = max(
-                    D[self.condensed_index(n, i, x)],
-                    D[self.condensed_index(n, i, y)])
+                # D[self.condensed_index(n, i, y)] = max(
+                #     D[self.condensed_index(n, i, x)],
+                #     D[self.condensed_index(n, i, y)])
 
-                #D[self.condensed_index(n, i, y)] = calRealDis(i,x,y)
+                #calcuate the real distance
+                D[self.condensed_index(n, i, y)] = calRealDis(i,x,y)
 
                 if i < x:
                     D[self.condensed_index(n, i, x)] = -1
@@ -350,11 +351,49 @@ class DataProcess():
         calculate the real distance between different clusters based on the number of different genes.
         Instad of using the max value of two clusters/node for approxiamte estimation.
         """
-        # go_inf[x].genes
+        xGenes = getGenes(x)
+        yGenes = getGenes(y)
+        totalGenes = getTotalGenes(xGenes,yGenes)
+        numOfIntersectedGene = getNumOfIntersectedGenes(i,totalGenes)
+        updateClusterGenes(x,y)
+
+        return numOfIntersectedGene
 
 
-        return 0
+    def getGenes(index):
+        return go_inf[index]["genes"].split("|")
 
+    def getTotalGenes(xGenes,yGenes):
+
+        totalGene = []
+
+        for gene in xGenes:
+            if gene not in totalGene:
+                totalGene.append(gene)
+
+        for gene in yGenes:
+            if gene not in totalGene:
+                totalGene.append(gene)
+
+        return totalGene
+
+    def getNumOfIntersectedGenes(index_i,totalGene):
+        numberOfCommonGene = 0
+        genes = getGenes(index_i)
+        
+        for gene in genes:
+            if gene in totalGene:
+                numberOfCommonGene += 1
+        return numberOfCommonGene
+
+    def updateClusterGenes(index_x,index_y):
+        xGenes = getGenes(index_x)
+        yGenes = getGenes(index_y)
+        for gene in xGenes:
+            if gene not in yGenes:
+                yGenes.append(gene)
+
+        go_inf[index_y]["genes"] = ','.join(yGenes)
 
     def getGODependency(self,GO_inf):
 
