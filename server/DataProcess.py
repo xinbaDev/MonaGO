@@ -1,5 +1,6 @@
 import numpy as np
 import json
+import copy
 
 class DataProcess():
 
@@ -331,7 +332,7 @@ class DataProcess():
                 #     D[self.condensed_index(n, i, y)])
 
                 #calcuate the real distance
-                D[self.condensed_index(n, i, y)] = calRealDis(i,x,y)
+                D[self.condensed_index(n, i, y)] = self.calRealDis(i,x,y)
 
                 if i < x:
                     D[self.condensed_index(n, i, x)] = -1
@@ -343,33 +344,33 @@ class DataProcess():
             level.append(t+n)
             level.append(int(Z[t,2]))
             self.clusterHierData.append(level)
+            print int(Z[t,2])
 
         return Z
 
-    def calRealDis(i,x,y):
+    def calRealDis(self,i,x,y):
         """
         calculate the real distance between different clusters based on the number of different genes.
         Instad of using the max value of two clusters/node for approxiamte estimation.
         """
-        xGenes = getGenes(x)
-        yGenes = getGenes(y)
-        totalGenes = getTotalGenes(xGenes,yGenes)
-        numOfIntersectedGene = getNumOfIntersectedGenes(i,totalGenes)
-        updateClusterGenes(x,y)
+        xGenes = self.getGenes(x)
+        yGenes = self.getGenes(y)
+        totalGenes = self.getTotalGenes(xGenes,yGenes)
+        numOfIntersectedGene = self.getNumOfIntersectedGenes(i,totalGenes)
+        self.updateClusterGenes(xGenes,yGenes,y)
 
         return numOfIntersectedGene
 
 
-    def getGenes(index):
-        return go_inf[index]["genes"].split("|")
+    def getGenes(self,index):
+        return self.go_info[index]["genes"].split("|")
 
-    def getTotalGenes(xGenes,yGenes):
+    def getTotalGenes(self,xGenes,yGenes):
 
         totalGene = []
 
         for gene in xGenes:
-            if gene not in totalGene:
-                totalGene.append(gene)
+            totalGene.append(gene)
 
         for gene in yGenes:
             if gene not in totalGene:
@@ -377,23 +378,21 @@ class DataProcess():
 
         return totalGene
 
-    def getNumOfIntersectedGenes(index_i,totalGene):
+    def getNumOfIntersectedGenes(self,index_i,totalGene):
         numberOfCommonGene = 0
-        genes = getGenes(index_i)
+        genes = self.getGenes(index_i)
         
         for gene in genes:
             if gene in totalGene:
                 numberOfCommonGene += 1
         return numberOfCommonGene
 
-    def updateClusterGenes(index_x,index_y):
-        xGenes = getGenes(index_x)
-        yGenes = getGenes(index_y)
+    def updateClusterGenes(self,xGenes,yGenes,index_y):
         for gene in xGenes:
             if gene not in yGenes:
                 yGenes.append(gene)
 
-        go_inf[index_y]["genes"] = ','.join(yGenes)
+        self.go_info[index_y]["genes"] = "|".join(yGenes)
 
     def getGODependency(self,GO_inf):
 
@@ -485,10 +484,10 @@ class DataProcess():
     def dataProcess(self,go_inf):
 
         self.clusterHierData = [] ##clear clusterHierData
-         
-        size = len(go_inf)
 
-        print go_inf
+        self.go_info = copy.deepcopy(go_inf)
+            
+        size = len(go_inf)
 
         if size==0:
             raise Exception("go_inf is empty")
@@ -504,8 +503,6 @@ class DataProcess():
         nd = self.to_tree(Z)
 
         go_index_reord =  nd.pre_order()#array_order
-
-        print go_index_reord
 
         go_inf_reOrder = self.reOrder(go_index_reord,go_inf)
 
