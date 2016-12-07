@@ -881,7 +881,10 @@
           }
     }
 
-
+   /*get all the leaf nodes along with thier cluster levels
+    *@parama index of clicked cluster node
+    *@return index of leaf nodes and their cluster levels
+    */ 
     function getHierNodes(index){
 
       var leafNodes = [];
@@ -953,28 +956,31 @@
       return pVal;
     }
 
-    function collapseNodeSet(nodePositions,genes,nodeBeingClicked){
 
-      //console.log(go_inf);
-      var removeGO = that.go_inf.splice(nodePositions[0],nodePositions.length);
-      //console.log(removeGO);
+    /**
+    *collapse/combine all go inf assoicated with the clustered node and return the removed go inf
+    *@parma leaf node position in chord(get all the assoicated go inf),total genes in the cluster, index of the node being clicked
+    *@return original go inf(before clustered)
+    */
+    function collapseNodeSet(nodePositions,nodeBeingClicked){
 
-     //console.log(go_inf);
+      var clusterGOs = that.go_inf.splice(nodePositions[0],nodePositions.length);
       var GO_id = [];
       var GO_name = [];
-      removeGO.map(function(d){
+      clusterGOs.map(function(d){
           GO_id.push(d["GO_id"]);
           GO_name.push(d["GO_name"]);
       });
 
-      var pVal = calculateNewPvalue(removeGO);
+      var pVal = calculateNewPvalue(clusterGOs);
+      //get all the genes associated with the cluster
+      var genes = getClusterGenes(nodePositions);
 
-      newGONode = {"GO_id":GO_id,"GO_name":GO_name,"count":genes.length,"pVal":pVal,"genes":genes,"nodeBeingClicked":nodeBeingClicked};
+      var newGONode = {"GO_id":GO_id,"GO_name":GO_name,"count":genes.length,"pVal":pVal,"genes":genes,"nodeBeingClicked":nodeBeingClicked};
 
       that.go_inf.splice(nodePositions[0],0,newGONode);
-      //console.log(go_inf);
 
-      return removeGO;
+      return clusterGOs;
     }
 
     function expandNodeSet(nodeBeingClicked,removeGO){
@@ -1285,35 +1291,37 @@
           drawHierarchicalClustering(clusterHierData);
     }
 
-    function onClusterNodeClick(d,i){
 
-      //transform the index to clusterlevel
-
-      var nodeBeingClicked = d["index"];
-
-      if(d["status"]=="Expanded"){
-
-        var nodes = getHierNodes(nodeBeingClicked);
-
-        var nodePositions = getLeafNodesPosition(nodes["leafNodes"]).unique();
-
-        var clusterNodesLevel = nodes["clusterNodesLevel"];
-
-        var genes = getClusterGenes(nodePositions);
-
-        var removeGO = collapseNodeSet(nodePositions,genes,nodeBeingClicked);
-
+    function createGOAndUpdateChordLayout(){
         createInteractionGenes();
         createGeneInfo();
 
         matrix = updateMatrix();
         updateLayout(matrix);
+    }
+
+    function onClusterNodeClick(d,i){
+
+      //transform the index to clusterlevel
+
+      var nodeBeingClickedIndex = d["index"];
+
+      if(d["status"]=="Expanded"){
+
+        //get leaf nodes(associated with the cluster) info(node index & cluster level)
+        var nodes = getHierNodes(nodeBeingClickedIndex);
+        //get the leaf nodes position in the chord layout
+        var nodePositions = getLeafNodesPosition(nodes["leafNodes"]).unique();
+        var clusterNodesLevel = nodes["clusterNodesLevel"];
+
+        //key function: collpase/combine go and return the go inf being removed
+        var removeGOs = collapseNodeSet(nodePositions,nodeBeingClickedIndex);
+
+        createGOAndUpdateChordLayout();
 
         var removeNodeInArray = removeNodesInArrayOrder(nodePositions);
-        /*console.log("array_order:" + array_order);*/
-        /*console.log("clusterNodeLevel:" + nodes["clusterNodeLevel"]);*/
-
-        var removeHierData = collapseHierClustering(nodePositions,clusterNodesLevel,nodeBeingClicked,Object.keys(memCache),memCache["clusterNodesRadius"]);
+        
+        var removeHierData = collapseHierClustering(nodePositions,clusterNodesLevel,nodeBeingClickedIndex,Object.keys(memCache),memCache["clusterNodesRadius"]);
 
         if(memCache["clusterNodesRadius"]!=undefined)
             var clusterNodesRadius = memCache["clusterNodesRadius"];
@@ -1321,7 +1329,7 @@
             clusterNodesRadius = [];
 
         clusterHierNodesStatus.map(function(d){
-            if(d["index"]==nodeBeingClicked){
+            if(d["index"]==nodeBeingClickedIndex){
               //console.log(d);
               clusterNodesRadius.push({"nodeId":d["index"],"radius":d["radius"]});
             }
@@ -1332,24 +1340,18 @@
         //console.log(clusterNodesRadius);
         /*console.log(removeHierData);*/
 
-        var nodeBeingMemorized = {"go_inf":removeGO,"array_order":removeNodeInArray,"clusterHierData":removeHierData,"clusterNodesLevel":clusterNodesLevel};
+        var nodeBeingMemorized = {"go_inf":removeGOs,"array_order":removeNodeInArray,"clusterHierData":removeHierData,"clusterNodesLevel":clusterNodesLevel};
 
-        memCache[nodeBeingClicked] = nodeBeingMemorized;
+        memCache[nodeBeingClickedIndex] = nodeBeingMemorized;
 
       }else{
         /*console.log("node going to expand");*/
 
-        nodeBeingMemorized = memCache[nodeBeingClicked];
+        nodeBeingMemorized = memCache[nodeBeingClickedIndex];
 
-        expandNodeSet(nodeBeingClicked,nodeBeingMemorized["go_inf"]);
+        expandNodeSet(nodeBeingClickedIndex,nodeBeingMemorized["go_inf"]);
 
-        createInteractionGenes();
-
-        createGeneInfo();
-
-        matrix = updateMatrix();
-
-        updateLayout(matrix);
+        createGOAndUpdateChordLayout();
 
         addNodesToArrayOrder(nodeBeingMemorized["array_order"]);
 
@@ -1362,7 +1364,7 @@
         var newclusterNodesRadius = [];
 
         clusterNodesRadius.map(function(d,i){
-          if(d["nodeId"]!=nodeBeingClicked)
+          if(d["nodeId"]!=nodeBeingClickedIndex)
             newclusterNodesRadius.push(d);
         })
 
@@ -1370,9 +1372,9 @@
 
         memCache["clusterNodesRadius"] = clusterNodesRadius;
 
-        expandHierClustering(nodeBeingMemorized["clusterHierData"],clusterNodesLevel,nodeBeingClicked,collapsedNodes,clusterNodesRadius);
+        expandHierClustering(nodeBeingMemorized["clusterHierData"],clusterNodesLevel,nodeBeingClickedIndex,collapsedNodes,clusterNodesRadius);
 
-        delete memCache[nodeBeingClicked];
+        delete memCache[nodeBeingClickedIndex];
       }
     }
 

@@ -2,7 +2,7 @@ import numpy as np
 import json
 import copy
 
-class DataProcess():
+class DataProcess2():
 
     clusterHierData = []
 
@@ -211,7 +211,7 @@ class DataProcess():
 
         # Create the nodes corresponding to the n original objects.
         for i in xrange(0, n):
-            d[i] = DataProcess.ClusterNode(i)
+            d[i] = DataProcess2.ClusterNode(i)
 
         nd = None
 
@@ -228,7 +228,7 @@ class DataProcess():
                 raise ValueError(('Corrupt matrix Z. Index to derivative cluster '
                                   'is used before it is formed. See row %d, '
                                   'column 1') % fj)
-            nd = DataProcess.ClusterNode(i + n, d[fi], d[fj], Z[i, 2])
+            nd = DataProcess2.ClusterNode(i + n, d[fi], d[fj], Z[i, 2])
             # fw.write("["+str(d[fi].id) + "," + str(d[fj].id) + "," + str(n+i)+"],\n")
             #          ^ id   ^ left ^ right ^ dist
             # if Z[i, 3] != nd.count:
@@ -327,12 +327,12 @@ class DataProcess():
 
                 # ni = 1 if id_i < n else <int>Z[id_i - n, 3]
 
-                D[self.condensed_index(n, i, y)] = max(
-                    D[self.condensed_index(n, i, x)],
-                    D[self.condensed_index(n, i, y)])
+                # D[self.condensed_index(n, i, y)] = max(
+                #     D[self.condensed_index(n, i, x)],
+                #     D[self.condensed_index(n, i, y)])
 
                 #calcuate the real distance
-                #D[self.condensed_index(n, i, y)] = self.calRealDis(i,x,y)
+                D[self.condensed_index(n, i, y)] = self.calRealDis(i,x,y)
 
                 if i < x:
                     D[self.condensed_index(n, i, x)] = -1

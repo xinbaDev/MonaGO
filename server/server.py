@@ -7,6 +7,7 @@ from flask import Flask,render_template,request,send_from_directory
 
 #for pre processing the data
 from DataProcess import DataProcess
+from DataProcess2 import DataProcess2
 from DavidDataScrawler import DavidDataScrawler
 
 import logging
@@ -62,7 +63,47 @@ def index():
         +"var clusterHierData="+str(clusterHierData) +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
 
         return data+html
-        
+
+@app.route('/index2', methods=['POST','GET'])
+def index2():
+
+    annotCatDict = {
+        'GOTERM_BP_FAT':'25',#biological process
+        'GOTERM_CC_FAT':'32',#celluar component
+        'GOTERM_MF_FAT':'39'#melocular function
+    }
+
+    if request.method == 'GET':
+        return render_template("index2.html")
+    else:
+
+
+
+        #parameters needed for querying DAVID
+        inputIds = request.form['inputIds']
+        idType = request.form['idType']
+        annotCat = request.form['annotCat']
+        pVal = request.form['pVal'];
+        #transform annotation name to number recognized by DAVID(e.g. GOTERM_BP_FAT to 25) .
+        annotCat = ','.join([annotCatDict[cat] for cat in annotCat.split(",")])
+
+        go,status = getDataFromDavid(inputIds,idType,annotCat,pVal)
+
+        if status == False:
+            return "Failure to get data, please make sure the identifier is correct"
+
+        matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData2(go)
+
+        if not matrix_count:
+            return "Failure to process data"
+
+        with open(root_dir+'templates/chord_layout.html',"r") as fr_html:
+            html = "".join(fr_html.readlines())
+
+        data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+str(matrix_count)+";"+"var array_order="+str(array_order)+";"\
+        +"var clusterHierData="+str(clusterHierData) +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
+
+        return data+html
 
 @app.route('/css/<fileName>')
 def getCss(fileName):
@@ -176,7 +217,6 @@ def processedData(go):
         clusterHierData:an array storing hierarcical data use to generated hierarcical tree
     '''
     dataProcess = DataProcess()
-
     try:
         preProcessedData = dataProcess.dataProcess(go)
 
@@ -191,6 +231,36 @@ def processedData(go):
         
         return matrix,go_index_reord,go_hier,go_inf_reord,clusterHierData
 
+@logTime
+def processedData2(go):
+    '''
+    generate necessary data for visualization
+
+    Args:
+        a list of GO terms
+
+    Return:
+        matrix:a matrix M where M(i,j) represents the number of intersected genes betweeen GO[i] and GO[j]
+        go_index_reord:an array representing the position change of GO terms after hieracical clustering
+        go_hier:a list of GO that are ancesters of enriched GO terms.
+        go_inf_reord:an array of enriched GO terms
+        clusterHierData:an array storing hierarcical data use to generated hierarcical tree
+    '''
+    dataProcess = DataProcess2()
+
+    try:
+        preProcessedData = dataProcess.dataProcess(go)
+
+    except Exception as e:
+        logger.error(str(e))
+    else:
+        matrix = preProcessedData["matrix"]["matrix_count"]
+        go_index_reord = preProcessedData["go_index_reord"]
+        go_hier = preProcessedData["go_hier"]
+        go_inf_reord = preProcessedData["go_inf"]
+        clusterHierData = preProcessedData["clusterHierData"]
+        
+        return matrix,go_index_reord,go_hier,go_inf_reord,clusterHierData
 
 if __name__ == '__main__':
     app.run(debug="true",host="0.0.0.0",threaded = True)
