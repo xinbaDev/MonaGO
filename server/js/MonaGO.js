@@ -1119,6 +1119,9 @@
       return [angle,radius];
     }
 
+    /**
+    *create cluster nodes
+    */
     function createClusterNodesStatus(clusterHierData,nodeBeingClicked,status,collpasedNodes,clusterNodesRadius,collapsedNodeRadius){
 
       for(i=0;i<clusterHierData.length;i++){
@@ -1200,16 +1203,20 @@
       /*console.log("recover array order:"+array_order);*/
     }
 
-    function removeNodesInClusterData(nodePositions,clusterNodesLevel){
-        /*console.log(clusterNodesLevel);*/
+    /**
+    *remove associated cluster in cluster hierarchical data and create new cluster hierarchical data
+    *@param nodePositions : the node position assoicated with the collapsed cluster
+    *@param clusterNodesLevel : 
+    *@return new created cluster hierarchical data
+    */
+    function createNewClusterHierData(nodePositions,clusterNodesLevel){
         var newNode = old_array_order[nodePositions[nodePositions.length-1]];
-        /*console.log("newNode:"+newNode);*/
         var newClusterHierData = [];
 
         clusterHierData.map(function(d,i){
             if(clusterNodesLevel.indexOf(i) == -1){
                 newClusterHierData.push(d);
-            }else{
+            }else{//create new node
                 if(clusterNodesLevel.indexOf(i) == clusterNodesLevel.length-1)
                 {
                     newClusterHierData.push([newNode,newNode,d[2]]);
@@ -1218,8 +1225,6 @@
                 }
             }
         });    
-
-        //console.log(newClusterHierData);
 
         return newClusterHierData;
     }
@@ -1243,6 +1248,10 @@
       return removeHierData;
     }
 
+    /**
+    *collpase the hierarcial clusters and return removed hierarcial data
+    *@parma nodePositions:
+    */
     function collapseHierClustering(nodePositions,clusterNodesLevel,nodeBeingClicked,collpasedNodes,clusterNodesRadius){
         var collapsedNodeRadius;
         clusterHierNodesStatus.map(function(d){
@@ -1263,8 +1272,10 @@
         var removeHierData = getRemoveClusterData(clusterNodesLevel);
         /*console.log(removeHierData);*/
 
-        clusterHierData = removeNodesInClusterData(nodePositions,clusterNodesLevel);
+        //create new cluster hierarchical cluster data
+        clusterHierData = createNewClusterHierData(nodePositions,clusterNodesLevel);
 
+        //create 
         createClusterNodesStatus(clusterHierData,nodeBeingClicked,"collapse",collpasedNodes,clusterNodesRadius,collapsedNodeRadius);
         
         /*console.log("newclusternode:"+clusterHierData);*/
