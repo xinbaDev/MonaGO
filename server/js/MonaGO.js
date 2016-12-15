@@ -1120,7 +1120,13 @@
     }
 
     /**
-    *create cluster nodes
+    *create cluster nodes(position,status)
+    *@param clusterHierData: hierarchical data
+    *@param nodeBeingClicked: index of the node being clicked
+    *@param status: expanded/collapsed
+    *@param collpaseNodes: an array of collapsed nodes 
+    *@param clusterNodesRadius: an array of collapsed nodes' radius
+    *@param collapsedNodeRadius: the radius of the collapsed node
     */
     function createClusterNodesStatus(clusterHierData,nodeBeingClicked,status,collpasedNodes,clusterNodesRadius,collapsedNodeRadius){
 
@@ -1250,7 +1256,12 @@
 
     /**
     *collpase the hierarcial clusters and return removed hierarcial data
-    *@parma nodePositions:
+    *@param nodePositions: an array of nodes' positions
+    *@param clusterNodesLevel: the level of the nodes being clustered in hierarchical data
+    *@param nodeBeingClicked: the index of the node being clicked
+    *@param collapsedNodes: an array of collapsed nodes
+    *@param clusterNodesRadius: an array of collapsed nodes' radius  
+    *@return removed hierarcial data
     */
     function collapseHierClustering(nodePositions,clusterNodesLevel,nodeBeingClicked,collpasedNodes,clusterNodesRadius){
         var collapsedNodeRadius;
@@ -1275,14 +1286,14 @@
         //create new cluster hierarchical cluster data
         clusterHierData = createNewClusterHierData(nodePositions,clusterNodesLevel);
 
-        //create 
+        //create cluster node 
         createClusterNodesStatus(clusterHierData,nodeBeingClicked,"collapse",collpasedNodes,clusterNodesRadius,collapsedNodeRadius);
         
         /*console.log("newclusternode:"+clusterHierData);*/
         if(labelOff==1)
           drawHierarchicalClustering(clusterHierData);
 
-        return removeHierData;
+        return removeHierData,clusterHierData;
     }
 
     function expandHierClustering(removedClusterHierData,clusterNodesLevel,nodeBeingClicked,collpasedNodes,clusterNodesRadius){
@@ -1298,8 +1309,7 @@
 
         createClusterNodesStatus(clusterHierData,nodeBeingClicked,"expand",collpasedNodes,clusterNodesRadius);
 
-        if(labelOff==1)
-          drawHierarchicalClustering(clusterHierData);
+        return clusterHierData;
     }
 
 
@@ -1328,11 +1338,9 @@
         //key function: collpase/combine go and return the go inf being removed
         var removeGOs = collapseNodeSet(nodePositions,nodeBeingClickedIndex);
 
-        createGOAndUpdateChordLayout();
-
         var removeNodeInArray = removeNodesInArrayOrder(nodePositions);
-        
-        var removeHierData = collapseHierClustering(nodePositions,clusterNodesLevel,nodeBeingClickedIndex,Object.keys(memCache),memCache["clusterNodesRadius"]);
+
+        var removeHierData,clusterHierData = collapseHierClustering(nodePositions,clusterNodesLevel,nodeBeingClickedIndex,Object.keys(memCache),memCache["clusterNodesRadius"]);
 
         if(memCache["clusterNodesRadius"]!=undefined)
             var clusterNodesRadius = memCache["clusterNodesRadius"];
@@ -1355,14 +1363,14 @@
 
         memCache[nodeBeingClickedIndex] = nodeBeingMemorized;
 
+        updateMoanaGOLayout(clusterHierData);
+
       }else{
         /*console.log("node going to expand");*/
 
         nodeBeingMemorized = memCache[nodeBeingClickedIndex];
 
         expandNodeSet(nodeBeingClickedIndex,nodeBeingMemorized["go_inf"]);
-
-        createGOAndUpdateChordLayout();
 
         addNodesToArrayOrder(nodeBeingMemorized["array_order"]);
 
@@ -1383,10 +1391,22 @@
 
         memCache["clusterNodesRadius"] = clusterNodesRadius;
 
-        expandHierClustering(nodeBeingMemorized["clusterHierData"],clusterNodesLevel,nodeBeingClickedIndex,collapsedNodes,clusterNodesRadius);
-
+        var clusterHierData = expandHierClustering(nodeBeingMemorized["clusterHierData"],clusterNodesLevel,nodeBeingClickedIndex,collapsedNodes,clusterNodesRadius);
+        
         delete memCache[nodeBeingClickedIndex];
+
+        updateMoanaGOLayout(clusterHierData);
+
+
       }
+    }
+
+    function updateMoanaGOLayout(clusterHierData){
+
+      createGOAndUpdateChordLayout();
+
+      if(labelOff==1)
+          drawHierarchicalClustering(clusterHierData);
     }
 
     function moveOutHierCluster(){
