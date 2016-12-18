@@ -1493,7 +1493,6 @@
 
     function getLevelFromNumOfOverlappingGenes(numOfOverlappingGenes){
       var level = -1;
-      console.log(numOfOverlappingGenes);
       that.clusterHierDataStatic.map(function(d,i){
           if(d[1]>=numOfOverlappingGenes)
             level = i;
@@ -2362,8 +2361,7 @@
       });
 
       ranger.noUiSlider.on('change', function( values, handle ) {
-        console.log(inputFormat.value);
-          var level = getLevelFromNumOfOverlappingGenes(inputFormat.value);
+          var level = getLevelFromNumOfOverlappingGenes(values.toString());
           getClusterNodesIndexBeingSelected(level);
 
           //temporary fix
@@ -2372,7 +2370,6 @@
       });
 
       inputFormat.addEventListener('change',function(){
-        console.log(this.value);
           ranger.noUiSlider.set(this.value);
           var level = getLevelFromNumOfOverlappingGenes(this.value);
           getClusterNodesIndexBeingSelected(level);
