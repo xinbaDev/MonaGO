@@ -33,7 +33,6 @@
 
     var old_array_order = [];
     var clusterHierDataFiltered = [];
-    var clusterHierDataStatic = [];
 
     var memCache = {};
     
@@ -49,6 +48,8 @@
     this.gene_info = {};//gene name for each GO term e.g. gene_info[i] = [...]
     this.dic = {};// gene intersection information
     this.go_inf = [];
+    this.clusterHierData = [];
+    this.clusterHierDataStatic = [];
 
     var that = this;
 
@@ -175,22 +176,22 @@
     }
 
     function createInteractionGenes(){
-       dic = {};
+       that.dic = {};
        var size = that.go_inf.length;
        for(var i = 0;i < size;i++){
           for(var j = 0;j < size;j++){
             if(i == j){
-              dic[i+"-"+j] = ""
+              that.dic[i+"-"+j] = ""
             }else{
               var genes_i = that.go_inf[i]["genes"];
               var genes_j = that.go_inf[j]["genes"];
               var intersectionGenes = genes_i.intersection(genes_j);
               
-              dic[i+"-"+j] = intersectionGenes.getGeneString("|");
+              that.dic[i+"-"+j] = intersectionGenes.getGeneString("|");
             }
           }
        }
-       return dic
+       return that.dic
     }
 
     function GOFilter(){
@@ -936,7 +937,8 @@
 
     function getClusterGenes(nodePositions){
       var clustergenes = [];
-
+      console.log(nodePositions);
+      console.log(that.go_inf);
       nodePositions.map(function(d){ 
             that.go_inf[d].genes.map(function(d,i){
                  clustergenes.push(d);
@@ -963,6 +965,8 @@
     *@return original go inf(before clustered)
     */
     function collapseNodeSet(nodePositions,nodeBeingClicked){
+      //get all the genes associated with the cluster
+      var genes = getClusterGenes(nodePositions);
 
       var clusterGOs = that.go_inf.splice(nodePositions[0],nodePositions.length);
       var GO_id = [];
@@ -973,8 +977,6 @@
       });
 
       var pVal = calculateNewPvalue(clusterGOs);
-      //get all the genes associated with the cluster
-      var genes = getClusterGenes(nodePositions);
 
       var newGONode = {"GO_id":GO_id,"GO_name":GO_name,"count":genes.length,"pVal":pVal,"genes":genes,"nodeBeingClicked":nodeBeingClicked};
 
@@ -1029,9 +1031,8 @@
       return newMatrix;
     }
 
-    function updateLayout(newMatrix){
+    function drawLayout(newMatrix){
 
-        chord = chordMatrix.matrix(newMatrix);
 
         groupElements = groupElements.data(chord.groups());
 
@@ -1288,12 +1289,8 @@
 
         //create cluster node 
         createClusterNodesStatus(clusterHierData,nodeBeingClicked,"collapse",collpasedNodes,clusterNodesRadius,collapsedNodeRadius);
-        
-        /*console.log("newclusternode:"+clusterHierData);*/
-        if(labelOff==1)
-          drawHierarchicalClustering(clusterHierData);
 
-        return removeHierData,clusterHierData;
+        return [removeHierData,clusterHierData];
     }
 
     function expandHierClustering(removedClusterHierData,clusterNodesLevel,nodeBeingClicked,collpasedNodes,clusterNodesRadius){
@@ -1312,24 +1309,8 @@
         return clusterHierData;
     }
 
-
-    function createGOAndUpdateChordLayout(){
-        createInteractionGenes();
-        createGeneInfo();
-
-        matrix = updateMatrix();
-        updateLayout(matrix);
-    }
-
-    function onClusterNodeClick(d,i){
-
-      //transform the index to clusterlevel
-
-      var nodeBeingClickedIndex = d["index"];
-
-      if(d["status"]=="Expanded"){
-
-        //get leaf nodes(associated with the cluster) info(node index & cluster level)
+    function collapseMonaGO(nodeBeingClickedIndex){
+      //get leaf nodes(associated with the cluster) info(node index & cluster level)
         var nodes = getHierNodes(nodeBeingClickedIndex);
         //get the leaf nodes position in the chord layout
         var nodePositions = getLeafNodesPosition(nodes["leafNodes"]).unique();
@@ -1340,7 +1321,13 @@
 
         var removeNodeInArray = removeNodesInArrayOrder(nodePositions);
 
-        var removeHierData,clusterHierData = collapseHierClustering(nodePositions,clusterNodesLevel,nodeBeingClickedIndex,Object.keys(memCache),memCache["clusterNodesRadius"]);
+        matrix = updateMatrix();
+        chord = chordMatrix.matrix(matrix);
+
+        var collapseResults = collapseHierClustering(nodePositions,clusterNodesLevel,nodeBeingClickedIndex,Object.keys(memCache),memCache["clusterNodesRadius"]);
+        removedHierData = collapseResults[0];
+        clusterHierData = collapseResults[1];
+        
 
         if(memCache["clusterNodesRadius"]!=undefined)
             var clusterNodesRadius = memCache["clusterNodesRadius"];
@@ -1359,16 +1346,17 @@
         //console.log(clusterNodesRadius);
         /*console.log(removeHierData);*/
 
-        var nodeBeingMemorized = {"go_inf":removeGOs,"array_order":removeNodeInArray,"clusterHierData":removeHierData,"clusterNodesLevel":clusterNodesLevel};
+        var nodeBeingMemorized = {"go_inf":removeGOs,"array_order":removeNodeInArray,"clusterHierData":removedHierData,"clusterNodesLevel":clusterNodesLevel};
 
         memCache[nodeBeingClickedIndex] = nodeBeingMemorized;
 
-        updateMoanaGOLayout(clusterHierData);
+        return clusterHierData;
 
-      }else{
-        /*console.log("node going to expand");*/
+    }
 
-        nodeBeingMemorized = memCache[nodeBeingClickedIndex];
+    function expandMonaGO(nodeBeingClickedIndex){
+
+      nodeBeingMemorized = memCache[nodeBeingClickedIndex];
 
         expandNodeSet(nodeBeingClickedIndex,nodeBeingMemorized["go_inf"]);
 
@@ -1391,14 +1379,36 @@
 
         memCache["clusterNodesRadius"] = clusterNodesRadius;
 
+        matrix = updateMatrix();
+        chord = chordMatrix.matrix(matrix);
+
+
         var clusterHierData = expandHierClustering(nodeBeingMemorized["clusterHierData"],clusterNodesLevel,nodeBeingClickedIndex,collapsedNodes,clusterNodesRadius);
         
         delete memCache[nodeBeingClickedIndex];
 
-        updateMoanaGOLayout(clusterHierData);
+        return clusterHierData;
+    }
 
+    function onClusterNodeClick(d,i){
+
+      //transform the index to clusterlevel
+
+      var nodeBeingClickedIndex = d["index"];
+
+      if(d["status"]=="Expanded"){
+
+        clusterHierData = collapseMonaGO(nodeBeingClickedIndex);
+
+      }else{
+        /*console.log("node going to expand");*/
+
+        clusterHierData = expandMonaGO(nodeBeingClickedIndex);
 
       }
+
+      updateMoanaGOLayout(clusterHierData);
+
     }
 
     function updateMoanaGOLayout(clusterHierData){
@@ -1407,6 +1417,13 @@
 
       if(labelOff==1)
           drawHierarchicalClustering(clusterHierData);
+    }
+
+    function createGOAndUpdateChordLayout(){
+        createInteractionGenes();
+        createGeneInfo();
+
+        drawLayout(matrix);
     }
 
     function moveOutHierCluster(){
@@ -1476,7 +1493,8 @@
 
     function getLevelFromNumOfOverlappingGenes(numOfOverlappingGenes){
       var level = -1;
-      clusterHierDataStatic.map(function(d,i){
+      console.log(numOfOverlappingGenes);
+      that.clusterHierDataStatic.map(function(d,i){
           if(d[1]>=numOfOverlappingGenes)
             level = i;
       });
@@ -1485,7 +1503,8 @@
     }
 
     function getClusterNodesIndexBeingSelected(level){
-
+      console.log(level);
+      console.log(level_g);
       var clusterDataLevel = [];
       if(level>=level_g){//collapse
         
@@ -1503,16 +1522,20 @@
 
 
         }
-        
+
       }else{//expand
+        console.log("expand");
         var index = level + nodesSize;
         var pos = [];
+        console.log(clusterNodesIndex);
         clusterNodesIndex.reverse().map(function(d1,i){
           if(d1 >= index){
             pos.push(i);
 
             var clusterNode = getClusterNode(d1);
-            onClusterNodeClick(clusterNode);
+            clusterHierData = expandMonaGO(clusterNode["index"]);
+            console.log(clusterHierData);
+          
           }
         });
 
@@ -1538,14 +1561,20 @@
             clusterHierNodesStatus.map(function(d){
               if(index == d["index"]){
                 if(memCache[index]==undefined){
-                  onClusterNodeClick(d);
+                  clusterHierData = collapseMonaGO(index);
+                  console.log(clusterHierData);
                 }
               }
             });
             
         });
       }
+
+
+
       level_g = level;
+      console.log(clusterHierData);
+      updateMoanaGOLayout(clusterHierData);
     }
 
     function getClusterNode(index){
@@ -2333,6 +2362,7 @@
       });
 
       ranger.noUiSlider.on('change', function( values, handle ) {
+        console.log(inputFormat.value);
           var level = getLevelFromNumOfOverlappingGenes(inputFormat.value);
           getClusterNodesIndexBeingSelected(level);
 
@@ -2342,6 +2372,7 @@
       });
 
       inputFormat.addEventListener('change',function(){
+        console.log(this.value);
           ranger.noUiSlider.set(this.value);
           var level = getLevelFromNumOfOverlappingGenes(this.value);
           getClusterNodesIndexBeingSelected(level);
@@ -2518,8 +2549,10 @@
       that.go_inf = go_inf;
       that.go_inf_ori = copyGOInfFrom(go_inf);
 
+      that.clusterHierData = clusterHierData;
+
       clusterHierData.map(function(d){
-        clusterHierDataStatic.push([d[2],d[3]]);
+        that.clusterHierDataStatic.push([d[2],d[3]]);
       });
 
       that.go_inf.forEach(function(d,i){
