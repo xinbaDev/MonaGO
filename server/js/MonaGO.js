@@ -45,6 +45,8 @@
     var maxNumOfOverlappingGens = clusterHierData[0][3];
     var minNumOfOverlappingGens = clusterHierData[clusterHierData.length-1][3];
 
+    var popUpList = [];//store the index of go that being popped up.
+
     this.gene_info = {};//gene name for each GO term e.g. gene_info[i] = [...]
     this.dic = {};// gene intersection information
     this.go_inf = [];
@@ -2120,7 +2122,8 @@
                d3.svg.arc().innerRadius(function(d){return (d.index!=i)? r0:r0+10;}).outerRadius(
                 function(d){return (d.index!=i)? r1:r1+10;}));
 
-          groupText.transition().attr("x",function(d){
+
+          groupText.transition().attr("x",function(d){  
             if(d.index==i){
               if ((d.startAngle+d.endAngle)/2 < 3.1415)
                 return 20;
@@ -2130,6 +2133,8 @@
               return 8;
             }
           });
+
+          popUpHierarchy();
 
 
           chordLayout.transition().attr("d",d3.svg.chord().radius(function(d){return (d.index!=i)? r0:r0+10;}));
@@ -2172,18 +2177,18 @@
             createOnClick(num_array);
             createOnHover(num_array);
 
-            var arrayList=[];
+            popUpList=[];
             for(i in index_array){
               var num = parseInt(index_array[i]);
-              arrayList.push(num);
+              popUpList.push(num);
             }
 
             groupLayout.transition().attr("d",
-                 d3.svg.arc().innerRadius(function(d){return (arrayList.indexOf(d.index)==-1)? r0:r0+5;}).outerRadius(
-                  function(d,i){return (arrayList.indexOf(d.index)==-1)? r1:r1+5;}));
+                 d3.svg.arc().innerRadius(function(d){return (popUpList.indexOf(d.index)==-1)? r0:r0+5;}).outerRadius(
+                  function(d,i){return (popUpList.indexOf(d.index)==-1)? r1:r1+5;}));
 
             groupText.transition().attr("x",function(d){
-              if(arrayList.indexOf(d.index)!=-1){
+              if(popUpList.indexOf(d.index)!=-1){
                 if ((d.startAngle+d.endAngle)/2 < 3.1415)
                   return 20;
                 else
@@ -2193,16 +2198,173 @@
               }
             });
 
-            chordLayout.transition().attr("d",d3.svg.chord().radius(function(d){return (arrayList.indexOf(d.index)==-1)? r0:r0+5;}));
+            popUpHierarchy();
 
-         /*   if(arrayList.length!=0)
+            chordLayout.transition().attr("d",d3.svg.chord().radius(function(d){return (popUpList.indexOf(d.index)==-1)? r0:r0+5;}));
+
+         /*   if(popUpList.length!=0)
               moveOutHierCluster();*/
         }
         else{
           resetVis();
+          resetHierarchy();
          
         }
       }
+    }
+
+    function popUpArcs(){
+      clusterArc
+        .style("fill", "green")
+        .attr("class","clusterArc")
+        .transition()
+        .duration(300)
+        .attr("d",function(d){
+            
+            var arc = d3.svg.arc()
+              .innerRadius(d["radius"]+15)
+              .outerRadius(d["radius"]+16)
+              .startAngle(d["startAngle"])
+              .endAngle(d["endAngle"]);
+
+            return arc();
+        });
+    }
+
+    function resetArcs(){
+      clusterArc
+        .style("fill", "green")
+        .attr("class","clusterArc")
+        .transition()
+        .duration(300)
+        .attr("d",function(d){
+            
+            var arc = d3.svg.arc()
+              .innerRadius(d["radius"]+10)
+              .outerRadius(d["radius"]+11)
+              .startAngle(d["startAngle"])
+              .endAngle(d["endAngle"]);
+
+            return arc();
+        });
+    }
+
+    function popUpLines(){
+      clusterLine1
+        .style("fill", "green")
+        .attr("class","clusterLine")
+        .transition()
+        .duration(300)
+        .attr("d",function(d){
+            
+            var firstLine = d3.svg.arc()
+            .innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+10:d["LineInnerPosition"])
+            .outerRadius(d["LineOuterPosition"]+10)
+            .startAngle(d["LineAngle"])
+            .endAngle(d["LineAngle"]+0.002);
+
+            return firstLine();
+        });
+
+      clusterLine2
+        .style("fill", "green")
+        .attr("class","clusterLine")
+        .transition()
+        .duration(300)
+        .attr("d",function(d){
+
+          var secondLine = d3.svg.arc()
+            .innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+10:d["LineInnerPosition"])
+            .outerRadius(d["LineOuterPosition"]+10)
+            .startAngle(d["LineAngle"])
+            .endAngle(d["LineAngle"]+0.002);
+
+            return secondLine();
+        });
+    }
+
+    function resetLines(){
+      clusterLine1
+        .style("fill", "green")
+        .attr("class","clusterLine")
+        .transition()
+        .duration(300)
+        .attr("d",function(d){
+            
+            var firstLine = d3.svg.arc()
+            .innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
+            .outerRadius(d["LineOuterPosition"]+5)
+            .startAngle(d["LineAngle"])
+            .endAngle(d["LineAngle"]+0.002);
+
+            return firstLine();
+        });
+
+      clusterLine2
+        .style("fill", "green")
+        .attr("class","clusterLine")
+        .transition()
+        .duration(300)
+        .attr("d",function(d){
+
+          var secondLine = d3.svg.arc()
+            .innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
+            .outerRadius(d["LineOuterPosition"]+5)
+            .startAngle(d["LineAngle"])
+            .endAngle(d["LineAngle"]+0.002);
+
+            return secondLine();
+        });
+    }
+
+    function popUpClusterNodes(){
+      clusterHierNodeView.transition().duration(300).attrTween("transform", tween).attr("class","clusterNodeView");
+      clusterHierNodeTextView.transition().duration(300).attrTween("transform", tween).attr("class","clusterText");
+
+      function tween(d, i, a) {
+              var interpolate;
+              var str;
+              
+              str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
+               + "translate(" + ( d["radius"] + 10 ) + ",0)";
+              interpolate = d3.interpolate(a,str);
+
+
+              return function(t) {
+                  return interpolate(t);
+              };
+      }
+    }
+
+    function resetClusterNodes(){
+      clusterHierNodeView.transition().duration(300).attrTween("transform", tween).attr("class","clusterNodeView");
+      clusterHierNodeTextView.transition().duration(300).attrTween("transform", tween).attr("class","clusterText");
+
+      function tween(d, i, a) {
+              var interpolate;
+              var str;
+              
+              str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
+               + "translate(" + ( d["radius"] + 5 ) + ",0)";
+              interpolate = d3.interpolate(a,str);
+
+
+              return function(t) {
+                  return interpolate(t);
+              };
+      }
+    }
+
+    function popUpHierarchy(){
+      popUpArcs();
+      popUpLines();
+      popUpClusterNodes();
+    }
+
+    function resetHierarchy(){
+      resetArcs();
+      resetLines();
+      resetClusterNodes();
     }
 
     function drawLable(){
@@ -2230,7 +2392,16 @@
             return "rotate(" + ((d.startAngle+d.endAngle)/2 * 180 / Math.PI - 90) + ")"
                + "translate(" + r1 + ",0)";
             }).append("svg:text")
-            .attr("x", 8)
+            .attr("x", function(d){
+              if(popUpList.indexOf(d.index)!=-1){
+                if ((d.startAngle+d.endAngle)/2 < 3.1415)
+                  return 20;
+                else
+                  return -10;
+              }else{
+                return 8;
+              }
+            })
             .attr("dy", ".45em")
             .attr("text-anchor", function(d) {
              return (d.startAngle+d.endAngle)/2 > Math.PI ? "end" : null;
@@ -2265,7 +2436,13 @@
 
       groupText.style("display","none");
 
-      drawHierarchicalClustering(clusterHierData);
+      if(popUpList.length != 0){
+        popUpHierarchy();
+      }else{
+        drawHierarchicalClustering(clusterHierData);
+      }
+      
+
       if(textBackground){
         if(zoom.scale()<0.7){
             textBackground.attr("visibility","hidden");
