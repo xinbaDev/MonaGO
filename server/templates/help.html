@@ -4,7 +4,7 @@
 
 body{
     font-family:Verdana, Geneva, sans-serif;
-	font-size: 20px;
+    font-size: 20px;
 }
 fieldset{
     background: rgba(255, 152, 0, 0.47);
@@ -111,8 +111,8 @@ textarea{
     background:#F1F1F1;
 }
 .demo{
-	color:blue;
-	text-decoration: underline;
+    color:blue;
+    text-decoration: underline;
 }
 .tooltip .tooltiptext {
     visibility: hidden;
@@ -157,7 +157,7 @@ textarea{
                 </map>
 
                 <h1>
-                    <a href="./index" style="text-decoration:none;color:orange">
+                    <a href="./" style="text-decoration:none;color:orange">
                         ManaGO
                     </a>
                 </h1>
@@ -167,88 +167,83 @@ textarea{
             <h2>
                 <strong>Help/Information</strong>
             </h2>
-	   
-	    <h3>Usage</h3>
-            <p>MonaGO is a visualization tool for Gene Ontology(GO) enrichement analysis and it is designed with biologists in mind. It facilitates biologists to better understand the GO enrichment result by using innovative visualization techniques. The basic workflow is as following:<p>
+       
+        <h3>Usage</h3>
+            <p>MonaGO is a visualization tool for Gene Ontology (GO) enrichment analysis which facilitates a better interpretation of GO enrichment results by using innovative visualization techniques. The basic workflow is as following:<p>
             <div style="padding-left: 50px">
-            	<p>(1)Input a list of genes that the user want to enrich with.
-            	<p>(2)Select the gene identifier given.
-            	<p>(3)Choose p-value to filter the enrichment result.
-            	<p>(4)Choose the GO annotation type(Biological Process,Molecular Function ,Celluar Component).
-            		The GO annotation data are from <a href="https://david.ncifcrf.gov" target="blank">DAVID</a>.
+                <p>(1) Input a list of genes to identify over-represented GO terms.
+                <p>(2) Select the gene identifier given.
+                <p>(3) Choose p-value to filter the enrichment result.
+                <p>(4) Choose the GO annotation type (Biological Process, Molecular Function, Cellular Component). The GO annotation data are from <a href="https://david.ncifcrf.gov" target="blank">DAVID</a>.
             </div>
 
 
             <p></p>
             
-		
-		<h3>Interface<h3>
-		<center>
-			<img src="../img/interface.png" style="width:600px">
-		</center>
-		<h4>1. Main visualization panel</h4>
+        
+        <h3>Interface<h3>
+        <center>
+            <img src="../img/interface.png" style="width:600px">
+        </center>
+        <h4>1. Main visualization panel</h4>
 
-		<p>The main visualization component is the chord diagram, which has auxiliary visual elements attached to it, including the GO term labels and the hierarchical clustering tree.</p>
+        <p>The main visualization component is the chord diagram, which has auxiliary visual elements attached to it, including the GO term labels and the hierarchical clustering tree.</p>
 
-		<h5>1.1 The chord diagram</h5>
+        <h5>1.1 The chord diagram</h5>
 
-		<p>Each element in the chord diagram represents a GO term or a cluster of GO terms. The edges inside the chord diagram between two elements denotes the fact that there are common genes between them. </p>
-
-
-		<p>Additionally, on each element two types of information, controlled by the toggle (radio buttons) on the top-left:
-		Name of the GO term, or, for a cluster, the name of the GO term with the lowest p-value, and 
-		The hierarchical clustering tree that allows the collapsing/expansion of GO terms.</p>
-		Note that the size and the position of the chord diagram can be changed.
-
-		<h5>1.2 Hierarchical clustering tree</h5>
-		<p>Clustering can be performed systematically or manually using the hierarchical clustering tree:
-		The slider on the top left allows systematic clustering of GO terms based on a threshold of the minimum number of common genes.
-		Alternatively, the nodes in the hierarchical clustering tree can be clicked to manually collapse GO /terms/clusters and expand clusters. </p>
+        <p>Each element in the chord diagram represents a GO term or a cluster of GO terms. The edges inside the chord diagram between two elements denote the fact that there are common genes between them. </p>
 
 
-		<h4>2. Details panel</h4>
+        <p>Additionally, on each element two types of information are displayed, controlled by the toggle (radio buttons) on the top-left:
+        Name of the GO term, or, for a cluster, the name of the GO term with the lowest p-value, and 
+        The hierarchical clustering tree that allows the collapsing/expansion of GO terms.</p>
+        Note that the size and the position of the chord diagram can be changed.
 
-		<p>The details panel shows detailed information about a GO term or a cluster in the main visualization panel. The details panel is activated when the mouse hovers over a GO term/cluster in the chord diagram. </p>
-
-
-		<p>The following information is shown in the details panel.
-
-
-		<p>For a GO term:
-		<div style="padding-left: 50px">
-			<p>Its ID,
-			<p>Its name,
-			<p>The p-value,
-			<p>The list of genes expressed for this term, and
-			<p>The part of the GO hierarchy from this term to the top term (Biological Process, Cellular Component, or Molecular Function).
-		</div>
-
-		<p>For a cluster:
-		<div style="padding-left: 50px">
-			<p>The IDs of GO terms in the cluster, separated by commas,
-			<p>The names of GO terms in the cluster, separated by commas,
-			<p>The number of common genes among the GO terms in the cluster,
-			<p>The average p-value of all GO terms in the cluster, and
-			<p>The list of names of all common genes.
-		</div>
+        <h5>1.2 Hierarchical clustering tree</h5>
+        <p>Clustering can be performed systematically or manually using the hierarchical clustering tree:
+        The slider on the top left allows systematic clustering of GO terms based on a threshold of the minimum number of common genes.
+        Alternatively, the nodes in the hierarchical clustering tree can be clicked to manually collapse GO /terms/clusters and expand clusters. </p>
 
 
-		<h4>3. Search panel</h4>
-		<p>The search panel allows the search of GO terms by gene names, and IDs or names of GO terms. (Please search by its full name for now)
+        <h4>2. Details panel</h4>
+
+        <p>The details panel shows detailed information about a GO term or a cluster in the main visualization panel. The details panel is activated when the mouse hovers over a GO term/cluster in the chord diagram. </p>
 
 
-		<p>All GO terms/clusters relevant to a search query will be highlighted (popping out) on the chord diagram in the  main visualization panel. Moreover, relevant GO terms/clusters will be listed in the details panel. 
+        <p>The following information is shown in the details panel.
 
 
-		<p>As the tool is still under heavy development, any feedback about how to improve it will be highly appreciated!  Please do not hesitate to contact me zxin9@student.monash.edu for any question/comments about this tool. Thank you for your time!
+        <p><b>For a GO term</b>:
+        <div style="padding-left: 50px">
+            <p>Its ID,
+            <p>Its name,
+            <p>The p-value,
+            <p>The list of genes expressed for this term, and
+            <p>The part of the GO hierarchy from this term to the top term (Biological Process, Cellular Component, or Molecular Function).
+        </div>
 
-		<h2>Contacts:</h2>
-		<p>Yuan-Fang Li: <a href="mailto:yuanfang.li@monash.edu">yuanfang.li@monash.edu</a></p>
-		<p>Mirana Ramialison: <a href="mailto:mirana.ramialison@monash.edu">mirana.ramialison@monash.edu</a></p>
-		<p>Alex Xin: <a href="mailto:zxin9@student.monash.edu">zxin9@student.monash.edu</a></p>
-		
-		<h2>Source code</h2>
-		<p>The source code is available on <a href="https://github.com/xinba123/MonaGO">gitHub</a>.</p>
+        <p><b>For a cluster</b>:
+        <div style="padding-left: 50px">
+            <p>The IDs of GO terms in the cluster, separated by commas,
+            <p>The names of GO terms in the cluster, separated by commas,
+            <p>The number of common genes among the GO terms in the cluster,
+            <p>The average p-value of all GO terms in the cluster, and
+            <p>The list of names of all common genes.
+        </div>
+
+
+        <h4>3. Search panel</h4>
+        <p>The search panel allows the search of GO terms by gene names, and IDs or names of GO terms (search by its full name).
+
+        <p>All GO terms/clusters relevant to a search query will be highlighted (popping out) on the chord diagram in the  main visualization panel. Moreover, relevant GO terms/clusters will be listed in the details panel. 
+
+        <h2>Contacts:</h2>
+        <p>Alex Xin: <a href="mailto:zxin9@student.monash.edu">zxin9@student.monash.edu</a></p>
+        <p>Yuan-Fang Li: <a href="mailto:yuanfang.li@monash.edu">yuanfang.li@monash.edu</a></p>
+        <p>Mirana Ramialison: <a href="mailto:mirana.ramialison@monash.edu">mirana.ramialison@monash.edu</a></p>
+        
+        <h2>Source code</h2>
+        <p>The source code is available on <a href="https://github.com/xinba123/MonaGO">GitHub</a>.</p>
         </div>
     </body>
 </html>
