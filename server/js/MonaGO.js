@@ -135,6 +135,7 @@
 
                 //clear the input
                 angularBtn.on("click", function () {
+                    popUpList = [];
                     scope.searchText = "";
                     $('#filter').val("");
                     $('#filter').focus();
@@ -2134,8 +2135,11 @@
             }
           });
 
-          popUpHierarchy();
+          popUpList = [];
 
+          popUpList.push(parseInt(i));//for consistency between two modes
+
+          popUpHierarchy();
 
           chordLayout.transition().attr("d",d3.svg.chord().radius(function(d){return (d.index!=i)? r0:r0+10;}));
 
@@ -2208,6 +2212,8 @@
         else{
           resetVis();
           resetHierarchy();
+          popUpList= [];
+
          
         }
       }
@@ -2425,6 +2431,15 @@
       return d[position];
     }
 
+    function drawPopUpHierarchy(){
+      setUpElementIfNecessary();
+      popUpHierarchy();
+    }
+
+    function setUpElementIfNecessary(){
+        drawHierarchicalClustering(clusterHierData);
+    }
+
     function drawHierCluster(){
       labelOff = 1;
       clusterArc.style("display","");
@@ -2435,9 +2450,9 @@
 
 
       groupText.style("display","none");
-
+      
       if(popUpList.length != 0){
-        popUpHierarchy();
+        drawPopUpHierarchy();
       }else{
         drawHierarchicalClustering(clusterHierData);
       }
