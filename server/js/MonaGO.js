@@ -194,7 +194,6 @@
             }
           }
        }
-       return that.dic
     }
 
     function GOFilter(){
@@ -1901,7 +1900,7 @@
     function createChordTempl(index,d){
         
         var geneListInHtml = "<div class='gene_content'>";
-        dic[index].split("|").forEach(function(d,i){
+        that.dic[index].split("|").forEach(function(d,i){
              var tmp = "<li>" + "<a class='gene_name'>"+ (i+1) +"."+ d + "</a> "+ "</li>";
              geneListInHtml+=tmp;
         });
@@ -2733,29 +2732,20 @@
 
     }
 
-    this.init = function(size,go_inf,clusterHierData){
-
-      that.go_inf = go_inf;
-      that.go_inf_ori = copyGOInfFrom(go_inf);
-
-      that.clusterHierData = clusterHierData;
-
-      clusterHierData.map(function(d){
-        that.clusterHierDataStatic.push([d[2],d[3]]);
-      });
-
-      that.go_inf.forEach(function(d,i){
-        that.go_inf[i].genes = d.genes.split("|");
-      });
-
-
+    function perparePvalue(){
       maxpVal = getMaxPval();
       minpVal = getMinPval();
 
       pVal_sort = sortGO_inf();
 
       step = (maxpVal-minpVal)/10;
+      
+      for(i=0;i<11;i++){
+        seperated_points.push(minpVal+step*i);
+      }
+    }
 
+    function perpareChord(){
       chordMatrix = d3.layout.chord()
        .padding(.03)
        .sortSubgroups(d3.descending);
@@ -2767,13 +2757,30 @@
         nodeObj = {"index":d.index,"angle":(d.startAngle+d.endAngle)/2,"radius":r1};
         chordGroupsNodePosition.push(nodeObj);
       });
-       
-      for(i=0;i<11;i++){
-        seperated_points.push(minpVal+step*i);
-      }
+    }
+
+    this.init = function(size,go_inf,clusterHierData){
+
+      that.go_inf = go_inf;
+      that.go_inf_ori = copyGOInfFrom(go_inf);
+
+      that.clusterHierData = clusterHierData;
+
+      clusterHierData.map(function(d){
+        that.clusterHierDataStatic.push([d[2],d[3]]);
+      });
+
+      //get a list of genes for each GO term
+      that.go_inf.forEach(function(d,i){
+        that.go_inf[i].genes = d.genes.split("|");
+      });
+
+      perparePvalue();
+
+      perpareChord();
 
       createGeneInfo();
-      that.dic = createInteractionGenes();
+      createInteractionGenes();
 
       createPvalLabelPanel(fill);
       createClusterNodesStatus(clusterHierData,[],"",[]);
