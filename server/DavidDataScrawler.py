@@ -1,7 +1,6 @@
 from HTMLParser import HTMLParser
 import re
 from PycurlHelper import PycurlHelper
-from twisted.internet import defer
 import logging
 
 logging.basicConfig(level=logging.debug)
