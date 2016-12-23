@@ -2605,6 +2605,8 @@
 
       $("#editor_save").click(function() {
 
+        console.log("click save");
+
           var svg = d3.select('.main_vis')
                     .attr("version", 1.1)
                     .attr("xmlns", "http://www.w3.org/2000/svg")
@@ -2625,15 +2627,94 @@
             context.drawImage(image, 0, 0);
 
             var canvasdata = canvas.toDataURL("image/png");
-
-            var a = document.createElement("a");
+            console.log(canvasdata);
+/*            var a = document.createElement("a");
             a.download = "sample.png";
             a.href = canvasdata;
-            a.click();
+            a.click();*/
+            post("/getPic", {
+                filename: 'chart',
+                png: canvasdata
+            }, null);
+
           };
 
         });
     }
+
+    function mextend (a, b) {
+          var n;
+          if (!a) {
+              a = {};
+          }
+          for (n in b) {
+              a[n] = b[n];
+          }
+          return a;
+    };
+
+
+    function mcss(el, styles) {
+          // if (H.isMS && !H.svg) { // #2686
+          //     if (styles && styles.opacity !== undefined) {
+          //         styles.filter = 'alpha(opacity=' + (styles.opacity * 100) + ')';
+          //     }
+          // }
+          mextend(el.style, styles);
+      };
+
+    function createElement(tag, attribs, styles, parent, nopad) {
+            var el = window.document.createElement(tag),
+                css = mcss;
+            if (attribs) {
+                mextend(el, attribs);
+            }
+            if (nopad) {
+                css(el, {
+                    padding: 0,
+                    border: 'none',
+                    margin: 0
+                });
+            }
+            if (styles) {
+                css(el, styles);
+            }
+            if (parent) {
+                parent.appendChild(el);
+            }
+            return el;
+    };
+
+    // Add the H.post utility
+    function post(url, data, formAttributes) {
+
+        var name,
+            form;
+
+        // create the form
+        form = createElement('form', {
+            method: 'post',
+            action: url,
+            enctype: 'multipart/form-data'
+        }, {
+            display: 'none'
+        }, window.document.body);
+
+        // add the data
+        for (name in data) {
+            createElement('input', {
+                type: 'hidden',
+                name: name,
+                value: data[name]
+            }, null, form);
+        }
+
+        // submit
+        form.submit();
+
+        // clean up
+        discardElement(form);
+    };
 
     function setUpView(){
 

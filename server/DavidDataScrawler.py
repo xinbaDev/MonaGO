@@ -234,6 +234,7 @@ class DavidDataScrawler(object):
             #get GO_id,GO_name,p-value,count
             if tag == "a":
                 m = re.search('(data/download/chart_\w+.txt)',attrs[0][1])
+                print('https://david-d.ncifcrf.gov/'+m.group(0))
                 if m!=None:
                     url = 'https://david-d.ncifcrf.gov/'+m.group(0)
                     res = self.pcHelper.get(url)

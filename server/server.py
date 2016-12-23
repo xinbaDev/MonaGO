@@ -3,7 +3,7 @@ import sys
 from datetime import datetime
 
 #for praser
-from flask import Flask,render_template,request,send_from_directory
+from flask import Flask,render_template,request,send_from_directory,Response
 
 #for pre processing the data
 from DataProcess import DataProcess
@@ -12,6 +12,8 @@ from DavidDataScrawler import DavidDataScrawler
 
 import logging
 import time
+
+import base64
 
 logging.basicConfig(filename="debug.txt",level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -35,8 +37,6 @@ def index():
     if request.method == 'GET':
         return render_template("index.html")
     else:
-
-
 
         #parameters needed for querying DAVID
         inputIds = request.form['inputIds']
@@ -150,10 +150,20 @@ def getMyLogo():
         fw.write("remote address: {}  time: {}\n".format(request.remote_addr,datetime.today()))
     return send_from_directory(root_dir+'my/img','my_logo.jpg')
 
-
 @app.route('/help.html')
 def getHelp():
     return send_from_directory(root_dir+'templates','help.html')
+
+@app.route('/getPic',methods=['POST','GET'])
+def getPic():
+    b64_string = request.form['png'].split(",")[1]
+
+    b64_string += "=" * ((4 - len(request.form['png']) % 4) % 4)
+    return Response(
+        base64.b64decode(b64_string),
+        mimetype="image/png",
+        headers={"Content-disposition":
+                 "attachment; filename=chart.png"})
 
 
 def logTime(func):
