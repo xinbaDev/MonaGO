@@ -26,8 +26,8 @@ class DavidDataScrawler(object):
         if self._checkSuccess(res):
             print "exception throw0"
 
-            url_1 = 'https://david-d.ncifcrf.gov/chartReport.jsp?annot={0}&currentList=0'.format(self.annotCat)
-            url_2 = 'https://david-d.ncifcrf.gov/list.jsp'
+            url_1 = 'https://david.ncifcrf.gov/chartReport.jsp?annot={0}&currentList=0'.format(self.annotCat)
+            url_2 = 'https://david.ncifcrf.gov/list.jsp'
 
             urls = [url_1,url_2]
 
@@ -99,6 +99,8 @@ class DavidDataScrawler(object):
 
 
     def _parseGO(self,getGO_response,pcHelper):
+        with open("asdasd.txt","w") as fw:
+            fw.write(getGO_response)
         parser = DavidDataScrawler.GOParser(pcHelper)
         parser.feed(getGO_response)#get go
         go = parser.getGO_inf()
@@ -136,7 +138,7 @@ class DavidDataScrawler(object):
                          ('sublist',''),('rowids',''),('convertedListName','null'),('convertedPopName','null'),
                          ('pasteBox',inputIds),('Identifier',idType) , ('rbUploadType','list')]
 
-        return pcHelper.sendMultipart(url="https://david-d.ncifcrf.gov/tools.jsp",data=data)
+        return pcHelper.sendMultipart(url="https://david.ncifcrf.gov/tools.jsp",data=data)
 
 
 
@@ -233,10 +235,12 @@ class DavidDataScrawler(object):
 
             #get GO_id,GO_name,p-value,count
             if tag == "a":
+                print(attrs[0][1])
                 m = re.search('(data/download/chart_\w+.txt)',attrs[0][1])
-                print('https://david-d.ncifcrf.gov/'+m.group(0))
+                
                 if m!=None:
-                    url = 'https://david-d.ncifcrf.gov/'+m.group(0)
+                    print('https://david.ncifcrf.gov/'+m.group(0))
+                    url = 'https://david.ncifcrf.gov/'+m.group(0)
                     res = self.pcHelper.get(url)
                     self._parseGO(res)
 
