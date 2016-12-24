@@ -62,11 +62,11 @@ class DavidDataScrawler(object):
             #logger.debug("geneIds:{}".format(geneIds))
 
             geneIdNameMapping = self._getGenesNamesByIds(geneIds,geneList)
-            with open("geneIdNameMapping","w") as fw:
-                fw.write(str(geneIdNameMapping))
+            # with open("geneIdNameMapping","w") as fw:
+            #     fw.write(str(geneIdNameMapping))
 
-            with open("go_filtered","w") as fw:
-                fw.write(str(go_filtered))
+            # with open("go_filtered","w") as fw:
+            #     fw.write(str(go_filtered))
                 
             print "exception throw7"
 
@@ -235,11 +235,10 @@ class DavidDataScrawler(object):
 
             #get GO_id,GO_name,p-value,count
             if tag == "a":
-                print(attrs[0][1])
                 m = re.search('(data/download/chart_\w+.txt)',attrs[0][1])
                 
                 if m!=None:
-                    print('https://david.ncifcrf.gov/'+m.group(0))
+                #if exists
                     url = 'https://david.ncifcrf.gov/'+m.group(0)
                     res = self.pcHelper.get(url)
                     self._parseGO(res)

@@ -75,9 +75,9 @@
     var chord;
     var detailPanelWidth = $(window).width()*0.25;
 
-    var controlPanelWidth = 512;
+    var controlPanelWidth = 520;
 
-    var controlPanelHeight = 150;
+    var controlPanelHeight = 160;
 
     var w = $(window).width()-detailPanelWidth,
          h = $(window).height(),
@@ -2605,7 +2605,8 @@
 
       $("#editor_save").click(function() {
 
-        console.log("click save");
+
+          d3.select("canvas").attr("width",w).attr("height",h);
 
           var svg = d3.select('.main_vis')
                     .attr("version", 1.1)
@@ -2622,7 +2623,10 @@
 
           image.onload = function() {
             //clean the context for redrawing
-            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            console.log(canvas.width);
+            console.log(canvas.height);
+            context.clearRect(0, 0, w, h);
 
             context.drawImage(image, 0, 0);
 
@@ -2715,6 +2719,12 @@
         // clean up
         discardElement(form);
     };
+
+
+    function discardElement(element) {
+      element.remove();
+    };
+
 
     function setUpView(){
 
