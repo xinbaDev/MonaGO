@@ -3,6 +3,9 @@ import re
 from PycurlHelper import PycurlHelper
 import logging
 
+from logTime import logTime
+from MultiPart import MultiPartProducer
+
 logging.basicConfig(level=logging.debug)
 logger = logging.getLogger(__name__)
 
@@ -128,7 +131,7 @@ class DavidDataScrawler(object):
 
 
 
-
+    @logTime
     def _uploadGene(self,pcHelper,idType,inputIds):
 
         data = [('idType', idType), ('uploadType', 'list'),('multiList','false'),('Mode','paste'),

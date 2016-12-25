@@ -15,6 +15,8 @@ import time
 
 import base64
 
+from logTime import logTime
+
 logging.basicConfig(filename="debug.txt",level=logging.INFO)
 logger = logging.getLogger(__name__)
 remote_server = False;
@@ -165,24 +167,6 @@ def getPic():
         headers={"Content-disposition":
                  "attachment; filename=chart.png"})
 
-
-def logTime(func):
-    '''
-    decorator
-
-    Args:
-        take the decorated func 
-    
-    Return:
-        return the wrapped function
-
-    '''
-    def func_warpper(*arg, **kw):
-        start_time = time.time()
-        result = func(*arg, **kw)
-        logger.info(func.__name__ + " lasts--- %s seconds ---" % (time.time() - start_time))
-        return result
-    return func_warpper
 
 
 @logTime
