@@ -25,6 +25,7 @@ class DavidDataScrawler(object):
 
 
     def run(self):
+        self.go_inf = []
 
         pool = HTTPConnectionPool(reactor)
         contextFactory = WebClientContextFactory()
@@ -71,103 +72,118 @@ class DavidDataScrawler(object):
     def setParams(self,inputIds,idType,annotCat,pVal):
         self.inputIds,self.idType,self.annotCat,self.pVal = inputIds,idType,annotCat,pVal
 
-    def cbRequest(self,response):
+    def cbGetGeneList(self,response):
         d = readBody(response)
-        d.addCallback(self.cbBody)
+        d.addCallback(self.cbParseGeneList)
         return d
-
-    def cbBody(self,body):
-        with open("list.html","w") as fw:
-            fw.write(body)
+        
+    @logTime
+    def cbParseGeneList(self,geneList_response):
+        print "get gene list done"
+        self.geneList = self._parseGenes(geneList_response)
+        with open("genelist.html","w") as fw:
+            fw.write(self.geneList)
 
     def cbResponseAfterUploadGenes(self,body):
         self.res = body
-        with open("uploadGene.html","w") as fw:
-            fw.write(body)
 
     def cbUploadGeneRequest(self,response):
         d = readBody(response)
         d.addCallback(self.cbResponseAfterUploadGenes)
         return d
 
+
+    def cbParseGO(self,getGO_response):
+        self.url, self.geneIds = self._parseGO(getGO_response)
+        print "get GO url,geneid done"
+
+
+    def cbGetGOChartHtml(self,response):
+        d = readBody(response)
+        d.addCallback(self.cbParseGO)
+        return d
+
     def getDeferedGOChartResponse(self,agent,url):
-        return 0
-
-
-    def getDeferedGOMappingResponse(self,agent,url):
         d = agent.request(
             'GET', url,
             Headers({'User-Agent': ['Chrome']}),
             None)
-        d.addCallback(self.cbRequest)
+        d.addCallback(self.cbGetGOChartHtml)
         return d
 
 
+    def getDeferedGOMappingResponse(self,agent,url):
+        
+        d = agent.request(
+            'GET', url,
+            Headers({'User-Agent': ['Chrome']}),
+            None)
+        d.addCallback(self.cbGetGeneList)
+
+        return d
+
+
+    def cbGenerateGOData(self,res):
+        print "process data"
+        go_filtered = self._filterGO(self.pVal,self.go_inf)
+        
+        # with open("go_filtered","w") as fw:
+        #     fw.write(str(go_filtered))
+        geneIds = self._getUniqueGeneIds(self.geneIds)
+
+        #logger.debug("geneIds:{}".format(geneIds))
+
+        geneIdNameMapping = self._getGenesNamesByIds(geneIds,self.geneList)
+
+        #change the gene id into gene name in go
+        go_processed = self._changeGeneIdToNameInGO(go_filtered,geneIdNameMapping)
+
+        
+
+        if not go_processed:
+            raise Exception("get final GO failed")
+
+        return go_processed
+
+    @logTime
+    def cbParseGOtxt(self,GO):
+        line = GO.encode('ascii','ignore').split("\n")
+        for i in range(1,len(line)-1):
+            cell = line[i].split("\t")
+            GO_term = cell[1].split("~")
+            self.go_inf.append({"cat":cell[0],"GO_id":GO_term[0],"GO_name":GO_term[1],"count":cell[2],"pVal":cell[4],"genes":cell[5].lower().strip()})
+        #might need to callback
+
+
+    def cbGetGOtxt(self,response):
+        d = readBody(response)
+        d.addCallback(self.cbParseGOtxt)
+        return d
+
+
+    def cbGetGenes(self,agent):
+        d = agent.request(
+            'GET', self.url,
+            Headers({'User-Agent': ['Chrome']}),
+            None)
+        d.addCallback(self.cbGetGOtxt)
+        return d
+
     def handleResponse(self,agent):
         if self._checkSuccess(self.res):
-            print "exception throw0"
+            print "upload sucess"
 
             url_1 = 'https://david.ncifcrf.gov/chartReport.jsp?annot={0}&currentList=0'.format(self.annotCat)
             url_2 = 'https://david.ncifcrf.gov/list.jsp'
             deferList = []
-            d1 = self.getDeferedGOChartResponse(agent,url_1)
+            # d1 = self.getDeferedGOChartResponse(agent,url_1)
+            # d1.addCallback(lambda ign: self.cbGetGenes(agent))
             d2 = self.getDeferedGOMappingResponse(agent,url_2)
-            deferList.append(d1)
+            #deferList.append(d1)
             deferList.append(d2)
             d = defer.DeferredList(deferList)
-
-
-            print "exception throw1"
-
-            getGO_response,geneList_response = map(lambda x: x.getvalue().decode('iso-8859-1'), pcHelper.buffers)
-
-            print "exception throw2"
-
-            logger.debug("getGO_response:{}".format(getGO_response))
-
-            print "exception throw3"
-            #logger.debug("geneList_response:{}".format(geneList_response))
-
-            go,geneIds = self._parseGO(getGO_response, pcHelper)
-            # with open("go","w") as fw:
-            #     fw.write(str(go))
-            print "exception throw4"
-            geneList = self._parseGenes(geneList_response)
                 
-
-            go_filtered = self._filterGO(self.pVal,go)
-            print "exception throw5"
-            # with open("go_filtered","w") as fw:
-            #     fw.write(str(go_filtered))
-            geneIds = self._getUniqueGeneIds(geneIds)
-
-            print "exception throw6"
-
-            #logger.debug("geneIds:{}".format(geneIds))
-
-            geneIdNameMapping = self._getGenesNamesByIds(geneIds,geneList)
-            # with open("geneIdNameMapping","w") as fw:
-            #     fw.write(str(geneIdNameMapping))
-
-            # with open("go_filtered","w") as fw:
-            #     fw.write(str(go_filtered))
-                
-            print "exception throw7"
-
-            #change the gene id into gene name in go
-            go_processed = self._changeGeneIdToNameInGO(go_filtered,geneIdNameMapping)
-
-            print "exception throw8"
-
-            if not go_processed:
-                raise Exception("get final GO failed")
-            
-
-            #before return, close the connection to DAVID explicitly
-
-            pcHelper.close()
-
-            return go_processed
+            #d.addCallback(self.cbGenerateGOData)
 
 
         else:
@@ -175,37 +191,27 @@ class DavidDataScrawler(object):
             raise Exception("upload genes to DAVID failed")
 
 
-
-
-
-
     def _checkSuccess(self,res):
-        print "check"
         if res.find("DAVID: Functional Annotation Tools")==-1:
             return False
         else:
             return True
 
 
-    def _parseGO(self,getGO_response,pcHelper):
-        with open("asdasd.txt","w") as fw:
-            fw.write(getGO_response)
-        parser = DavidDataScrawler.GOParser(pcHelper)
+    def _parseGO(self,getGO_response):
+        parser = DavidDataScrawler.GOParser()
         parser.feed(getGO_response)#get go
-        go = parser.getGO_inf()
         geneIds = parser.getGeneLists()
-
-        #logger.debug('go:{}'.format(go))
-
-        if not go:
-            raise Exception("get GO terms failed") 
-
+        GOUrl = parser.getGOUrl()
         #logger.debug('geneIds:{}'.format(geneIds))
+
+        if not GOUrl:
+            raise Exception("get GOUrl failed") 
 
         if not geneIds:
             raise Exception("get gene lists failed") 
 
-        return go,geneIds
+        return GOUrl,geneIds
 
 
     def _parseGenes(self,geneList_response):
@@ -291,15 +297,14 @@ class DavidDataScrawler(object):
         return filterGO_inf
 
 
+
     class GOParser(HTMLParser):
         '''
         parse a list of GO terms(name and a list of associated gene ids)
         '''
 
-        def __init__(self,pcHelper):
+        def __init__(self):
             HTMLParser.__init__(self)
-
-            self.pcHelper = pcHelper
             self.go_inf = []
             self.geneLists = {}
             self.metacount = 0
@@ -313,8 +318,7 @@ class DavidDataScrawler(object):
                 if m!=None:
                 #if exists
                     url = 'https://david.ncifcrf.gov/'+m.group(0)
-                    res = self.pcHelper.get(url)
-                    self._parseGO(res)
+                    self.url = url
 
             #get gene rowid
             if tag == "img":
@@ -323,18 +327,11 @@ class DavidDataScrawler(object):
                     self.geneLists[self.metacount] = self._parseStringIntoList(genes)
                     self.metacount+=1
 
-        def _parseGO(self,GO):
-            line = GO.encode('ascii','ignore').split("\n")
-            for i in range(1,len(line)-1):
-                cell = line[i].split("\t")
-                GO_term = cell[1].split("~")
-                self.go_inf.append({"cat":cell[0],"GO_id":GO_term[0],"GO_name":GO_term[1],"count":cell[2],"pVal":cell[4],"genes":cell[5].lower().strip()})
-
-        def getGO_inf(self):
-            return self.go_inf
-
         def getGeneLists(self):
             return self.geneLists
+
+        def getGOUrl(self):
+            return self.url
 
         def _parseStringIntoList(self,genes):
             index = genes.find("geneReport")
