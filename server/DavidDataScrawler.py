@@ -1,40 +1,111 @@
 from HTMLParser import HTMLParser
 import re
 from PycurlHelper import PycurlHelper
-import logging
 
-from logTime import logTime
+from cookielib import CookieJar
+from twisted.internet import defer, reactor
+from twisted.web.client import Agent, readBody, HTTPConnectionPool, CookieAgent 
+from twisted.web.http_headers import Headers
+from twisted.internet.ssl import ClientContextFactory
+
+
 from MultiPart import MultiPartProducer
+
+import logging
+from logTime import logTime
 
 logging.basicConfig(level=logging.debug)
 logger = logging.getLogger(__name__)
 
+class WebClientContextFactory(ClientContextFactory):
+    def getContext(self, hostname, port):
+        return ClientContextFactory.getContext(self)
 
 class DavidDataScrawler(object):
+
+
+    def run(self):
+
+        pool = HTTPConnectionPool(reactor)
+        contextFactory = WebClientContextFactory()
+
+        cookieJar = CookieJar()
+        agent = CookieAgent(Agent(reactor,contextFactory),cookieJar)
+
+        d = self._uploadGene(agent,self.idType,self.inputIds)
+
+        d.addCallback(lambda ign: self.handleResponse(agent))
+
+        reactor.run(installSignalHandlers=0)
+        return 0
+
+
+    @logTime
+    def _uploadGene(self,agent,idType,inputIds):
+
+        data = [('idType', idType), ('uploadType', 'list'),('multiList','false'),('Mode','paste'),
+                         ('useIndex','null'),('usePopIndex','null'),('demoIndex','null'),('ids',inputIds),
+                         ('removeIndex','null'),('renameIndex','null'),('renamePopIndex','null'),('newName','null'),
+                         ('combineIndex','null'),('selectedSpecies','null'),('uploadHTML','null'),('managerHTML','null'),
+                         ('sublist',''),('rowids',''),('convertedListName','null'),('convertedPopName','null'),
+                         ('pasteBox',inputIds),('Identifier',idType) , ('rbUploadType','list')]
+
+        postBody = MultiPartProducer(data)
+
+        d = agent.request(
+            'POST',
+            'https://david.ncifcrf.gov/tools.jsp',
+            Headers({'User-Agent': ['Chrome']}),
+            postBody)
+
+        d.addCallback(self.cbUploadGeneRequest)
+
+        return d
 
     def setParams(self,inputIds,idType,annotCat,pVal):
         self.inputIds,self.idType,self.annotCat,self.pVal = inputIds,idType,annotCat,pVal
 
-    def run(self):
+    def cbRequest(self,response):
+        d = readBody(response)
+        #d.addCallback(self.cbBody)
+        return d
 
-        pcHelper = PycurlHelper()
+    def cbBody(self,body):
+        self.res = body
+        with open("asdasd","w") as fw:
+            fw.write(body)
 
-        #d = Deferred()#init defer
+    def cbUploadGeneRequest(self,response):
+        d = readBody(response)
+        d.addCallback(self.cbBody)
+        return d
 
-        res = self._uploadGene(pcHelper,self.idType,self.inputIds)
+    def getDeferedGOChartResponse(self,agent,url):
+        return 0
 
-        # with open('test.html',"w") as fr_html:
-        #     fr_html.write(res) 
 
-        if self._checkSuccess(res):
+    def getDeferedGOMappingResponse(self,agent,url):
+        d = agent.request(
+            'GET', url,
+            Headers({'User-Agent': ['Chrome']}),
+            None)
+        d.addCallback(self.cbRequest)
+        return d
+
+
+    def handleResponse(self,agent):
+        if self._checkSuccess(self.res):
             print "exception throw0"
 
             url_1 = 'https://david.ncifcrf.gov/chartReport.jsp?annot={0}&currentList=0'.format(self.annotCat)
             url_2 = 'https://david.ncifcrf.gov/list.jsp'
+            deferList = []
+            d1 = self.getDeferedGOChartResponse(agent,url_1)
+            d2 = self.getDeferedGOMappingResponse(agent,url_2)
+            deferList.append(d1)
+            deferList.append(d2)
+            d = defer.DeferredList(deferList)
 
-            urls = [url_1,url_2]
-
-            pcHelper.curlMultiGet(urls)
 
             print "exception throw1"
 
@@ -94,7 +165,12 @@ class DavidDataScrawler(object):
             raise Exception("upload genes to DAVID failed")
 
 
+
+
+
+
     def _checkSuccess(self,res):
+        print "check"
         if res.find("DAVID: Functional Annotation Tools")==-1:
             return False
         else:
@@ -127,22 +203,6 @@ class DavidDataScrawler(object):
         parser.feed(geneList_response)
         genesIdName = parser.getParsedGeneNameWithId()
         return genesIdName
-
-
-
-
-    @logTime
-    def _uploadGene(self,pcHelper,idType,inputIds):
-
-        data = [('idType', idType), ('uploadType', 'list'),('multiList','false'),('Mode','paste'),
-                         ('useIndex','null'),('usePopIndex','null'),('demoIndex','null'),('ids',inputIds),
-                         ('removeIndex','null'),('renameIndex','null'),('renamePopIndex','null'),('newName','null'),
-                         ('combineIndex','null'),('selectedSpecies','null'),('uploadHTML','null'),('managerHTML','null'),
-                         ('sublist',''),('rowids',''),('convertedListName','null'),('convertedPopName','null'),
-                         ('pasteBox',inputIds),('Identifier',idType) , ('rbUploadType','list')]
-
-        return pcHelper.sendMultipart(url="https://david.ncifcrf.gov/tools.jsp",data=data)
-
 
 
 
