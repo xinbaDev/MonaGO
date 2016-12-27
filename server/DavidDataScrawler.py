@@ -8,7 +8,7 @@ from twisted.web.client import Agent, readBody, HTTPConnectionPool, CookieAgent
 from twisted.web.http_headers import Headers
 from twisted.internet.ssl import ClientContextFactory
 
-
+from uuid import uuid4
 from MultiPart import MultiPartProducer
 
 import logging
@@ -30,7 +30,7 @@ class DavidDataScrawler(object):
         contextFactory = WebClientContextFactory()
 
         cookieJar = CookieJar()
-        agent = CookieAgent(Agent(reactor,contextFactory),cookieJar)
+        agent = CookieAgent(Agent(reactor,contextFactory, pool=pool),cookieJar)
 
         d = self._uploadGene(agent,self.idType,self.inputIds)
 
@@ -50,12 +50,18 @@ class DavidDataScrawler(object):
                          ('sublist',''),('rowids',''),('convertedListName','null'),('convertedPopName','null'),
                          ('pasteBox',inputIds),('Identifier',idType) , ('rbUploadType','list')]
 
-        postBody = MultiPartProducer(data)
+        boundary = uuid4().hex
+        boundaryHeader = "multipart/form-data; boundary="+boundary
+
+        postBody = MultiPartProducer(data, boundary = boundary)
+        
 
         d = agent.request(
             'POST',
             'https://david.ncifcrf.gov/tools.jsp',
-            Headers({'User-Agent': ['Chrome']}),
+            Headers({      
+                "Content-Type": [boundaryHeader],
+                }),
             postBody)
 
         d.addCallback(self.cbUploadGeneRequest)
@@ -67,17 +73,21 @@ class DavidDataScrawler(object):
 
     def cbRequest(self,response):
         d = readBody(response)
-        #d.addCallback(self.cbBody)
+        d.addCallback(self.cbBody)
         return d
 
     def cbBody(self,body):
+        with open("list.html","w") as fw:
+            fw.write(body)
+
+    def cbResponseAfterUploadGenes(self,body):
         self.res = body
-        with open("asdasd","w") as fw:
+        with open("uploadGene.html","w") as fw:
             fw.write(body)
 
     def cbUploadGeneRequest(self,response):
         d = readBody(response)
-        d.addCallback(self.cbBody)
+        d.addCallback(self.cbResponseAfterUploadGenes)
         return d
 
     def getDeferedGOChartResponse(self,agent,url):
