@@ -23,9 +23,11 @@ class WebClientContextFactory(ClientContextFactory):
 
 class DavidDataScrawler(object):
 
-
     def run(self):
+        
+
         self.go_inf = []
+        self.go_processed = []
 
         pool = HTTPConnectionPool(reactor)
         contextFactory = WebClientContextFactory()
@@ -38,7 +40,6 @@ class DavidDataScrawler(object):
         d.addCallback(lambda ign: self.handleResponse(agent))
 
         reactor.run(installSignalHandlers=0)
-        return 0
 
 
     @logTime
@@ -76,13 +77,10 @@ class DavidDataScrawler(object):
         d = readBody(response)
         d.addCallback(self.cbParseGeneList)
         return d
-        
-    @logTime
+
     def cbParseGeneList(self,geneList_response):
         print "get gene list done"
         self.geneList = self._parseGenes(geneList_response)
-        with open("genelist.html","w") as fw:
-            fw.write(self.geneList)
 
     def cbResponseAfterUploadGenes(self,body):
         self.res = body
@@ -136,14 +134,8 @@ class DavidDataScrawler(object):
         geneIdNameMapping = self._getGenesNamesByIds(geneIds,self.geneList)
 
         #change the gene id into gene name in go
-        go_processed = self._changeGeneIdToNameInGO(go_filtered,geneIdNameMapping)
+        self.go_processed = self._changeGeneIdToNameInGO(go_filtered,geneIdNameMapping)
 
-        
-
-        if not go_processed:
-            raise Exception("get final GO failed")
-
-        return go_processed
 
     @logTime
     def cbParseGOtxt(self,GO):
@@ -176,15 +168,14 @@ class DavidDataScrawler(object):
             url_1 = 'https://david.ncifcrf.gov/chartReport.jsp?annot={0}&currentList=0'.format(self.annotCat)
             url_2 = 'https://david.ncifcrf.gov/list.jsp'
             deferList = []
-            # d1 = self.getDeferedGOChartResponse(agent,url_1)
-            # d1.addCallback(lambda ign: self.cbGetGenes(agent))
+            d1 = self.getDeferedGOChartResponse(agent,url_1)
+            d1.addCallback(lambda ign: self.cbGetGenes(agent))
             d2 = self.getDeferedGOMappingResponse(agent,url_2)
-            #deferList.append(d1)
+            deferList.append(d1)
             deferList.append(d2)
             d = defer.DeferredList(deferList)
                 
-            #d.addCallback(self.cbGenerateGOData)
-
+            d.addCallback(self.cbGenerateGOData)
 
         else:
             logger.info("get chartReport failed")
