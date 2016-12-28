@@ -1,3 +1,9 @@
+import logging
+import time
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 def logTime(func):
     '''
     decorator

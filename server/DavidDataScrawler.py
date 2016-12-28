@@ -1,14 +1,28 @@
 from HTMLParser import HTMLParser
 import re
-from PycurlHelper import PycurlHelper
+import requests
+import threading
 import logging
 
 from logTime import logTime
-from MultiPart import MultiPartProducer
 
-logging.basicConfig(level=logging.debug)
+
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+class myThread (threading.Thread):
+    def __init__(self, threadID, request, url):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.url = url
+        self.request = request
+
+    def run(self):
+        self.res = self.request.get(self.url,verify=False)
+
+
+    def getRes(self):
+        return self.res.content
 
 class DavidDataScrawler(object):
 
@@ -17,37 +31,39 @@ class DavidDataScrawler(object):
 
     def run(self):
 
-        pcHelper = PycurlHelper()
+        s = requests.session()
+        #s.cert = '/path/client.cert'
 
         #d = Deferred()#init defer
 
-        res = self._uploadGene(pcHelper,self.idType,self.inputIds)
+        res = self._uploadGene(s,self.idType,self.inputIds)
 
         # with open('test.html',"w") as fr_html:
         #     fr_html.write(res) 
 
         if self._checkSuccess(res):
-            print "exception throw0"
+            logger.debug("upload gene success")
 
             url_1 = 'https://david.ncifcrf.gov/chartReport.jsp?annot={0}&currentList=0'.format(self.annotCat)
             url_2 = 'https://david.ncifcrf.gov/list.jsp'
 
-            urls = [url_1,url_2]
+            thread1 = myThread(1, s, url_1)
+            thread2 = myThread(2, s, url_2)
 
-            pcHelper.curlMultiGet(urls)
+            thread1.start()
+            thread2.start()
 
-            print "exception throw1"
+            threads = []
+            threads.append(thread1)
+            threads.append(thread2)
 
-            getGO_response,geneList_response = map(lambda x: x.getvalue().decode('iso-8859-1'), pcHelper.buffers)
+            for t in threads:
+                t.join()
 
-            print "exception throw2"
+            getGO_response = thread1.getRes()
+            geneList_response = thread2.getRes()
 
-            logger.debug("getGO_response:{}".format(getGO_response))
-
-            print "exception throw3"
-            #logger.debug("geneList_response:{}".format(geneList_response))
-
-            go,geneIds = self._parseGO(getGO_response, pcHelper)
+            go,geneIds = self._parseGO(getGO_response, s)
             # with open("go","w") as fw:
             #     fw.write(str(go))
             print "exception throw4"
@@ -65,13 +81,6 @@ class DavidDataScrawler(object):
             #logger.debug("geneIds:{}".format(geneIds))
 
             geneIdNameMapping = self._getGenesNamesByIds(geneIds,geneList)
-            # with open("geneIdNameMapping","w") as fw:
-            #     fw.write(str(geneIdNameMapping))
-
-            # with open("go_filtered","w") as fw:
-            #     fw.write(str(go_filtered))
-                
-            print "exception throw7"
 
             #change the gene id into gene name in go
             go_processed = self._changeGeneIdToNameInGO(go_filtered,geneIdNameMapping)
@@ -83,8 +92,6 @@ class DavidDataScrawler(object):
             
 
             #before return, close the connection to DAVID explicitly
-
-            pcHelper.close()
 
             return go_processed
 
@@ -101,10 +108,10 @@ class DavidDataScrawler(object):
             return True
 
 
-    def _parseGO(self,getGO_response,pcHelper):
+    def _parseGO(self,getGO_response,request):
         with open("asdasd.txt","w") as fw:
             fw.write(getGO_response)
-        parser = DavidDataScrawler.GOParser(pcHelper)
+        parser = DavidDataScrawler.GOParser(request)
         parser.feed(getGO_response)#get go
         go = parser.getGO_inf()
         geneIds = parser.getGeneLists()
@@ -132,16 +139,18 @@ class DavidDataScrawler(object):
 
 
     @logTime
-    def _uploadGene(self,pcHelper,idType,inputIds):
+    def _uploadGene(self,s,idType,inputIds):
 
-        data = [('idType', idType), ('uploadType', 'list'),('multiList','false'),('Mode','paste'),
-                         ('useIndex','null'),('usePopIndex','null'),('demoIndex','null'),('ids',inputIds),
-                         ('removeIndex','null'),('renameIndex','null'),('renamePopIndex','null'),('newName','null'),
-                         ('combineIndex','null'),('selectedSpecies','null'),('uploadHTML','null'),('managerHTML','null'),
-                         ('sublist',''),('rowids',''),('convertedListName','null'),('convertedPopName','null'),
-                         ('pasteBox',inputIds),('Identifier',idType) , ('rbUploadType','list')]
+        data = {'idType':(None, idType), 'uploadType': (None, 'list'), 'multiList': (None,'false'),'Mode':(None,'paste'),
+                         'useIndex':(None,'null'),'usePopIndex': (None,'null'),'demoIndex': (None,'null'),'ids': (None,inputIds),
+                         'removeIndex': (None,'null'),'renameIndex': (None,'null'),'renamePopIndex': (None,'null'),
+                         'newName': (None,'null'),'combineIndex': (None,'null'),'selectedSpecies': (None,'null'),'uploadHTML': (None,'null'),
+                         'managerHTML': (None,'null'), 'sublist': (None,''),'rowids': (None,''),'convertedListName': (None,'null'),
+                         'convertedPopName': (None,'null'),'pasteBox': (None,inputIds),'Identifier': (None,idType) , 'rbUploadType':(None,'list')}
 
-        return pcHelper.sendMultipart(url="https://david.ncifcrf.gov/tools.jsp",data=data)
+        r = s.post('https://david.ncifcrf.gov/tools.jsp', files=data,  verify=False)
+
+        return r.content
 
 
 
@@ -226,10 +235,10 @@ class DavidDataScrawler(object):
         parse a list of GO terms(name and a list of associated gene ids)
         '''
 
-        def __init__(self,pcHelper):
+        def __init__(self,request):
             HTMLParser.__init__(self)
 
-            self.pcHelper = pcHelper
+            self.request = request
             self.go_inf = []
             self.geneLists = {}
             self.metacount = 0
@@ -243,8 +252,8 @@ class DavidDataScrawler(object):
                 if m!=None:
                 #if exists
                     url = 'https://david.ncifcrf.gov/'+m.group(0)
-                    res = self.pcHelper.get(url)
-                    self._parseGO(res)
+                    res = self.request.get(url,verify = False)
+                    self._parseGO(res.content)
 
             #get gene rowid
             if tag == "img":
