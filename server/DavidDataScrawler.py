@@ -64,9 +64,7 @@ class DavidDataScrawler(object):
             geneList_response = thread2.getRes()
 
             go,geneIds = self._parseGO(getGO_response, s)
-            # with open("go","w") as fw:
-            #     fw.write(str(go))
-            print "exception throw4"
+
             geneList = self._parseGenes(geneList_response)
                 
 
@@ -109,8 +107,6 @@ class DavidDataScrawler(object):
 
 
     def _parseGO(self,getGO_response,request):
-        with open("asdasd.txt","w") as fw:
-            fw.write(getGO_response)
         parser = DavidDataScrawler.GOParser(request)
         parser.feed(getGO_response)#get go
         go = parser.getGO_inf()
@@ -146,7 +142,8 @@ class DavidDataScrawler(object):
                          'removeIndex': (None,'null'),'renameIndex': (None,'null'),'renamePopIndex': (None,'null'),
                          'newName': (None,'null'),'combineIndex': (None,'null'),'selectedSpecies': (None,'null'),'uploadHTML': (None,'null'),
                          'managerHTML': (None,'null'), 'sublist': (None,''),'rowids': (None,''),'convertedListName': (None,'null'),
-                         'convertedPopName': (None,'null'),'pasteBox': (None,inputIds),'Identifier': (None,idType) , 'rbUploadType':(None,'list')}
+                         'convertedPopName': (None,'null'),'pasteBox': (None,inputIds),'Identifier': (None,idType) ,
+                         'selectedSpecies': (None,',0') , 'speciesList': (None,'0'), 'rbUploadType':(None,'list')}
 
         r = s.post('https://david.ncifcrf.gov/tools.jsp', files=data,  verify=False)
 
