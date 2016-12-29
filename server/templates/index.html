@@ -58,7 +58,7 @@
 						<h2><span class="label label-primary" title="select gene identifier">Step 2: Select Identifier</span></h2>
 			
 									<br>
-									  <select class="selectpicker" data-width="300px" name="idType">
+									  <select class="selectpicker" data-width="300px" size="10" name="idType">
 								  
 										  	<option value="AFFYMETRIX_3PRIME_IVT_ID">AFFYMETRIX_3PRIME_IVT_ID</option>						
 										  	<option value="AFFYMETRIX_EXON_GENE_ID">AFFYMETRIX_EXON_GENE_ID</option>	
@@ -176,6 +176,11 @@
 		if($("body .background").length!=0){
 			$("body .background").remove();
 		}
+
+		$('.selectpicker').selectpicker({
+		  size: 10
+		});
+
 	}
 
 

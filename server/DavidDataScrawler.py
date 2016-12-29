@@ -69,12 +69,11 @@ class DavidDataScrawler(object):
                 
 
             go_filtered = self._filterGO(self.pVal,go)
-            print "exception throw5"
+
             # with open("go_filtered","w") as fw:
             #     fw.write(str(go_filtered))
             geneIds = self._getUniqueGeneIds(geneIds)
 
-            print "exception throw6"
 
             #logger.debug("geneIds:{}".format(geneIds))
 
@@ -83,7 +82,6 @@ class DavidDataScrawler(object):
             #change the gene id into gene name in go
             go_processed = self._changeGeneIdToNameInGO(go_filtered,geneIdNameMapping)
 
-            print "exception throw8"
 
             if not go_processed:
                 raise Exception("get final GO failed")
@@ -219,7 +217,7 @@ class DavidDataScrawler(object):
 
         filterGO_inf = [GO for GO in go_inf if float(GO["pVal"]) < float(pVal)]
 
-        logger.debug('go_filtered:{}'.format(filterGO_inf))
+        #logger.debug('go_filtered:{}'.format(filterGO_inf))
 
         if not filterGO_inf:
             raise Exception("get go_filtered failed")
