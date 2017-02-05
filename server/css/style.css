@@ -197,7 +197,7 @@ li{
 }
 
 #arrow_controlPanel{
-    background-position: 0px 70px;
+    background-position: 0px 45px;
     background-repeat: no-repeat;
     opacity: 1;
 }
@@ -361,7 +361,7 @@ path.chord {
   top: 0;
   left: 0;
   width: 558px;
-  height: 160px;
+  height: 80px;
   box-shadow: 0 0 15px rgba(0,0,0,0.2);
   z-index:3;
   background: white;
@@ -483,6 +483,7 @@ n:hover {
   float:right;
   right: 20px;
   position: relative;
+  margin-top: -15px;
 }
 
 .go_detail_content{

@@ -77,7 +77,7 @@
 
     var controlPanelWidth = 520;
 
-    var controlPanelHeight = 160;
+    var controlPanelHeight = 100;
 
     var w = $(window).width()-detailPanelWidth,
          h = $(window).height(),
@@ -1410,14 +1410,14 @@
       }
 
       updateMoanaGOLayout(clusterHierData);
-
+      updateLabel();
     }
 
     function updateMoanaGOLayout(clusterHierData){
 
       createGOAndUpdateChordLayout();
 
-      if(labelOff==1)
+      //if(labelOff==1)
           drawHierarchicalClustering(clusterHierData);
     }
 
@@ -1855,6 +1855,15 @@
         chordLayout.classed("fade", function(p) {
           return p.source.index != i
               && p.target.index != i;
+        });
+
+        highlight_index = i;
+        groupText.transition().duration(300).style("fill", function(d,i) {
+          if(d.index == highlight_index){
+            return "black";
+          }else{
+            return "grey";
+          }
         });
         
         var detailPanelTempl = createDetailPanelTempl(i);
@@ -2376,12 +2385,12 @@
 
       labelOff = 0;
 
-      clusterArc.style("display","none");
-      clusterLine1.style("display","none");
-      clusterLine2.style("display","none");
-      clusterHierNodeView.style("display","none");
-      clusterHierNodeTextView.style("display","none");
-      groupText.style("display","")
+      // clusterArc.style("display","none");
+      // clusterLine1.style("display","none");
+      // clusterLine2.style("display","none");
+      // clusterHierNodeView.style("display","none");
+      // clusterHierNodeTextView.style("display","none");
+      // groupText.style("display","")
 
       updateLabel();
     }
@@ -2394,9 +2403,10 @@
             .data(chord.groups)
             .enter().append("svg:g")
             .attr("transform", function(d) {
-            return "rotate(" + ((d.startAngle+d.endAngle)/2 * 180 / Math.PI - 90) + ")"
-               + "translate(" + r1 + ",0)";
+            return "rotate(" + (((d.startAngle+d.endAngle)/2 * 180 / Math.PI - 90)+5) + ")"
+               + "translate(" + (r1 + 0) + ",0)";
             }).append("svg:text")
+            .style('fill', 'grey')
             .attr("x", function(d){
               if(popUpList.indexOf(d.index)!=-1){
                 if ((d.startAngle+d.endAngle)/2 < 3.1415)
@@ -2441,14 +2451,14 @@
 
     function drawHierCluster(){
       labelOff = 1;
-      clusterArc.style("display","");
-      clusterLine1.style("display","");
-      clusterLine2.style("display","");
-      clusterHierNodeView.style("display","");
-      clusterHierNodeTextView.style("display","");
+      // clusterArc.style("display","");
+      // clusterLine1.style("display","");
+      // clusterLine2.style("display","");
+      // clusterHierNodeView.style("display","");
+      // clusterHierNodeTextView.style("display","");
 
 
-      groupText.style("display","none");
+      // groupText.style("display","none");
       
       if(popUpList.length != 0){
         drawPopUpHierarchy();
@@ -2508,16 +2518,16 @@
 
       var element = '&nbsp<label>Cluster GO term according to the minimum number of common gene(s)</label> \
           <div id="slider" class="sliderBar"></div>\
-          <input type="text" id="input_slider"/>\
-            <table class="RadioBox">\
-            <tbody><tr><td>\
-                  <input id="labelRadioBox" class="radioButton" type="radio" name="radioBox" value="0" checked>\
-                </td><td><label style="padding-left:10px" for="labelRadioBox">Show GO term name</label>\
-                </td></tr><tr><td></td></tr><tr><td>\
-                  <input id="hierClusterRadioBox"  class="radioButton" type="radio" name="radioBox" value="1" >\
-                </td><td>\
-                   <label style="width:300px;padding-left:10px" for="hierClusterRadioBox">Show hierarchical tree and click on the node to manually cluster the GO term</label>\
-                </td></tr></tbody></table>';
+          <input type="text" id="input_slider"/>';
+            // <table class="RadioBox">\
+            // <tbody><tr><td>\
+            //       <input id="labelRadioBox" class="radioButton" type="radio" name="radioBox" value="0" checked>\
+            //     </td><td><label style="padding-left:10px" for="labelRadioBox">Show GO term name</label>\
+            //     </td></tr><tr><td></td></tr><tr><td>\
+            //       <input id="hierClusterRadioBox"  class="radioButton" type="radio" name="radioBox" value="1" >\
+            //     </td><td>\
+            //        <label style="width:300px;padding-left:10px" for="hierClusterRadioBox">Show hierarchical tree and click on the node to manually cluster the GO term</label>\
+            //     </td></tr></tbody></table>';
 
       //add save image button
       element += '<button id="editor_save" class="btn" z-index:100">Save image</button>';
@@ -2764,6 +2774,11 @@
          .data(clusterHierData)
        .enter().append("path");
 
+      groupText = circleSvg.append("svg:g")
+           .selectAll("g")
+             .data(chord.groups)
+            .enter().append("svg:g");
+
       clusterHierNodeView = circleSvg.append("svg:g")
        .selectAll("g")
          .data(clusterHierNodesStatus)
@@ -2787,10 +2802,7 @@
          .attr("id","chordGroups")
          .on("mouseover", mouseover_group);
 
-      groupText = circleSvg.append("svg:g")
-           .selectAll("g")
-             .data(chord.groups)
-            .enter().append("svg:g");
+
 
       that.go_inf.map(function(d){
         if(goLabelSize[d.GO_name] == undefined){
@@ -2877,7 +2889,9 @@
       createClusterNodesStatus(clusterHierData,[],"",[]);
       setUpView();
       determineLabelSize();
+      drawHierCluster();
       drawLable();
+
       setUpListener();
       
     }
