@@ -1,6 +1,6 @@
 .submitFormCentered{
 	margin: auto;
-    padding-bottom: 64px;
+    padding-bottom: 10px;
     width: 850px;
     background-color: white;
     z-index:1000;
@@ -17,11 +17,20 @@
 }
 
 .submit-btn{
-	float: right;
+	margin-top: 20px;
+/*    margin-bottom: 10px !important;*/
+    position: relative;
+    left: 720;
+    display: table !important;
 }
 
 #LISTBox{
 	width:500px;
+}
+
+#inputGOs{
+    width:500px;
+    margin-top: 20px
 }
 
 .header-img{
@@ -83,6 +92,15 @@
     margin-top: -125px;
     cursor:pointer;
 }
+
+.example_go{
+    position: relative;
+    width: 300px;
+    left: -20px;
+    float: right;
+    margin-top: -135px;
+    cursor:pointer;
+}
 /* .bg-img{
 	width: auto;
 	height: ;
@@ -111,4 +129,29 @@
 .main_section{
     padding-left: 10px;
     padding-right: 10px;
+}
+
+.David_submit_button{
+    height:70px;
+    text-align: center;
+    line-height: 65px;
+}
+
+.manual_submit_button{
+    height:70px;
+    text-align: center;
+    line-height: 65px;
+}
+
+.manual_submit{
+    padding-top: 10px
+}
+
+.manual_input{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.demo_GOs{
+    font-size: 10px
 }

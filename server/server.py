@@ -17,6 +17,8 @@ import base64
 
 from logTime import logTime
 
+import ast
+
 logging.basicConfig(filename="debug.txt",level=logging.INFO)
 logger = logging.getLogger(__name__)
 remote_server = False;
@@ -39,19 +41,22 @@ def index():
     if request.method == 'GET':
         return render_template("index.html")
     else:
+        if request.form['inputGOs']:
+            go = ast.literal_eval(request.form['inputGOs'])
 
-        #parameters needed for querying DAVID
-        inputIds = request.form['inputIds']
-        idType = request.form['idType']
-        annotCat = request.form['annotCat']
-        pVal = request.form['pVal'];
-        #transform annotation name to number recognized by DAVID(e.g. GOTERM_BP_FAT to 25) .
-        annotCat = ','.join([annotCatDict[cat] for cat in annotCat.split(",")])
+        else:
+            #parameters needed for querying DAVID
+            inputIds = request.form['inputIds']
+            idType = request.form['idType']
+            annotCat = request.form['annotCat']
+            pVal = request.form['pVal'];
+            #transform annotation name to number recognized by DAVID(e.g. GOTERM_BP_FAT to 25) .
+            annotCat = ','.join([annotCatDict[cat] for cat in annotCat.split(",")])
 
-        go,status = getDataFromDavid(inputIds,idType,annotCat,pVal)
+            go,status = getDataFromDavid(inputIds,idType,annotCat,pVal)
 
-        if status == False:
-            return "Failure to get data, please make sure the identifier is correct"
+            if status == False:
+                return "Failure to get data, please make sure the identifier is correct"
 
         matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go)
 
@@ -79,20 +84,22 @@ def index2():
         return render_template("index2.html")
     else:
 
+        if request.form['inputGOs']:
+            go = request.form['inputGOs']
 
-
+        else:
         #parameters needed for querying DAVID
-        inputIds = request.form['inputIds']
-        idType = request.form['idType']
-        annotCat = request.form['annotCat']
-        pVal = request.form['pVal'];
-        #transform annotation name to number recognized by DAVID(e.g. GOTERM_BP_FAT to 25) .
-        annotCat = ','.join([annotCatDict[cat] for cat in annotCat.split(",")])
+            inputIds = request.form['inputIds']
+            idType = request.form['idType']
+            annotCat = request.form['annotCat']
+            pVal = request.form['pVal'];
+            #transform annotation name to number recognized by DAVID(e.g. GOTERM_BP_FAT to 25) .
+            annotCat = ','.join([annotCatDict[cat] for cat in annotCat.split(",")])
 
-        go,status = getDataFromDavid(inputIds,idType,annotCat,pVal)
+            go,status = getDataFromDavid(inputIds,idType,annotCat,pVal)
 
-        if status == False:
-            return "Failure to get data, please make sure the identifier is correct"
+            if status == False:
+                return "Failure to get data, please make sure the identifier is correct"
 
         matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData2(go)
 
@@ -210,6 +217,9 @@ def processedData(go):
         go_inf_reord:an array of enriched GO terms
         clusterHierData:an array storing hierarcical data use to generated hierarcical tree
     '''
+    with open("datafromdavid.txt","w") as fw:
+        fw.write(str(go))
+
     dataProcess = DataProcess()
     try:
         preProcessedData = dataProcess.dataProcess(go)

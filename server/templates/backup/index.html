@@ -29,12 +29,7 @@
 
 <div class="submitFormCentered">
 
-			<div class="David_submit">
-
-				<div class="David_submit_button btn-success" ><label>Submit genes to DAVID</label></div>
-				
-
-				<div class="main_section" style="display:none">
+				<div class="main_section">
 
 					<div class="step1">
 						<h2><span class="label label-primary" title="paste a list of genes seperated by comma,newline or space">Step 1: Enter Gene List</span></h2>
@@ -45,25 +40,16 @@
 							<textarea rows="6" id="LISTBox" class="form-control" name="inputIds"></textarea>
 							<div class="example_gene" onclick="copyDemoGenes()"><p>Demo genes(click to paste):</p> 
 								<p id="demo_gene">
-									1007_s_at
-									1053_at
-									117_at
-									121_at
-									1255_g_at
-									1294_at
-									1316_at
-									1320_at
-									1405_i_at
-									1431_at
-									1438_at
-									1487_at
-									1494_f_at
-									1598_g_at  ....
+									Actc1,Actn2,Adk,Adnp,Adprhl1,Akap2,Ankrd1,
+									Anp32e,Anxa6,App,Arpc2,Asb2,Atp1a1,Atp1b1,
+									Atp2a2,Atp5o,Atp6v0e,Brd7,Bves,Bzw1,Cald1,
+									Cap2,Casq2,Cav3,Cbx5,Ccdc141,Cd93,Col18a1,
+									Col1a1,Col3a1,Cox8b  ....
 								</p>
 							</div>
 						</div>
 				
-						<input type="Button" value="Clear" onclick="clearDavidPaste();" name="B3">
+						<input type="Button" value="Clear" onclick="clearPaste();" name="B3">
 					</div>
 
 
@@ -142,45 +128,28 @@
 
 	        			<br>
 						
-							<select class="selectpicker show-tick" data-width="500px" name="annotType" multiple>
+	        				<select class="selectpicker show-tick" data-width="500px" name="annotType" multiple>
 
 				            	<option value="GOTERM_BP_FAT" selected>Biological Process</option>
 								<option value="GOTERM_MF_FAT">Molecular Function</option>
 				            	<option value="GOTERM_CC_FAT">Cellular Component</option>
-				
+
 				            </select>
 
 
 						<br>
-
 					</div>
-					<div class="btn btn-success btn-rounded btn-lg submit-btn" onclick="davidSubmitClicked()">Submit</div>
+						
+
+					<div class="btn btn-success btn-rounded btn-lg submit-btn" onclick="submitClicked()">Submit</div>
+
 				</div>
-
-			</div>
-
-			<div class="manual_submit">
-				<div class="manual_submit_button btn-success"><label>Submit enriched GO terms manually</label></div>
-				<div class="manual_input " style="display:none">
-					<h2><span class="label label-primary" title="enter enriched GO term manually">(Optional)Enter Enriched GO Terms Manually(Beta)</span></h2>
-					<textarea rows="6" id="inputGOs" class="form-control" name="inputGOs"></textarea>
-					<div class="example_go" onclick="copyDemoGOs()"><p>Demo enriched GO terms(click to paste):</p> 
-								<p class="demo_GOs">
-									[{'count': '10', 'genes': 'cytochrome P450 family 2 subfamily A member 6(CYP2A6)|thyroid hormone receptor, alpha(THRA)|heat shock protein family A (Hsp70) member 6(HSPA6)|paired box 8(PAX8)|cytochrome P450 family 2 subfamily E member 1(CYP2E1)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6', 'GO_name': 'response to chemical', 'pVal': '1.0781602543845606E-4', 'cat': 'GOTERM_BP_2', 'GO_id': 'GO:0042221'},...]
-								</p>
-							</div>
-					<input type="Button" value="Clear" onclick="clearManualPaste();" name="B3">
-					<div class="btn btn-success btn-rounded btn-lg submit-btn" onclick="manualSubmitClicked()">Submit</div>
-				</div>
-					
-			</div>
-
-		</div>
 			 
 </form>
 
   
 
+</div>
 
    <div class="footer">
 		<p><t>MonaGO is a visualization tool for Gene Ontology(GO) enrichment analysis. It makes use of GO annotation information from <a href="https://david.ncifcrf.gov/">DAVID</a>. For more information please check <a href="help.html">help page</a>.</p>
@@ -197,8 +166,7 @@
 */
 	var ranger = document.getElementById('slider');
 	var inputFormat = document.getElementById('input_slider');
-	var demoGenes = "1007_s_at,1053_at,117_at,121_at,1255_g_at,1294_at,1316_at,1320_at,1405_i_at,1431_at,1438_at,1487_at,1494_f_at,1598_g_at";
-	var demoGOs = "[{'count': '10', 'genes': 'cytochrome P450 family 2 subfamily A member 6(CYP2A6)|thyroid hormone receptor, alpha(THRA)|heat shock protein family A (Hsp70) member 6(HSPA6)|paired box 8(PAX8)|cytochrome P450 family 2 subfamily E member 1(CYP2E1)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6', 'GO_name': 'response to chemical', 'pVal': '1.0781602543845606E-4', 'cat': 'GOTERM_BP_2', 'GO_id': 'GO:0042221'}, {'count': '7', 'genes': 'thyroid hormone receptor, alpha(THRA)|replication factor C subunit 2(RFC2)|paired box 8(PAX8)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|growth arrest specific 6(GAS6', 'GO_name': 'positive regulation of metabolic process', 'pVal': '0.007231788762278165', 'cat': 'GOTERM_BP_2', 'GO_id': 'GO:0009893'}, {'count': '10', 'genes': 'thyroid hormone receptor, alpha(THRA)|replication factor C subunit 2(RFC2)|heat shock protein family A (Hsp70) member 6(HSPA6)|paired box 8(PAX8)|cytochrome P450 family 2 subfamily E member 1(CYP2E1)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6', 'GO_name': 'cellular response to stimulus', 'pVal': '0.007623017222272105', 'cat': 'GOTERM_BP_2', 'GO_id': 'GO:0051716'}, {'count': '5', 'genes': 'thyroid hormone receptor, alpha(THRA)|paired box 8(PAX8)|cytochrome P450 family 2 subfamily E member 1(CYP2E1)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA', 'GO_name': 'response to endogenous stimulus', 'pVal': '0.014063053241212722', 'cat': 'GOTERM_BP_2', 'GO_id': 'GO:0009719'}, {'count': '4', 'genes': 'thyroid hormone receptor, alpha(THRA)|estrogen related receptor alpha(ESRRA)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6', 'GO_name': 'immune system development', 'pVal': '0.014366157696945712', 'cat': 'GOTERM_BP_2', 'GO_id': 'GO:0002520'}, {'count': '8', 'genes': 'thyroid hormone receptor, alpha(THRA)|replication factor C subunit 2(RFC2)|paired box 8(PAX8)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6', 'GO_name': 'positive regulation of cellular process', 'pVal': '0.015493534130397025', 'cat': 'GOTERM_BP_2', 'GO_id': 'GO:0048522'}, {'count': '8', 'genes': 'thyroid hormone receptor, alpha(THRA)|replication factor C subunit 2(RFC2)|paired box 8(PAX8)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6', 'GO_name': 'positive regulation of biological process', 'pVal': '0.02843111003373838', 'cat': 'GOTERM_BP_2', 'GO_id': 'GO:0048518'}, {'count': '4', 'genes': 'thyroid hormone receptor, alpha(THRA)|paired box 8(PAX8)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6', 'GO_name': 'positive regulation of developmental process', 'pVal': '0.030425397503462466', 'cat': 'GOTERM_BP_2', 'GO_id': 'GO:0051094'}, {'count': '11', 'genes': 'cytochrome P450 family 2 subfamily A member 6(CYP2A6)|thyroid hormone receptor, alpha(THRA)|replication factor C subunit 2(RFC2)|paired box 8(PAX8)|cytochrome P450 family 2 subfamily E member 1(CYP2E1)|protein tyrosine phosphatase, non-receptor type 21(PTPN21)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6', 'GO_name': 'cellular metabolic process', 'pVal': '0.03416205556134172', 'cat': 'GOTERM_BP_2', 'GO_id': 'GO:0044237'}, {'count': '11', 'genes': 'cytochrome P450 family 2 subfamily A member 6(CYP2A6)|thyroid hormone receptor, alpha(THRA)|replication factor C subunit 2(RFC2)|paired box 8(PAX8)|cytochrome P450 family 2 subfamily E member 1(CYP2E1)|protein tyrosine phosphatase, non-receptor type 21(PTPN21)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6', 'GO_name': 'primary metabolic process', 'pVal': '0.03538374297665633', 'cat': 'GOTERM_BP_2', 'GO_id': 'GO:0044238'}, {'count': '6', 'genes': 'thyroid hormone receptor, alpha(THRA)|replication factor C subunit 2(RFC2)|paired box 8(PAX8)|C-C motif chemokine ligand 5(CCL5)|guanylate cyclase activator 1A(GUCA1A)|growth arrest specific 6(GAS6', 'GO_name': 'regulation of signaling', 'pVal': '0.03568142936784652', 'cat': 'GOTERM_BP_2', 'GO_id': 'GO:0023051'}, {'count': '5', 'genes': 'thyroid hormone receptor, alpha(THRA)|paired box 8(PAX8)|estrogen related receptor alpha(ESRRA)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6', 'GO_name': 'regulation of developmental process', 'pVal': '0.04095463507902857', 'cat': 'GOTERM_BP_2', 'GO_id': 'GO:0050793'}, {'count': '3', 'genes': 'C-C motif chemokine ligand 5(CCL5)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6', 'GO_name': 'taxis', 'pVal': '0.049042277507176164', 'cat': 'GOTERM_BP_2', 'GO_id': 'GO:0042330'}]";
+	var demoGenes = "Actc1,Actn2,Adk,Adnp,Adprhl1,Akap2,Ankrd1,Anp32e,Anxa6,App,Arpc2,Asb2,Atp1a1,Atp1b1,Atp2a2,Atp5o,Atp6v0e,Brd7,Bves,Bzw1,Cald1,Cap2,Casq2,Cav3,Cbx5,Ccdc141,Cd93,Col18a1,Col1a1,Col3a1,Cox8b,Cpt1b,Csnk1a1,Csrp2,Csrp3,Ctnna1,Ctnnb1,Ctnnd1,Dcn,Dctn6,Ddc,Des,Dync1i2,Epb4.1l3,Ergic1,Fhl2,Gata4,Gata6,Gbas,Gja1,Gja5,Gmpr,Gnb2l1,Grb10,Hand2,Hey2,Hif1a,Hmgn1,Hopx,Hspa9,Id2,Igf2,Igf2r,Igfbp5,Itga5,Jph2,Ldb3,Lims1,Lmnb1,Lmo7,Lmod2,Lpl,Lrrc10,Lrrfip1,Mb,Mdh1,Mki67,Mlip,Mmadhc,Mmd,Mrpl33,Msi2,Mtus1,Mtx2,Myadm,Mybpc3,Myh6,Myh7,Myl12a,Myl12b,Myl2,Myl4,Myl9,Myom1,Myoz2,Naa38,Ndufa10,Nebl,Nkx2-5,Nppb,Pafah1b1,Palld,Parva,Pdk1,Pdlim3,Plekho1,Pln,Pomp,Postn,Ppp1r14c,Ppp1r3c,Ppp2r3a,Prkar1a,Psmd7,Ptov1,Ptp4a2,Pygm,Qk,Rab14,Rad23b,Rbm24,Rbpms,Rpl14,Rps24,Ryr2,Sae1,Sdpr,Sec31a,Sept7,Sfrp1,Slc8a1,Smyd1,Smyd2,Sorbs2,Sox4,Sptbn1,Srl,Srsf7,Ssr3,Stk39,Stt3b,Sulf2,Svil,Synpo2l,Tab2,Tbx20,Tcap,Tead1,Tmpo,Tmsb4x,Tns1,Tpm1,Trim55,Trim63,Ttn,Txndc5,Ube2e3,Unc45b,Vcan,Vdac3,Wdr89,Wls,Zmynd11";
 
 	init();
 
@@ -211,24 +179,10 @@
 
 		$('.selectpicker').selectpicker({
 		  size: 10
-		})
-
-		$(".David_submit_button").click(function(d){
-		  $goList = $(this).next();
-          $goList.slideToggle(500);
-		})
-
-		$(".manual_submit_button").click(function(d){
-		  $goList = $(this).next();
-          $goList.slideToggle(500);
-		})
+		});
 
 	}
 
-
-	function copyDemoGOs(){
-		$("#inputGOs").val(demoGOs);
-	}
 
 
     function setUpRangeSlider(ranger,inputFormat){
@@ -257,25 +211,16 @@
 	function copyDemoGenes(){
 		$("#LISTBox").val(demoGenes);
 
-		//$('select[name="idType"]').val("OFFICIAL_GENE_SYMBOL");
+		$('select[name="idType"]').val("OFFICIAL_GENE_SYMBOL");
 		$('.selectpicker').selectpicker('refresh')
 	}
 
-	function clearDavidPaste(){
+	function clearPaste(){
 		document.frmManager.inputIds.value="";
 	}
 
-	function clearManualPaste(){
-		document.frmManager.inputGOs.value="";
-	}
-
-	function davidSubmitClicked(){
-		var res = uploadList("david");
-		if(res) showLoadingIcon();
-	}
-
-	function manualSubmitClicked(){
-		var res = uploadList("manual");
+	function submitClicked(){
+		var res = uploadList();
 		if(res) showLoadingIcon();
 	}
 
@@ -291,7 +236,7 @@
 		}
 	}
 
-	function uploadList(type){
+	function uploadList(){
 
 		
 		//alert("start upload");
@@ -327,30 +272,18 @@
 
 		FM.annotCat.value = annotList.toString();
 
-
-		if(type == "david"){
-			if(FM.inputIds.value == ""){
-				alert("Error: Please paste a list in step 1.");
-				return false;
-			}
-
-			
-
-			if(FM.annotCat.value == ""){
-				alert("Error: Please select annotation type in step 4.");
-
-				return false;
-			}
+		if(FM.inputIds.value == ""){
+			alert("Error: Please paste a list in step 1.");
+			return false;
 		}
 
-		if(type == "manual"){
-			if(FM.inputGOs.value == ""){
-				alert("Error: Please paste GO terms.");
-				return false;
-			}
+		
+
+		if(FM.annotCat.value == ""){
+			alert("Error: Please select annotation type in step 4.");
+
+			return false;
 		}
-
-
 
 		FM.pVal.value = $("#input_slider").val();
 
@@ -379,12 +312,6 @@
 		if(idString[lastChar]==",")
 			idString.slice(lastChar,1);
 		return idString;
-	}
-
-
-
-	function chooseSubmitType($type){
-
 	}
 </script>
 

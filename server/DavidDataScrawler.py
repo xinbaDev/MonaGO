@@ -38,8 +38,8 @@ class DavidDataScrawler(object):
 
         res = self._uploadGene(s,self.idType,self.inputIds)
 
-        # with open('test.html',"w") as fr_html:
-        #     fr_html.write(res) 
+        with open('test.html',"w") as fr_html:
+            fr_html.write(res) 
 
         if self._checkSuccess(res):
             logger.debug("upload gene success")
@@ -62,6 +62,9 @@ class DavidDataScrawler(object):
 
             getGO_response = thread1.getRes()
             geneList_response = thread2.getRes()
+
+            with open('test1.html',"w") as fr_html:
+                fr_html.write(getGO_response) 
 
             go,geneIds = self._parseGO(getGO_response, s)
 
