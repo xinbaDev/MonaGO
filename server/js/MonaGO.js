@@ -2580,6 +2580,10 @@
       });
     }
 
+    function getRidOfFadeLines(svg){
+        return svg.replace(/<path class="chord fade" d="[,-\d\s\w\.]*" id="chordChords"><\/path>/g, "");
+    }
+
     function setUpListener(){
       $('#filter').keydown(function(event){
         if(event.which == 13){
@@ -2623,6 +2627,10 @@
                     .attr("xmlns", "http://www.w3.org/2000/svg")
                     .node().parentNode.innerHTML;
 
+
+          svg = getRidOfFadeLines(svg);
+          console.log(svg);
+
           var imgsrc = 'data:image/svg+xml;base64,'+ btoa(svg);
 
           var canvas = document.querySelector("canvas");
@@ -2634,14 +2642,11 @@
           image.onload = function() {
             //clean the context for redrawing
 
-            console.log(canvas.width);
-            console.log(canvas.height);
             context.clearRect(0, 0, w, h);
 
             context.drawImage(image, 0, 0);
 
             var canvasdata = canvas.toDataURL("image/png");
-            console.log(canvasdata);
 /*            var a = document.createElement("a");
             a.download = "sample.png";
             a.href = canvasdata;
