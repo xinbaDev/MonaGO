@@ -27,6 +27,9 @@
   };
 
   var MonaGO = function(){
+
+    var monago;
+
     var force;
     var nodesSize = size;
     var maxNodeIndex = size;
@@ -50,6 +53,8 @@
     this.gene_info = {};//gene name for each GO term e.g. gene_info[i] = [...]
     this.dic = {};// gene intersection information
     this.go_inf = [];
+    this.goNodes = [];
+    this.matrix = [];
     this.clusterHierData = [];
     this.clusterHierDataStatic = [];
 
@@ -77,7 +82,7 @@
 
     var controlPanelWidth = 520;
 
-    var controlPanelHeight = 100;
+    var controlPanelHeight = 120;
 
     var w = $(window).width()-detailPanelWidth,
          h = $(window).height(),
@@ -86,6 +91,8 @@
 
     var goNameArr = [];
 
+
+    var main_div = 0;
     var svg ;
     var go_chart;
     var circleSvg;
@@ -108,6 +115,7 @@
     var clusterNodesIndex = [];
     var details_opened = true;
     var control_opened = true;
+    var reloadData = false;
 
     var clusterArc;
     var clusterLine1;
@@ -337,7 +345,7 @@
     }      
 
     function GO(goid) {
-      return goNodes[goid];
+      return that.goNodes[goid];
     }
 
     function recursiveAncestor(goid) {
@@ -573,7 +581,8 @@
       }
 
 
-      panelLabel = panelTitle + panel.join('<br>');
+      panelLabel = "<div>" + panelTitle + panel.join('<br>') + "</div>";
+      $('#pval-label').empty();
       $('#pval-label').append(panelLabel);
 
 
@@ -683,6 +692,8 @@
     }
 
     function drawArc(clusterHierData){
+
+      console.log(clusterHierData);
 
       var clusterHierDataFiltered = [];
       var arcData = [];
@@ -939,8 +950,8 @@
 
     function getClusterGenes(nodePositions){
       var clustergenes = [];
-      console.log(nodePositions);
-      console.log(that.go_inf);
+      // console.log(nodePositions);
+      // console.log(that.go_inf);
       nodePositions.map(function(d){ 
             that.go_inf[d].genes.map(function(d,i){
                  clustergenes.push(d);
@@ -1425,7 +1436,7 @@
         createInteractionGenes();
         createGeneInfo();
 
-        drawLayout(matrix);
+        drawLayout(that.matrix);
     }
 
     function moveOutHierCluster(){
@@ -1504,8 +1515,8 @@
     }
 
     function getClusterNodesIndexBeingSelected(level){
-      console.log(level);
-      console.log(level_g);
+      // console.log(level);
+      // console.log(level_g);
       var clusterDataLevel = [];
       if(level>=level_g){//collapse
         
@@ -2488,6 +2499,7 @@
     }
 
     function toggleControl(){
+      console.log(control_opened);
       $('#arrow_controlPanel').css('transform', function(){ return control_opened ? 'rotate(180deg)' : 'rotate(0deg)'});
       
       var shiftleft = controlPanelWidth - 20;
@@ -2516,34 +2528,44 @@
 
     function setUpControlPanel(){
 
-      var element = '&nbsp<label>Cluster GO term according to the minimum number of common gene(s)</label> \
-          <div id="slider" class="sliderBar"></div>\
-          <input type="text" id="input_slider"/>';
-            // <table class="RadioBox">\
-            // <tbody><tr><td>\
-            //       <input id="labelRadioBox" class="radioButton" type="radio" name="radioBox" value="0" checked>\
-            //     </td><td><label style="padding-left:10px" for="labelRadioBox">Show GO term name</label>\
-            //     </td></tr><tr><td></td></tr><tr><td>\
-            //       <input id="hierClusterRadioBox"  class="radioButton" type="radio" name="radioBox" value="1" >\
-            //     </td><td>\
-            //        <label style="width:300px;padding-left:10px" for="hierClusterRadioBox">Show hierarchical tree and click on the node to manually cluster the GO term</label>\
-            //     </td></tr></tbody></table>';
+      if (reloadData == false){
+          var element = '&nbsp<label>Cluster GO term according to the minimum number of common gene(s)</label> \
+              <div id="slider" class="sliderBar"></div>\
+              <input type="text" id="input_slider"/>';
+                // <table class="RadioBox">\
+                // <tbody><tr><td>\
+                //       <input id="labelRadioBox" class="radioButton" type="radio" name="radioBox" value="0" checked>\
+                //     </td><td><label style="padding-left:10px" for="labelRadioBox">Show GO term name</label>\
+                //     </td></tr><tr><td></td></tr><tr><td>\
+                //       <input id="hierClusterRadioBox"  class="radioButton" type="radio" name="radioBox" value="1" >\
+                //     </td><td>\
+                //        <label style="width:300px;padding-left:10px" for="hierClusterRadioBox">Show hierarchical tree and click on the node to manually cluster the GO term</label>\
+                //     </td></tr></tbody></table>';
 
-      //add save image button
-      element += '<button id="editor_save" class="btn" z-index:100">Save image</button>';
+          //add save image button
+          element += '<div class="control-panel-button">';
+          element += '<button id="editor_save" class="btn" z-index:100">Save image</button>';
+          element +=  '<button id="export" class="btn" z-index:100">Export File</button>';
+          element +=  '<input type="file" id="import" style="display: none"> <label for="import" class="btn" id="import_label">Import File</label>'
+          
+          // element +=  '<input id="import" type="file" class="btn" z-index:100"></input>';
+          element += '</div>';
+          //add toggle button
+          element +=  '<button id="arrow_controlPanel" class="arrowBar arrow"></button>';
 
-      //add toggle button
-      element +=  '<button id="arrow_controlPanel" class="arrowBar arrow"></button>';
+        $("#control-panel").append(element);
 
+      }
 
-
-      $("#control-panel").append(element);
       var ranger = document.getElementById('slider');
       var inputFormat = document.getElementById('input_slider');
       setUpRangeSlider(ranger,inputFormat,minNumOfOverlappingGens,maxNumOfOverlappingGens);
     }
 
     function setUpRangeSlider(ranger,inputFormat,minNumOfOverlappingGens,maxNumOfOverlappingGens){
+      if(ranger.noUiSlider)
+        ranger.noUiSlider.destroy();
+
       noUiSlider.create(ranger, {
         start: [ maxNumOfOverlappingGens+1 ], // Handle start position
         step: 1, // Slider moves in increments of '10'
@@ -2584,7 +2606,7 @@
         return svg.replace(/<path class="chord fade" d="[,-\d\s\w\.]*" id="chordChords"><\/path>/g, "");
     }
 
-    function setUpListener(){
+    function setUpListener(monago){
       $('#filter').keydown(function(event){
         if(event.which == 13){
           refreshDetailPanel();
@@ -2598,13 +2620,16 @@
         $('#searchBox').remove();
       });
 
-      $('#arrow_detailedPanel').click(function(){
-        toggleDetails();
-      });
+      if (reloadData == false){
+        $('#arrow_detailedPanel').click(function(){
+          toggleDetails();
+        });
 
-      $('#arrow_controlPanel').click(function(){
-        toggleControl();
-      });
+        $('#arrow_controlPanel').click(function(){
+          toggleControl();
+        });  
+      }
+
 
       $('.radioButton').change(function(){
         switch(this.value) {
@@ -2629,7 +2654,7 @@
 
 
           svg = getRidOfFadeLines(svg);
-          console.log(svg);
+          //console.log(svg);
 
           var imgsrc = 'data:image/svg+xml;base64,'+ btoa(svg);
 
@@ -2659,6 +2684,39 @@
           };
 
         });
+
+
+      $('#export').click(function(){
+
+          var save_file = "{\"size\":" + size + "," + "\"go_inf\":" + JSON.stringify(go_inf) + "," + "\"clusterHierData\":" +JSON.stringify(clusterHierData)
+          + "," + "\"matrix\":"+ JSON.stringify(that.matrix) + "," + "\"goNodes\":" + JSON.stringify(goNodes)+"}";
+
+            post("/export", {
+                filename: 'file',
+                file: save_file
+            }, null);
+      });
+
+      $('#import').click(function(){
+
+            function readSingleFile(evt) {
+            //Retrieve the first (and only!) File from the FileList object
+            var f = evt.target.files[0]; 
+
+            if (f) {
+              var r = new FileReader();
+              r.onload = function(e) { 
+                var contents = e.target.result; 
+                monago.reload(contents);
+              }
+              r.readAsText(f);
+            } else { 
+              alert("Failed to load file");
+            }
+          }
+
+        document.getElementById('import').addEventListener('change', readSingleFile, false);
+      })
     }
 
     function mextend (a, b) {
@@ -2743,13 +2801,15 @@
 
     function setUpView(){
 
+      if(main_div)
+        main_div.remove();
+
       main_div = d3.select("#chart").append("div");
 
       $("#details").css("width",detailPanelWidth);
       $("#pval-label").css("margin-left",-detailPanelWidth-160);
       $("#control-panel").css("width",controlPanelWidth);
       $("#control-panel").css("height",controlPanelHeight);
-
 
       svg = main_div
        .append("svg:svg")
@@ -2841,6 +2901,7 @@
     }
 
     function perparePvalue(){
+      seperated_points = [];
       maxpVal = getMaxPval();
       minpVal = getMinPval();
 
@@ -2858,19 +2919,23 @@
        .padding(.03)
        .sortSubgroups(d3.descending);
        
-      chord = chordMatrix.matrix(matrix);
+
+      chord = chordMatrix.matrix(that.matrix);
 
       //store the nodes for hierarchical clustering visualzaition
+      chordGroupsNodePosition = [];
       chord.groups().forEach(function(d,i){
         nodeObj = {"index":d.index,"angle":(d.startAngle+d.endAngle)/2,"radius":r1};
         chordGroupsNodePosition.push(nodeObj);
       });
     }
 
-    this.init = function(size,go_inf,clusterHierData){
+    this.init = function(size,go_inf,clusterHierData,goNodes,matrix){
 
       that.go_inf = go_inf;
+      that.goNodes = goNodes;
       that.go_inf_ori = copyGOInfFrom(go_inf);
+      that.matrix = matrix;
 
       that.clusterHierData = clusterHierData;
 
@@ -2897,14 +2962,48 @@
       drawHierCluster();
       drawLable();
 
-      setUpListener();
+      setUpListener(that);
       
+    }
+
+    this.reload = function(content){
+      reloadData = true;
+
+      var content = JSON.parse(content);
+
+      that.go_inf = content["go_inf"];
+      that.goNodes = content["goNodes"];
+      that.go_inf_ori = copyGOInfFrom(that.go_inf);
+      that.matrix = content["matrix"];
+
+      that.clusterHierData = content["clusterHierData"];
+
+      that.clusterHierDataStatic = [];
+      clusterHierData.map(function(d){
+        that.clusterHierDataStatic.push([d[2],d[3]]);
+      });
+
+      perparePvalue();
+
+      perpareChord();
+
+      createGeneInfo();
+      createInteractionGenes();
+
+      createPvalLabelPanel(fill);
+      createClusterNodesStatus(clusterHierData,[],"",[]);
+      setUpView();
+      determineLabelSize();
+      drawHierCluster();
+      drawLable();
+
+      setUpListener();
+
     }
 
   }
 
-  new MonaGO().init(size,go_inf,clusterHierData);
-
+  monago = new MonaGO().init(size,go_inf,clusterHierData,goNodes,matrix);
 
 
 })();

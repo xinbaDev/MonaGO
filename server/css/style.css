@@ -197,7 +197,7 @@ li{
 }
 
 #arrow_controlPanel{
-    background-position: 0px 45px;
+    background-position: 0px 55px;
     background-repeat: no-repeat;
     opacity: 1;
 }
@@ -480,10 +480,16 @@ n:hover {
 }
 
 #editor_save {
-  float:right;
-  right: 20px;
-  position: relative;
-  margin-top: -15px;
+  margin-right: 10px;
+}
+
+#export {
+  margin-right: 5px;
+}
+
+#import_label{
+  border: 2px solid #AAA;
+   background: #DDD;
 }
 
 .go_detail_content{
@@ -524,4 +530,9 @@ hr {
      position: relative;
     float: right;
     margin-right: 170px;
+}
+
+.control-panel-button{
+    margin-top: 30;
+    margin-left: 200px;
 }

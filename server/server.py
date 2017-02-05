@@ -174,6 +174,16 @@ def getPic():
         headers={"Content-disposition":
                  "attachment; filename=chart.png"})
 
+@app.route('/export',methods=['POST','GET'])
+def export():
+    string = request.form['file']
+
+    return Response(
+        string,
+        mimetype="file/txt",
+        headers={"Content-disposition":
+                 "attachment; filename=export.monago"})
+
 
 
 @logTime
