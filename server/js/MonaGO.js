@@ -37,7 +37,7 @@
     var old_array_order = [];
     var clusterHierDataFiltered = [];
 
-    var memCache = {};
+    
     
 
     var labelOff=0;
@@ -57,6 +57,7 @@
     this.matrix = [];
     this.clusterHierData = [];
     this.clusterHierDataStatic = [];
+    this.memCache = {};
 
     var that = this;
 
@@ -592,7 +593,6 @@
     }
 
     function transformIndex(index){
-      /*console.log(array_order);*/
 
       return (index < nodesSize)?
         array_order.indexOf(parseInt(index)):getIndexFormClusterNode(parseInt(index));
@@ -702,6 +702,8 @@
           if((d!=undefined) && (d[3]!=0))
             clusterHierDataFiltered.push(d);
       });
+
+      console.log(clusterHierDataFiltered);
       
       clusterHierDataFiltered.map(function(d){
             var firstNodeIndex = d[0];
@@ -903,13 +905,17 @@
 
       var leafNodes = [];
       var clusterNodesLevel = [];
-
+      console.log("index:"+index)
+      console.log("maxNodeIndex:"+maxNodeIndex)
       recursiveGetNodes(index-maxNodeIndex);
 
       function recursiveGetNodes(pos){
 
-          var leftNode = clusterHierData[pos][0];
-          var rightNode = clusterHierData[pos][1];
+          var leftNode = that.clusterHierData[pos][0];
+          var rightNode = that.clusterHierData[pos][1];
+
+          console.log("leftNode:"+leftNode)
+          console.log("rightNode:"+rightNode)
 
           if(leftNode < maxNodeIndex){
             leafNodes.push({"level":pos,"nodeId":leftNode});
@@ -925,6 +931,7 @@
 
           clusterNodesLevel.push(pos);
       }
+      console.log(leafNodes);
 
       return {"leafNodes":leafNodes,"clusterNodesLevel":clusterNodesLevel};
     }
@@ -950,8 +957,8 @@
 
     function getClusterGenes(nodePositions){
       var clustergenes = [];
-      // console.log(nodePositions);
-      // console.log(that.go_inf);
+      console.log(nodePositions);
+      console.log(that.go_inf);
       nodePositions.map(function(d){ 
             that.go_inf[d].genes.map(function(d,i){
                  clustergenes.push(d);
@@ -1096,8 +1103,10 @@
     }
 
     function calculateAClusterNodePosition(firstNodeIndex,secondNodeIndex,status,index,nodeBeingClicked,clusterNodesRadius,collapsedNodeRadius){
-
       //get the node object
+
+      console.log(firstNodeIndex);
+      console.log(secondNodeIndex);
       if(firstNodeIndex < nodesSize){
         firstNodeIndex = transformIndex(firstNodeIndex);
         firstNode = chordGroupsNodePosition[firstNodeIndex];
@@ -1116,6 +1125,8 @@
         secondNode = clusterHierNodesStatus[secondNodeIndex];
       }
 
+      console.log(firstNodeIndex);
+      console.log(secondNodeIndex);
       //calculate the position of new node(radius,angle)
       angle = (firstNode.angle+secondNode.angle)/2;
 
@@ -1146,6 +1157,8 @@
 
       for(i=0;i<clusterHierData.length;i++){
         if(clusterHierData[i]!=undefined){
+
+            console.log(clusterHierData);
             firstNode = clusterHierData[i][0];
             secondNode = clusterHierData[i][1];
             index = clusterHierData[i][2];
@@ -1233,7 +1246,7 @@
         var newNode = old_array_order[nodePositions[nodePositions.length-1]];
         var newClusterHierData = [];
 
-        clusterHierData.map(function(d,i){
+        that.clusterHierData.map(function(d,i){
             if(clusterNodesLevel.indexOf(i) == -1){
                 newClusterHierData.push(d);
             }else{//create new node
@@ -1252,17 +1265,20 @@
     function addNodesInClusterData(removedClusterHierData){
 
       removedClusterHierData.map(function(d,i){
-          clusterHierData[d[2]-maxNodeIndex] = d;
+          console.log(d)
+          console.log(maxNodeIndex)
+          that.clusterHierData[d[2]-maxNodeIndex] = d;
       });
 
-      return clusterHierData;
+      console.log(that.clusterHierData)
+      return that.clusterHierData;
     }
 
     function getRemoveClusterData(clusterNodesLevel){
       var removeHierData = [];
 
       clusterNodesLevel.map(function(d,i){
-          removeHierData.push(clusterHierData[d]);
+          removeHierData.push(that.clusterHierData[d]);
       });
 
       return removeHierData;
@@ -1295,15 +1311,15 @@
         });
 
         var removeHierData = getRemoveClusterData(clusterNodesLevel);
-        /*console.log(removeHierData);*/
+        console.log(removeHierData);
 
         //create new cluster hierarchical cluster data
-        clusterHierData = createNewClusterHierData(nodePositions,clusterNodesLevel);
-
+        that.clusterHierData = createNewClusterHierData(nodePositions,clusterNodesLevel);
+        console.log(that.clusterHierData);
         //create cluster node 
-        createClusterNodesStatus(clusterHierData,nodeBeingClicked,"collapse",collpasedNodes,clusterNodesRadius,collapsedNodeRadius);
+        createClusterNodesStatus(that.clusterHierData,nodeBeingClicked,"collapse",collpasedNodes,clusterNodesRadius,collapsedNodeRadius);
 
-        return [removeHierData,clusterHierData];
+        return [removeHierData,that.clusterHierData];
     }
 
     function expandHierClustering(removedClusterHierData,clusterNodesLevel,nodeBeingClicked,collpasedNodes,clusterNodesRadius){
@@ -1315,16 +1331,17 @@
           chordGroupsNodePosition.push(nodeObj);
         });
 
-        clusterHierData = addNodesInClusterData(removedClusterHierData,clusterNodesLevel);
+        that.clusterHierData = addNodesInClusterData(removedClusterHierData,clusterNodesLevel);
 
-        createClusterNodesStatus(clusterHierData,nodeBeingClicked,"expand",collpasedNodes,clusterNodesRadius);
+        createClusterNodesStatus(that.clusterHierData,nodeBeingClicked,"expand",collpasedNodes,clusterNodesRadius);
 
-        return clusterHierData;
+        return that.clusterHierData;
     }
 
     function collapseMonaGO(nodeBeingClickedIndex){
       //get leaf nodes(associated with the cluster) info(node index & cluster level)
         var nodes = getHierNodes(nodeBeingClickedIndex);
+        console.log(nodes)
         //get the leaf nodes position in the chord layout
         var nodePositions = getLeafNodesPosition(nodes["leafNodes"]).unique();
         var clusterNodesLevel = nodes["clusterNodesLevel"];
@@ -1337,13 +1354,13 @@
         matrix = updateMatrix();
         chord = chordMatrix.matrix(matrix);
 
-        var collapseResults = collapseHierClustering(nodePositions,clusterNodesLevel,nodeBeingClickedIndex,Object.keys(memCache),memCache["clusterNodesRadius"]);
+        var collapseResults = collapseHierClustering(nodePositions,clusterNodesLevel,nodeBeingClickedIndex,Object.keys(that.memCache),that.memCache["clusterNodesRadius"]);
         removedHierData = collapseResults[0];
         clusterHierData = collapseResults[1];
         
 
-        if(memCache["clusterNodesRadius"]!=undefined)
-            var clusterNodesRadius = memCache["clusterNodesRadius"];
+        if(that.memCache["clusterNodesRadius"]!=undefined)
+            var clusterNodesRadius = that.memCache["clusterNodesRadius"];
         else
             clusterNodesRadius = [];
 
@@ -1354,14 +1371,14 @@
             }
         });
 
-        memCache["clusterNodesRadius"] = clusterNodesRadius;
+        that.memCache["clusterNodesRadius"] = clusterNodesRadius;
 
         //console.log(clusterNodesRadius);
         /*console.log(removeHierData);*/
 
         var nodeBeingMemorized = {"go_inf":removeGOs,"array_order":removeNodeInArray,"clusterHierData":removedHierData,"clusterNodesLevel":clusterNodesLevel};
 
-        memCache[nodeBeingClickedIndex] = nodeBeingMemorized;
+        that.memCache[nodeBeingClickedIndex] = nodeBeingMemorized;
 
         return clusterHierData;
 
@@ -1369,17 +1386,17 @@
 
     function expandMonaGO(nodeBeingClickedIndex){
 
-      nodeBeingMemorized = memCache[nodeBeingClickedIndex];
+        nodeBeingMemorized = that.memCache[nodeBeingClickedIndex];
 
         expandNodeSet(nodeBeingClickedIndex,nodeBeingMemorized["go_inf"]);
 
         addNodesToArrayOrder(nodeBeingMemorized["array_order"]);
 
-        var collapsedNodes = getMemKey(memCache);
+        var collapsedNodes = getMemKey(that.memCache);
 
         var clusterNodesLevel = nodeBeingMemorized["clusterNodesLevel"];
 
-        var clusterNodesRadius = memCache["clusterNodesRadius"];
+        var clusterNodesRadius = that.memCache["clusterNodesRadius"];
 
         var newclusterNodesRadius = [];
 
@@ -1390,17 +1407,17 @@
 
         clusterNodesRadius = newclusterNodesRadius;
 
-        memCache["clusterNodesRadius"] = clusterNodesRadius;
+        that.memCache["clusterNodesRadius"] = clusterNodesRadius;
 
         matrix = updateMatrix();
         chord = chordMatrix.matrix(matrix);
 
 
-        var clusterHierData = expandHierClustering(nodeBeingMemorized["clusterHierData"],clusterNodesLevel,nodeBeingClickedIndex,collapsedNodes,clusterNodesRadius);
+        that.clusterHierData = expandHierClustering(nodeBeingMemorized["clusterHierData"],clusterNodesLevel,nodeBeingClickedIndex,collapsedNodes,clusterNodesRadius);
         
-        delete memCache[nodeBeingClickedIndex];
+        delete that.memCache[nodeBeingClickedIndex];
 
-        return clusterHierData;
+        return that.clusterHierData;
     }
 
     function onClusterNodeClick(d,i){
@@ -1425,7 +1442,7 @@
     }
 
     function updateMoanaGOLayout(clusterHierData){
-
+      console.log(clusterHierData);
       createGOAndUpdateChordLayout();
 
       //if(labelOff==1)
@@ -1521,13 +1538,13 @@
       if(level>=level_g){//collapse
         
         for(var i=level;i >= 0; i--){
-          if(clusterHierData[i]!=undefined&&clusterDataLevel.indexOf(i)==-1){
-            if(memCache[clusterHierData[i][2]]==undefined){
-              var clusterNodesLevel = getHierNodes(clusterHierData[i][2])["clusterNodesLevel"];
+          if(that.clusterHierData[i]!=undefined&&that.clusterDataLevel.indexOf(i)==-1){
+            if(that.memCache[clusterHierData[i][2]]==undefined){
+              var clusterNodesLevel = getHierNodes(that.clusterHierData[i][2])["clusterNodesLevel"];
               //console.log(clusterNodesLevel);
               clusterNodesLevel.map(function(d){return clusterDataLevel.push(d);});
               clusterDataLevel = clusterDataLevel.unique();
-              clusterNodesIndex.push(clusterHierData[clusterNodesLevel[clusterNodesLevel.length-1]][2]);
+              clusterNodesIndex.push(that.clusterHierData[clusterNodesLevel[clusterNodesLevel.length-1]][2]);
             }
           }
           clusterNodesIndex = clusterNodesIndex.unique();
@@ -1545,8 +1562,8 @@
             pos.push(i);
 
             var clusterNode = getClusterNode(d1);
-            clusterHierData = expandMonaGO(clusterNode["index"]);
-            console.log(clusterHierData);
+            that.clusterHierData = expandMonaGO(clusterNode["index"]);
+            console.log(that.clusterHierData);
           
           }
         });
@@ -1554,13 +1571,13 @@
         clusterNodesIndex.splice(pos[0],pos.length);
 
         for(var i=level;i >= 0; i--){
-          if(clusterHierData[i]!=undefined&&clusterDataLevel.indexOf(i)==-1){
+          if(that.clusterHierData[i]!=undefined&&clusterDataLevel.indexOf(i)==-1){
 
-            var clusterNodesLevel = getHierNodes(clusterHierData[i][2])["clusterNodesLevel"];
+            var clusterNodesLevel = getHierNodes(that.clusterHierData[i][2])["clusterNodesLevel"];
             //console.log(clusterNodesLevel);
             clusterNodesLevel.map(function(d){return clusterDataLevel.push(d);});
             clusterDataLevel = clusterDataLevel.unique();
-            clusterNodesIndex.push(clusterHierData[clusterNodesLevel[clusterNodesLevel.length-1]][2]);
+            clusterNodesIndex.push(that.clusterHierData[clusterNodesLevel[clusterNodesLevel.length-1]][2]);
 
           }
         }
@@ -1572,9 +1589,9 @@
         clusterNodesIndex.map(function(index,i){
             clusterHierNodesStatus.map(function(d){
               if(index == d["index"]){
-                if(memCache[index]==undefined){
-                  clusterHierData = collapseMonaGO(index);
-                  console.log(clusterHierData);
+                if(that.memCache[index]==undefined){
+                  that.clusterHierData = collapseMonaGO(index);
+                  console.log(that.clusterHierData);
                 }
               }
             });
@@ -1585,8 +1602,7 @@
 
 
       level_g = level;
-      console.log(clusterHierData);
-      updateMoanaGOLayout(clusterHierData);
+      updateMoanaGOLayout(that.clusterHierData);
     }
 
     function getClusterNode(index){
@@ -2474,7 +2490,7 @@
       if(popUpList.length != 0){
         drawPopUpHierarchy();
       }else{
-        drawHierarchicalClustering(clusterHierData);
+        drawHierarchicalClustering(that.clusterHierData);
       }
       
 
@@ -2689,7 +2705,7 @@
       $('#export').click(function(){
 
           var save_file = "{\"size\":" + size + "," + "\"go_inf\":" + JSON.stringify(go_inf) + "," + "\"clusterHierData\":" +JSON.stringify(clusterHierData)
-          + "," + "\"matrix\":"+ JSON.stringify(that.matrix) + "," + "\"goNodes\":" + JSON.stringify(goNodes)+"}";
+          + "," + "\"matrix\":"+ JSON.stringify(that.matrix) + "," +"\"array_order\":" + JSON.stringify(array_order) + "," + "\"goNodes\":" + JSON.stringify(goNodes)+"}";
 
             post("/export", {
                 filename: 'file',
@@ -2705,6 +2721,7 @@
 
             if (f) {
               var r = new FileReader();
+              console.log(monago);
               r.onload = function(e) { 
                 var contents = e.target.result; 
                 monago.reload(contents);
@@ -2976,9 +2993,20 @@
       that.go_inf_ori = copyGOInfFrom(that.go_inf);
       that.matrix = content["matrix"];
 
+
+      array_order = content["array_order"];
+
+      nodesSize = content["size"];
+      maxNodeIndex = content["size"];
+
       that.clusterHierData = content["clusterHierData"];
 
+      console.log(that.clusterHierData);
+
       that.clusterHierDataStatic = [];
+      clusterHierNodesStatus = [];
+      that.memCache = {};
+
       clusterHierData.map(function(d){
         that.clusterHierDataStatic.push([d[2],d[3]]);
       });
@@ -2991,9 +3019,14 @@
       createInteractionGenes();
 
       createPvalLabelPanel(fill);
-      createClusterNodesStatus(clusterHierData,[],"",[]);
+      createClusterNodesStatus(that.clusterHierData,[],"",[]);
       setUpView();
       determineLabelSize();
+
+      clusterArc.remove()
+      clusterLine2.remove()
+      clusterLine1.remove()
+
       drawHierCluster();
       drawLable();
 

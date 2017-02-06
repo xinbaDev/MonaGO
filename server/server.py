@@ -41,7 +41,7 @@ def index():
     if request.method == 'GET':
         return render_template("index.html")
     else:
-        if request.form['inputGOs']:
+        if request.form['type'] == "manual":
             go = ast.literal_eval(request.form['inputGOs'])
 
         else:
