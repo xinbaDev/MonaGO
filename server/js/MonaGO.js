@@ -45,8 +45,7 @@
     var clusterHierNodesStatus = [];//for storing nodes generated Hierarchical clustering
     var chordGroupsNodePosition = [];
 
-    var maxNumOfOverlappingGens = clusterHierData[0][3];
-    var minNumOfOverlappingGens = clusterHierData[clusterHierData.length-1][3];
+
 
     var popUpList = [];//store the index of go that being popped up.
 
@@ -58,6 +57,7 @@
     this.clusterHierData = [];
     this.clusterHierDataStatic = [];
     this.memCache = {};
+    this.level_g = 0;
 
     var that = this;
 
@@ -111,8 +111,7 @@
     var zoom = d3.behavior.zoom().translate([w/2, h/2]);
     var zoomLevel = 1;
 
-    
-    var level_g = 0;
+  
     var clusterNodesIndex = [];
     var details_opened = true;
     var control_opened = true;
@@ -693,7 +692,6 @@
 
     function drawArc(clusterHierData){
 
-      console.log(clusterHierData);
 
       var clusterHierDataFiltered = [];
       var arcData = [];
@@ -703,7 +701,6 @@
             clusterHierDataFiltered.push(d);
       });
 
-      console.log(clusterHierDataFiltered);
       
       clusterHierDataFiltered.map(function(d){
             var firstNodeIndex = d[0];
@@ -905,8 +902,7 @@
 
       var leafNodes = [];
       var clusterNodesLevel = [];
-      console.log("index:"+index)
-      console.log("maxNodeIndex:"+maxNodeIndex)
+
       recursiveGetNodes(index-maxNodeIndex);
 
       function recursiveGetNodes(pos){
@@ -914,8 +910,7 @@
           var leftNode = that.clusterHierData[pos][0];
           var rightNode = that.clusterHierData[pos][1];
 
-          console.log("leftNode:"+leftNode)
-          console.log("rightNode:"+rightNode)
+
 
           if(leftNode < maxNodeIndex){
             leafNodes.push({"level":pos,"nodeId":leftNode});
@@ -931,7 +926,7 @@
 
           clusterNodesLevel.push(pos);
       }
-      console.log(leafNodes);
+
 
       return {"leafNodes":leafNodes,"clusterNodesLevel":clusterNodesLevel};
     }
@@ -957,8 +952,7 @@
 
     function getClusterGenes(nodePositions){
       var clustergenes = [];
-      console.log(nodePositions);
-      console.log(that.go_inf);
+
       nodePositions.map(function(d){ 
             that.go_inf[d].genes.map(function(d,i){
                  clustergenes.push(d);
@@ -1105,8 +1099,7 @@
     function calculateAClusterNodePosition(firstNodeIndex,secondNodeIndex,status,index,nodeBeingClicked,clusterNodesRadius,collapsedNodeRadius){
       //get the node object
 
-      console.log(firstNodeIndex);
-      console.log(secondNodeIndex);
+
       if(firstNodeIndex < nodesSize){
         firstNodeIndex = transformIndex(firstNodeIndex);
         firstNode = chordGroupsNodePosition[firstNodeIndex];
@@ -1125,8 +1118,7 @@
         secondNode = clusterHierNodesStatus[secondNodeIndex];
       }
 
-      console.log(firstNodeIndex);
-      console.log(secondNodeIndex);
+ 
       //calculate the position of new node(radius,angle)
       angle = (firstNode.angle+secondNode.angle)/2;
 
@@ -1158,7 +1150,7 @@
       for(i=0;i<clusterHierData.length;i++){
         if(clusterHierData[i]!=undefined){
 
-            console.log(clusterHierData);
+     
             firstNode = clusterHierData[i][0];
             secondNode = clusterHierData[i][1];
             index = clusterHierData[i][2];
@@ -1265,12 +1257,11 @@
     function addNodesInClusterData(removedClusterHierData){
 
       removedClusterHierData.map(function(d,i){
-          console.log(d)
-          console.log(maxNodeIndex)
+
           that.clusterHierData[d[2]-maxNodeIndex] = d;
       });
 
-      console.log(that.clusterHierData)
+
       return that.clusterHierData;
     }
 
@@ -1311,11 +1302,11 @@
         });
 
         var removeHierData = getRemoveClusterData(clusterNodesLevel);
-        console.log(removeHierData);
+
 
         //create new cluster hierarchical cluster data
         that.clusterHierData = createNewClusterHierData(nodePositions,clusterNodesLevel);
-        console.log(that.clusterHierData);
+
         //create cluster node 
         createClusterNodesStatus(that.clusterHierData,nodeBeingClicked,"collapse",collpasedNodes,clusterNodesRadius,collapsedNodeRadius);
 
@@ -1341,7 +1332,7 @@
     function collapseMonaGO(nodeBeingClickedIndex){
       //get leaf nodes(associated with the cluster) info(node index & cluster level)
         var nodes = getHierNodes(nodeBeingClickedIndex);
-        console.log(nodes)
+
         //get the leaf nodes position in the chord layout
         var nodePositions = getLeafNodesPosition(nodes["leafNodes"]).unique();
         var clusterNodesLevel = nodes["clusterNodesLevel"];
@@ -1442,7 +1433,7 @@
     }
 
     function updateMoanaGOLayout(clusterHierData){
-      console.log(clusterHierData);
+
       createGOAndUpdateChordLayout();
 
       //if(labelOff==1)
@@ -1532,13 +1523,13 @@
     }
 
     function getClusterNodesIndexBeingSelected(level){
-      // console.log(level);
-      // console.log(level_g);
+      console.log(level);
+      console.log(that.level_g);
       var clusterDataLevel = [];
-      if(level>=level_g){//collapse
+      if(level>=that.level_g){//collapse
         
         for(var i=level;i >= 0; i--){
-          if(that.clusterHierData[i]!=undefined&&that.clusterDataLevel.indexOf(i)==-1){
+          if(that.clusterHierData[i]!=undefined&&clusterDataLevel.indexOf(i)==-1){
             if(that.memCache[clusterHierData[i][2]]==undefined){
               var clusterNodesLevel = getHierNodes(that.clusterHierData[i][2])["clusterNodesLevel"];
               //console.log(clusterNodesLevel);
@@ -1556,14 +1547,13 @@
         console.log("expand");
         var index = level + nodesSize;
         var pos = [];
-        console.log(clusterNodesIndex);
+
         clusterNodesIndex.reverse().map(function(d1,i){
           if(d1 >= index){
             pos.push(i);
 
             var clusterNode = getClusterNode(d1);
             that.clusterHierData = expandMonaGO(clusterNode["index"]);
-            console.log(that.clusterHierData);
           
           }
         });
@@ -1591,7 +1581,7 @@
               if(index == d["index"]){
                 if(that.memCache[index]==undefined){
                   that.clusterHierData = collapseMonaGO(index);
-                  console.log(that.clusterHierData);
+
                 }
               }
             });
@@ -1601,7 +1591,7 @@
 
 
 
-      level_g = level;
+      that.level_g = level;
       updateMoanaGOLayout(that.clusterHierData);
     }
 
@@ -2515,7 +2505,7 @@
     }
 
     function toggleControl(){
-      console.log(control_opened);
+
       $('#arrow_controlPanel').css('transform', function(){ return control_opened ? 'rotate(180deg)' : 'rotate(0deg)'});
       
       var shiftleft = controlPanelWidth - 20;
@@ -2575,7 +2565,7 @@
 
       var ranger = document.getElementById('slider');
       var inputFormat = document.getElementById('input_slider');
-      setUpRangeSlider(ranger,inputFormat,minNumOfOverlappingGens,maxNumOfOverlappingGens);
+      setUpRangeSlider(ranger,inputFormat,that.minNumOfOverlappingGens,that.maxNumOfOverlappingGens);
     }
 
     function setUpRangeSlider(ranger,inputFormat,minNumOfOverlappingGens,maxNumOfOverlappingGens){
@@ -2721,7 +2711,7 @@
 
             if (f) {
               var r = new FileReader();
-              console.log(monago);
+
               r.onload = function(e) { 
                 var contents = e.target.result; 
                 monago.reload(contents);
@@ -2956,7 +2946,11 @@
 
       that.clusterHierData = clusterHierData;
 
-      clusterHierData.map(function(d){
+
+      that.maxNumOfOverlappingGens = that.clusterHierData[0][3];
+      that.minNumOfOverlappingGens = that.clusterHierData[that.clusterHierData.length-1][3];
+
+      that.clusterHierData.map(function(d){
         that.clusterHierDataStatic.push([d[2],d[3]]);
       });
 
@@ -2985,6 +2979,7 @@
 
     this.reload = function(content){
       reloadData = true;
+      that.level_g = 0;
 
       var content = JSON.parse(content);
 
@@ -3000,14 +2995,15 @@
       maxNodeIndex = content["size"];
 
       that.clusterHierData = content["clusterHierData"];
+      that.maxNumOfOverlappingGens = that.clusterHierData[0][3];
+      that.minNumOfOverlappingGens = that.clusterHierData[that.clusterHierData.length-1][3];
 
-      console.log(that.clusterHierData);
 
       that.clusterHierDataStatic = [];
       clusterHierNodesStatus = [];
       that.memCache = {};
 
-      clusterHierData.map(function(d){
+      that.clusterHierData.map(function(d){
         that.clusterHierDataStatic.push([d[2],d[3]]);
       });
 
