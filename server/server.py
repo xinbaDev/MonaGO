@@ -277,4 +277,4 @@ def processedData2(go):
         return matrix,go_index_reord,go_hier,go_inf_reord,clusterHierData
 
 if __name__ == '__main__':
-    app.run(debug="true",host="0.0.0.0",threaded = True)
+    app.run(debug="true",host="0.0.0.0", port=80, threaded = True)
