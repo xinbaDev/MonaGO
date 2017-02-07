@@ -344,7 +344,7 @@ class DataProcess():
             level.append(t+n)
             level.append(int(Z[t,2]))
             self.clusterHierData.append(level)
-            print int(Z[t,2])
+            #print int(Z[t,2])
 
         return Z
 
