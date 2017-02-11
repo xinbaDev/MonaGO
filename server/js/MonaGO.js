@@ -2612,6 +2612,19 @@
         return svg.replace(/<path class="chord fade" d="[,-\d\s\w\.]*" id="chordChords"><\/path>/g, "");
     }
 
+    function enlargeSVG(svg){
+      var re = /<svg class="main_vis" width="(\d+)" height="(\d+)" version="1.1" xmlns="http:\/\/www.w3.org\/2000\/svg"><g id="circle" transform="translate\(([0-9]*\.[0-9]+),([0-9]*\.[0-9]+)\)">/g;
+
+      function converter(str, p1,p2,p3,p4, offset, s){
+        p1 = parseInt(p1) + 200;
+        p2 = parseInt(p2) + 200;
+        p3 = parseFloat(p3) + 100;
+        p4 = parseFloat(p4) + 100;
+        return '<svg class="main_vis" width="'+ p1 + '" height="' + p2 + '" version="1.1" xmlns="http://www.w3.org/2000/svg"><g id="circle" transform="translate('+ p3 + ','+ p4 +')">'
+      }
+      return svg.replace(re,converter);
+    }
+
     function setUpListener(monago){
       $('#filter').keydown(function(event){
         if(event.which == 13){
@@ -2644,7 +2657,7 @@
                   break;
               case "1" :
                   drawHierCluster();
-                  break;
+                  break;  
           }            
       });
 
@@ -2659,35 +2672,56 @@
                     .node().parentNode.innerHTML;
 
 
-          svg = getRidOfFadeLines(svg);
+          svg_data = getRidOfFadeLines(svg);
+          svg_data = enlargeSVG(svg_data);
+/*          post("/getPic", {
+              filename: 'chart',
+              svg: svg_data
+          }, null);*/
+
+          // var doc = new jsPDF()
+          // doc.addSVG(svg_data,20,40,160,130)
+          // doc.save('pic.pdf');
           //console.log(svg);
 
-          var imgsrc = 'data:image/svg+xml;base64,'+ btoa(svg);
+          // var imgsrc = 'data:image/svg+xml;base64,'+ btoa(svg_data);
 
-          var canvas = document.querySelector("canvas");
-          var context = canvas.getContext("2d");
+          // var canvas = document.querySelector("canvas");
+          // var context = canvas.getContext("2d");
 
-          var image = new Image();
-          image.src = imgsrc;
+          // var image = new Image();
+          // image.src = imgsrc;
 
-          image.onload = function() {
-            //clean the context for redrawing
+          // image.onload = function() {
+          //   //clean the context for redrawing
 
-            context.clearRect(0, 0, w, h);
+          //   context.clearRect(0, 0, w, h);
 
-            context.drawImage(image, 0, 0);
+          //   context.drawImage(image, 0, 0);
 
-            var canvasdata = canvas.toDataURL("image/png");
-/*            var a = document.createElement("a");
-            a.download = "sample.png";
-            a.href = canvasdata;
-            a.click();*/
-            post("/getPic", {
-                filename: 'chart',
-                png: canvasdata
-            }, null);
+          //   var canvasdata = canvas.toDataURL("image/png");
 
-          };
+
+          //   // var a = document.createElement("a");
+          //   // a.download = "chart.png";
+          //   // a.href = canvasdata;
+          //   // a.click();
+          //   // post("/getPic", {
+          //   //     filename: 'chart',
+          //   //     png: canvasdata
+          //   // }, null);
+
+          // };
+
+          var svgBlob = new Blob([svg_data], {type:"image/svg+xml;charset=utf-8"});
+          var svgUrl = URL.createObjectURL(svgBlob);
+          var downloadLink = document.createElement("a");
+          downloadLink.href = svgUrl;
+          downloadLink.download = "newesttree.svg";
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          document.body.removeChild(downloadLink);
+
 
         });
 

@@ -165,14 +165,15 @@ def getHelp():
 
 @app.route('/getPic',methods=['POST','GET'])
 def getPic():
-    b64_string = request.form['png'].split(",")[1]
+    b64_string = request.form['svg']
 
-    b64_string += "=" * ((4 - len(request.form['png']) % 4) % 4)
+    #b64_string += "=" * ((4 - len(request.form['png']) % 4) % 4)
+
     return Response(
-        base64.b64decode(b64_string),
-        mimetype="image/png",
+        b64_string,
+        mimetype="image/svg+xml",
         headers={"Content-disposition":
-                 "attachment; filename=chart.png"})
+                 "attachment; filename=chart.svg"})
 
 @app.route('/export',methods=['POST','GET'])
 def export():
