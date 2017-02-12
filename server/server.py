@@ -192,6 +192,8 @@ def parseInputGOs(go_csvFormat):
     for line in lines:
         if line.strip("\n\r") != "":
             cols = line.split(",",4) # do not split genes
+            if cols[0] == "GO_id":
+                continue
             genes = cols[4].split("|")
             count = len(genes)
             cols.append(count)

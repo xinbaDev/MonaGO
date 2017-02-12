@@ -121,7 +121,7 @@
 					</div>
 
 					<div class="step3">		
-						
+			
 						<h2><span class="label label-primary" title="choose p-value">Step 3: Choose p-value</span></h2>
 
 						<br>
@@ -171,7 +171,8 @@
 									GO:0042221,response to chemical,GOTERM_BP_2,1.08E-04,"cytochrome P450 family 2 subfamily A member 6(CYP2A6)|thyroid hormone receptor, alpha(THRA)|heat shock protein family A (Hsp70) member 6(HSPA6)|paired box 8(PAX8)|cytochrome P450 family 2 subfamily E member 1(CYP2E1)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6"...
 								</p>
 							</div>
-					<input type="Button" value="Clear" onclick="clearManualPaste();" name="B3">
+					<input type="Button" value="Clear" class="btn" onclick="clearManualPaste();" name="B3">
+					<input type="file" id="Upload" style="display: none"> <label for="Upload" class="btn" id="Upload_label">Upload CSV</label>
 					<div class="btn btn-success btn-rounded btn-lg submit-btn" onclick="manualSubmitClicked()">Submit</div>
 				</div>
 					
@@ -235,6 +236,29 @@ GO:0042330,taxis,GOTERM_BP_2,0.049042278,C-C motif chemokine ligand 5(CCL5)|EPH 
 		  $goList = $(this).next();
           $goList.slideToggle(500);
 		})
+
+		$('#Upload').click(function(){
+
+		    function readSingleFile(evt) {
+			    //Retrieve the first (and only!) File from the FileList object
+			    var f = evt.target.files[0]; 
+
+			    if (f) {
+			      var r = new FileReader();
+
+			      r.onload = function(e) { 
+			        var contents = e.target.result; 
+			        document.frmManager.inputGOs.value = contents;
+			      }
+			      r.readAsText(f);
+			    } else { 
+			      alert("Failed to load file");
+			    }
+		  	}
+
+    	document.getElementById('Upload').addEventListener('change', readSingleFile, false);
+     
+		});
 
 	}
 
@@ -303,6 +327,8 @@ GO:0042330,taxis,GOTERM_BP_2,0.049042278,C-C motif chemokine ligand 5(CCL5)|EPH 
 			$(".loadingBar").css("top",bodyHeight/2);
 		}
 	}
+
+
 
 	function uploadList(type){
 
