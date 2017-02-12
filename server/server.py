@@ -42,8 +42,7 @@ def index():
         return render_template("index.html")
     else:
         if request.form['type'] == "manual":
-            go = ast.literal_eval(request.form['inputGOs'])
-
+            go = parseInputGOs(request.form['inputGOs'])
         else:
             #parameters needed for querying DAVID
             inputIds = request.form['inputIds']
@@ -186,6 +185,20 @@ def export():
                  "attachment; filename=export.monago"})
 
 
+def parseInputGOs(go_csvFormat):
+    goDictContainer = []
+    lines = go_csvFormat.split("\n")
+
+    for line in lines:
+        if line.strip("\n\r") != "":
+            cols = line.split(",",4) # do not split genes
+            genes = cols[4].split("|")
+            count = len(genes)
+            cols.append(count)
+            goDictContainer.append({"count": cols[5],"genes":str(cols[4].strip("\r\"")), "GO_id": str(cols[0]), "GO_name": str(cols[1]), "cat": str(cols[2]),
+                "pVal": str(cols[3])})
+
+    return goDictContainer
 
 @logTime
 def getDataFromDavid(inputIds,idType,annotCat,pVal):
@@ -228,8 +241,6 @@ def processedData(go):
         go_inf_reord:an array of enriched GO terms
         clusterHierData:an array storing hierarcical data use to generated hierarcical tree
     '''
-    with open("datafromdavid.txt","w") as fw:
-        fw.write(str(go))
 
     dataProcess = DataProcess()
     try:
