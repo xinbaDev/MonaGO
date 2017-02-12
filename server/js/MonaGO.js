@@ -570,6 +570,7 @@
       var panel = [];
       panelTitle.push("p-value");
       panelTitle.push("<hr></hr>");
+      panelTitle = panelTitle.join('');
       //create panel
       for(i=0;i<seperated_points.length-1;i++)
       {
