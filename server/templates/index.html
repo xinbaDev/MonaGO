@@ -32,19 +32,19 @@
 
 			<div class="David_submit">
 
-				<div class="David_submit_button btn-success" ><label>Submit genes to DAVID</label></div>
+				<div class="David_submit_button btn-success" ><label class="large_label">Submit genes to DAVID for GO enrichment and visualisation</label></div>
 				
 
 				<div class="main_section" style="display:none">
 
 					<div class="step1">
-						<h2><span class="label label-primary" title="paste a list of genes seperated by comma,newline or space">Step 1: Enter Gene List</span></h2>
-		
+						<h2><span class="label label-primary" title="paste a list of genes seperated by comma, newline or space">Step 1: Enter Gene List</span></h2>
+						<br>
 						<font class="regular"> Paste a list</font>
-						
+						<p>
 						<div >
 							<textarea rows="6" id="LISTBox" class="form-control" name="inputIds"></textarea>
-							<div class="example_gene" onclick="copyDemoGenes()"><p>Demo genes(click to paste):</p> 
+							<div class="example_gene" onclick="copyDemoGenes()"><p>Demo genes (click to paste):</p> 
 								<p id="demo_gene">
 									1007_s_at
 									1053_at
@@ -70,7 +70,7 @@
 
 					<div class="step2">
 
-						<h2><span class="label label-primary" title="select gene identifier">Step 2: Select Identifier</span></h2>
+						<h2><span class="label label-primary" title="choose gene identifier">Step 2: Choose Identifier</span></h2>
 			
 									<br>
 									  <select class="selectpicker" data-width="300px" size="10" name="idType">
@@ -122,7 +122,7 @@
 
 					<div class="step3">		
 			
-						<h2><span class="label label-primary" title="choose p-value">Step 3: Choose p-value</span></h2>
+						<h2><span class="label label-primary" title="choose p-value from 0.05 to 0.001">Step 3: Choose p-value</span></h2>
 
 						<br>
 
@@ -161,7 +161,7 @@
 			</div>
 
 			<div class="manual_submit">
-				<div class="manual_submit_button btn-success"><label>Submit enriched GO terms manually</label></div>
+				<div class="manual_submit_button btn-success"><label class="large_label">Submit enriched GO terms for visualisation</label></div>
 				<div class="manual_input " style="display:none">
 					<h2><span class="label label-primary" title="enter enriched GO term manually">Enter Enriched GO Terms Manually(Beta)</span></h2>
 					<textarea rows="6" id="inputGOs" class="form-control" name="inputGOs"></textarea>

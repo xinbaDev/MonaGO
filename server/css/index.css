@@ -115,7 +115,7 @@
 }
 
 #input_slider{
-    width: 50;
+    width: 60;
     padding-left: 10px;
     margin-left: 20px;
     margin-top: -3px;
@@ -159,4 +159,8 @@
 .btn{
     background-color: #8e8686;
     border-color: #2196F3;
+}
+
+.large_label{
+    font-size:20px;
 }
