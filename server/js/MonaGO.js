@@ -88,7 +88,8 @@
     var w = $(window).width()-detailPanelWidth,
          h = $(window).height(),
          r0 = Math.min(w, h) * .20,
-         r1 = r0 * 1.1;
+         r1 = r0 * 1.1,
+         widthToheightRatio = w/h;
 
     var goNameArr = [];
 
@@ -2665,27 +2666,38 @@
       $("#editor_save").click(function() {
 
 
-          d3.select("canvas").attr("width",w).attr("height",h);
+          // d3.select("canvas").attr("width",w).attr("height",h);
 
-          var svg = d3.select('.main_vis')
-                    .attr("version", 1.1)
-                    .attr("xmlns", "http://www.w3.org/2000/svg")
-                    .node().parentNode.innerHTML;
+          // var svg = d3.select('.main_vis')
+          //           .attr("version", 1.1)
+          //           .attr("xmlns", "http://www.w3.org/2000/svg")
+          //           .node().parentNode.innerHTML;
 
 
-          svg_data = getRidOfFadeLines(svg);
-          svg_data = enlargeSVG(svg_data);
+          // svg_data = getRidOfFadeLines(svg);
+          // svg_data = enlargeSVG(svg_data);
 /*          post("/getPic", {
               filename: 'chart',
               svg: svg_data
           }, null);*/
 
-          // var doc = new jsPDF()
-          // doc.addSVG(svg_data,20,40,160,130)
-          // doc.save('pic.pdf');
-          //console.log(svg);
+          //(1) save high resolution png, fast, small size
+          saveSvgAsPng(document.getElementById("main_vis"), "diagram.png", {scale: 5});
+
+          //(2) save pdf , slow, large file.
+          // svgAsPngUri(document.getElementById("main_vis"),{scale: 3},function(data){
+          //     var doc = new jsPDF();
+          //     doc.addImage(data, 'PNG', 0, 0, 250, 250/widthToheightRatio);
+          //     doc.save('pic.pdf');
+          // })
 
           // var imgsrc = 'data:image/svg+xml;base64,'+ btoa(svg_data);
+
+          //save as pdf
+          // var doc = new jsPDF()
+          // doc.addImage(imgsrc, 'JPEG', 0, 0, 1350, 750);
+          // doc.save('pic.pdf');
+          // //console.log(svg);
 
           // var canvas = document.querySelector("canvas");
           // var context = canvas.getContext("2d");
@@ -2703,6 +2715,7 @@
           //   var canvasdata = canvas.toDataURL("image/png");
 
 
+          //a way to save as png, need server
           //   // var a = document.createElement("a");
           //   // a.download = "chart.png";
           //   // a.href = canvasdata;
@@ -2714,14 +2727,15 @@
 
           // };
 
-          var svgBlob = new Blob([svg_data], {type:"image/svg+xml;charset=utf-8"});
-          var svgUrl = URL.createObjectURL(svgBlob);
-          var downloadLink = document.createElement("a");
-          downloadLink.href = svgUrl;
-          downloadLink.download = "newesttree.svg";
-          document.body.appendChild(downloadLink);
-          downloadLink.click();
-          document.body.removeChild(downloadLink);
+          //save as svg
+          // var svgBlob = new Blob([svg_data], {type:"image/svg+xml;charset=utf-8"});
+          // var svgUrl = URL.createObjectURL(svgBlob);
+          // var downloadLink = document.createElement("a");
+          // downloadLink.href = svgUrl;
+          // downloadLink.download = "newesttree.svg";
+          // document.body.appendChild(downloadLink);
+          // downloadLink.click();
+          // document.body.removeChild(downloadLink);
 
 
         });
@@ -2856,6 +2870,7 @@
       svg = main_div
        .append("svg:svg")
          .attr("class","main_vis")
+         .attr("id","main_vis")
          .attr("width", w)
          .attr("height", h)
          .call(zoom.on("zoom", redraw))

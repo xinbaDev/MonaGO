@@ -70,11 +70,14 @@ class DavidDataScrawler(object):
 
             geneList = self._parseGenes(geneList_response)
                 
+            with open("go.txt","w") as fw:
+                fw.write(str(go))
 
             go_filtered = self._filterGO(self.pVal,go)
 
-            # with open("go_filtered","w") as fw:
-            #     fw.write(str(go_filtered))
+            with open("go_filtered.txt","w") as fw:
+                fw.write(str(go_filtered))
+
             geneIds = self._getUniqueGeneIds(geneIds)
 
 

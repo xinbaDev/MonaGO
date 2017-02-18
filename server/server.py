@@ -48,10 +48,10 @@ def index():
             inputIds = request.form['inputIds']
             idType = request.form['idType']
             annotCat = request.form['annotCat']
-            pVal = request.form['pVal'];
+            pVal = request.form['pVal']
             #transform annotation name to number recognized by DAVID(e.g. GOTERM_BP_FAT to 25) .
             annotCat = ','.join([annotCatDict[cat] for cat in annotCat.split(",")])
-
+            print annotCat
             go,status = getDataFromDavid(inputIds,idType,annotCat,pVal)
 
             if status == False:
