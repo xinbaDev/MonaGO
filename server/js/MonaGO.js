@@ -334,12 +334,13 @@
           nodes[i].y = 50;
           nodes[i]['is'] = 'root';
         }
+
       }
 
 
       nodes[nodeIndex[target]].fixed = true;
       nodes[nodeIndex[target]].x = width / 2;
-      nodes[nodeIndex[target]].y = height - 20;
+      nodes[nodeIndex[target]].y = height - 50;
       nodes[nodeIndex[target]]['is'] = 'target';
 
       return {'nodes' : nodes, 'links' : links};
@@ -1744,6 +1745,15 @@
       return arrDest;
     }
 
+    function roundPval(pval,place){
+      if (typeof pval === "string"){
+        return parseFloat(pval).toFixed(place);
+      }
+      else{
+        return pval.toFixed(place);
+      }
+    }
+
     function createDetailPanelTempl(i){
         var detailPanelTempl = "";
 
@@ -1753,12 +1763,12 @@
         if(numOfGOTerms == 1){
            goInfTempl += "<p> <a class='prop-field'>GO_Name: </a>"+ recursiveGetArrays(that.go_inf[i].GO_name) + "</p>";
            goInfTempl += " <p> <a class='prop-field'>Num of genes: </a>"+ that.go_inf[i].count + "</p>"+
-           "<p> <a class='prop-field'>P-value: </a>" + that.go_inf[i].pVal + "</p>";
+           "<p> <a class='prop-field'>P-value: </a>" + roundPval(that.go_inf[i].pVal,5) + "</p>";
         }else{
            goInfTempl += "<a class='prop-field go_dropmenu'> GO_name: <b id='caret_GO' class='caret rotate180'></b></a>" + 
                           createGOList(recursiveGetArrays(that.go_inf[i].GO_name)) + "<p>";
            goInfTempl += " <p> <a class='prop-field'>Num of genes: </a>"+ that.go_inf[i].count + "</p>"+
-           "<p> <a class='prop-field'>P-value(Average): </a>" + that.go_inf[i].pVal + "</p>";
+           "<p> <a class='prop-field'>P-value(Average): </a>" + roundPval(that.go_inf[i].pVal,5) + "</p>";
         }
            
 
@@ -1934,8 +1944,8 @@
         });
         geneListInHtml += "</div>";
 
-        templ="<p>Overlapping genes between <a class='go_id'>" + that.go_inf[d.source.index].GO_id + 
-        "</a> and <a class='go_id'>" +  that.go_inf[d.source.subindex].GO_id+"</a>:\n</p>"+geneListInHtml;
+        templ="<p>Overlapping genes between <a class='go_id'>" + that.go_inf[d.source.index].GO_id + "(" + that.go_inf[d.source.index].GO_name + ")" + 
+        "</a> and <a class='go_id'>" +  that.go_inf[d.source.subindex].GO_id + "(" + that.go_inf[d.source.subindex].GO_name +")" +"</a>:\n</p>"+geneListInHtml;
 
         return templ;
     }
