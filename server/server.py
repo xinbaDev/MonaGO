@@ -38,9 +38,11 @@ logger = logging.getLogger(__name__)
 remote_server = False;
 
 if(remote_server):
-    root_dir = "/root/alex/myproject/"
+    root_dir = "/home/ubuntu/"
 else:
     root_dir = ""
+
+GO_dict = {}
 
 app = Flask(__name__)
 @app.route('/', methods=['POST','GET'])
@@ -198,21 +200,43 @@ def export():
         headers={"Content-disposition":
                  "attachment; filename=export.monago"})
 
+def loadGOHier():
+
+    if len(GO_dict) == 0:
+        with open(root_dir+"data/GO.txt") as fr:
+            for line in fr:
+                go_inf = line.split(",",1)
+                GO_dict.update({go_inf[0]:go_inf[1]})
+
+def getGONameAndCatergory(GO_id):
+    try:
+        GO_inf = GO_dict[GO_id]
+    except:
+        logger.error("could not find GO id in GO_dict")
+    else:
+        return GO_inf
 
 def parseInputGOs(go_csvFormat):
+    #GO_id,p-value,genes
+
+    loadGOHier()
+
     goDictContainer = []
     lines = go_csvFormat.split("\n")
 
     for line in lines:
         if line.strip("\n\r") != "":
-            cols = line.split(",",4) # do not split genes
+            cols = line.split(",",2) # do not split genes
             if cols[0] == "GO_id":
                 continue
-            genes = cols[4].split("|")
+            genes = cols[2].split(",")
             count = len(genes)
-            cols.append(count)
-            goDictContainer.append({"count": cols[5],"genes":str(cols[4].strip("\r\"")), "GO_id": str(cols[0]), "GO_name": str(cols[1]), "cat": str(cols[2]),
-                "pVal": str(cols[3])})
+
+            go_inf = getGONameAndCatergory(cols[0])
+            go_cat,go_name = go_inf.split(",")
+
+            goDictContainer.append({"count": count,"genes":str(cols[2].strip("\r\"")), "GO_id": str(cols[0]), "GO_name": go_name, "cat": go_cat,
+                "pVal": str(cols[1])})
 
     return goDictContainer
 
@@ -305,4 +329,5 @@ def processedData2(go):
         return matrix,go_index_reord,go_hier,go_inf_reord,clusterHierData
 
 if __name__ == '__main__':
+    loadGOHier()
     app.run(debug="true",host="0.0.0.0", port=80, threaded = True)

@@ -167,8 +167,8 @@
 					<textarea rows="6" id="inputGOs" class="form-control" name="inputGOs"></textarea>
 					<div class="example_go" onclick="copyDemoGOs()"><p>Demo enriched GO terms (click to paste):</p> 
 								<p class="demo_GOs">
-									GO_id,GO_name,category,pVal,genes<br>
-									GO:0042221,response to chemical,GOTERM_BP_2,1.08E-04,"cytochrome P450 family 2 subfamily A member 6(CYP2A6)|thyroid hormone receptor, alpha(THRA)|heat shock protein family A (Hsp70) member 6(HSPA6)|paired box 8(PAX8)|cytochrome P450 family 2 subfamily E member 1(CYP2E1)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6"...
+									GO_id,pVal,genes<br>
+									GO:0042221,1.08E-04,"cytochrome P450 family 2 subfamily A member 6(CYP2A6)|thyroid hormone receptor, alpha(THRA)|heat shock protein family A (Hsp70) member 6(HSPA6)|paired box 8(PAX8)|cytochrome P450 family 2 subfamily E member 1(CYP2E1)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6"...
 								</p>
 							</div>
 					<input type="Button" value="Clear" class="btn" onclick="clearManualPaste();" name="B3">
@@ -202,16 +202,16 @@
 	var inputFormat = document.getElementById('input_slider');
 	var demoGenes = "1007_s_at,1053_at,117_at,121_at,1255_g_at,1294_at,1316_at,1320_at,1405_i_at,1431_at,1438_at,1487_at,1494_f_at,1598_g_at";
 	
-	var demoGO_csvFormat = `GO:0042221,response to chemical,GOTERM_BP_2,1.08E-04,"cytochrome P450 family 2 subfamily A member 6(CYP2A6)|thyroid hormone receptor, alpha(THRA)|replication factor C subunit 2(RFC2)|paired box 8(PAX8)|cytochrome P450 family 2 subfamily E member 1(CYP2E1)|protein tyrosine phosphatase, non-receptor type 21(PTPN21)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6"
-GO:0009893,positive regulation of metabolic process,GOTERM_BP_2,0.007231789,"thyroid hormone receptor,alpha(THRA)|replication factor C subunit 2(RFC2)|paired box 8(PAX8)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|growth arrest specific 6(GAS6"
-GO:0051716,cellular response to stimulus,GOTERM_BP_2,0.007623017,"thyroid hormone receptor, alpha(THRA)|paired box 8(PAX8)|cytochrome P450 family 2 subfamily E member 1(CYP2E1)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA'"
-GO:0002520,immune system development,GOTERM_BP_2,0.02843111,"thyroid hormone receptor, alpha(THRA)|replication factor C subunit 2(RFC2)|paired box 8(PAX8)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6"
-GO:0051094,positive regulation of developmental process,GOTERM_BP_2,0.030425398,"thyroid hormone receptor, alpha(THRA)|paired box 8(PAX8)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6'"
-GO:0044237,cellular metabolic process,GOTERM_BP_2,0.034162056,"cytochrome P450 family 2 subfamily A member 6(CYP2A6)|thyroid hormone receptor, alpha(THRA)|replication factor C subunit 2(RFC2)|paired box 8(PAX8)|cytochrome P450 family 2 subfamily E member 1(CYP2E1)|protein tyrosine phosphatase, non-receptor type 21(PTPN21)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6"
-GO:0044238,primary metabolic process,GOTERM_BP_2,0.035383743,"cytochrome P450 family 2 subfamily A member 6(CYP2A6)|thyroid hormone receptor, alpha(THRA)|replication factor C subunit 2(RFC2)|paired box 8(PAX8)|cytochrome P450 family 2 subfamily E member 1(CYP2E1)|protein tyrosine phosphatase, non-receptor type 21(PTPN21)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6"
-GO:0023051,regulation of signaling,GOTERM_BP_2,0.035681429,"thyroid hormone receptor, alpha(THRA)|replication factor C subunit 2(RFC2)|paired box 8(PAX8)|C-C motif chemokine ligand 5(CCL5)|guanylate cyclase activator 1A(GUCA1A)|growth arrest specific 6(GAS6"
-GO:0050793,regulation of developmental process,GOTERM_BP_2,0.040954635,"thyroid hormone receptor, alpha(THRA)|paired box 8(PAX8)|estrogen related receptor alpha(ESRRA)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6"
-GO:0042330,taxis,GOTERM_BP_2,0.049042278,C-C motif chemokine ligand 5(CCL5)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6
+	var demoGO_csvFormat = `GO:0042221,1.08E-04,"cytochrome P450 family 2 subfamily A member 6(CYP2A6)|thyroid hormone receptor, alpha(THRA)|replication factor C subunit 2(RFC2)|paired box 8(PAX8)|cytochrome P450 family 2 subfamily E member 1(CYP2E1)|protein tyrosine phosphatase, non-receptor type 21(PTPN21)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6"
+GO:0009893,0.007231789,"thyroid hormone receptor,alpha(THRA)|replication factor C subunit 2(RFC2)|paired box 8(PAX8)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|growth arrest specific 6(GAS6"
+GO:0051716,0.007623017,"thyroid hormone receptor, alpha(THRA)|paired box 8(PAX8)|cytochrome P450 family 2 subfamily E member 1(CYP2E1)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA'"
+GO:0002520,0.02843111,"thyroid hormone receptor, alpha(THRA)|replication factor C subunit 2(RFC2)|paired box 8(PAX8)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6"
+GO:0051094,0.030425398,"thyroid hormone receptor, alpha(THRA)|paired box 8(PAX8)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6'"
+GO:0044237,0.034162056,"cytochrome P450 family 2 subfamily A member 6(CYP2A6)|thyroid hormone receptor, alpha(THRA)|replication factor C subunit 2(RFC2)|paired box 8(PAX8)|cytochrome P450 family 2 subfamily E member 1(CYP2E1)|protein tyrosine phosphatase, non-receptor type 21(PTPN21)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6"
+GO:0044238,0.035383743,"cytochrome P450 family 2 subfamily A member 6(CYP2A6)|thyroid hormone receptor, alpha(THRA)|replication factor C subunit 2(RFC2)|paired box 8(PAX8)|cytochrome P450 family 2 subfamily E member 1(CYP2E1)|protein tyrosine phosphatase, non-receptor type 21(PTPN21)|C-C motif chemokine ligand 5(CCL5)|estrogen related receptor alpha(ESRRA)|guanylate cyclase activator 1A(GUCA1A)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6"
+GO:0023051,0.035681429,"thyroid hormone receptor, alpha(THRA)|replication factor C subunit 2(RFC2)|paired box 8(PAX8)|C-C motif chemokine ligand 5(CCL5)|guanylate cyclase activator 1A(GUCA1A)|growth arrest specific 6(GAS6"
+GO:0050793,0.040954635,"thyroid hormone receptor, alpha(THRA)|paired box 8(PAX8)|estrogen related receptor alpha(ESRRA)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6"
+GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5)|EPH receptor B3(EPHB3)|growth arrest specific 6(GAS6
 `;
 
 	init();
