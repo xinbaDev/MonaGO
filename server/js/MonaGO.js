@@ -212,7 +212,7 @@
               var genes_j = that.go_inf[j]["genes"];
               var intersectionGenes = genes_i.intersection(genes_j);
               
-              that.dic[i+"-"+j] = intersectionGenes.getGeneString("|");
+              that.dic[i+"-"+j] = intersectionGenes.getGeneString(";");
             }
           }
        }
@@ -1951,7 +1951,7 @@
     function createChordTempl(index,d){
         
         var geneListInHtml = "<div class='gene_content'>";
-        that.dic[index].split("|").forEach(function(d,i){
+        that.dic[index].split(";").forEach(function(d,i){
              var tmp = "<li>" + "<a class='gene_name'>"+ (i+1) +"."+ d + "</a> "+ "</li>";
              geneListInHtml+=tmp;
         });
@@ -3029,7 +3029,7 @@
 
       //get a list of genes for each GO term
       that.go_inf.forEach(function(d,i){
-        that.go_inf[i].genes = d.genes.split("|");
+        that.go_inf[i].genes = d.genes.split(";");
       });
 
       perparePvalue();

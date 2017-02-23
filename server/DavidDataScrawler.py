@@ -184,7 +184,7 @@ class DavidDataScrawler(object):
         for i in range(0,len(go)):
 
             geneNames = go[i]["genes"].split(",")
-            geneNameString = "|".join([geneIdNameMapping[geneName.strip().lower()] for geneName in geneNames]) 
+            geneNameString = ";".join([geneIdNameMapping[geneName.strip().lower()] for geneName in geneNames]) 
 
             go[i]["genes"] = geneNameString[:-1]# strip the last '|'
 

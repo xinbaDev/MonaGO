@@ -376,7 +376,7 @@ class DataProcess():
 
 
     def getGenes(self,index):
-        return self.go_info[index]["genes"].split("|")
+        return self.go_info[index]["genes"].split(";")
 
     def getTotalGenes(self,xGenes,yGenes):
 
@@ -405,7 +405,7 @@ class DataProcess():
             if gene not in yGenes:
                 yGenes.append(gene)
 
-        self.go_info[index_y]["genes"] = "|".join(yGenes)
+        self.go_info[index_y]["genes"] = ";".join(yGenes)
 
     def getGODependency(self,GO_inf):
 
@@ -454,8 +454,8 @@ class DataProcess():
                 if i == j:
                     matrix[i][j] = 0
                 else:
-                    genes_i = go_inf[i]["genes"].split("|")
-                    genes_j = go_inf[j]["genes"].split("|")
+                    genes_i = go_inf[i]["genes"].split(";")
+                    genes_j = go_inf[j]["genes"].split(";")
                     overlappingGenes = set(genes_i).intersection(genes_j)
 
                     #get count
@@ -478,13 +478,13 @@ class DataProcess():
                     matrix_geneName[str(i)+"-"+str(j)] = ""
                 else:
 
-                    genes_i = go_inf[i]["genes"].split("|")
-                    genes_j = go_inf[j]["genes"].split("|")
+                    genes_i = go_inf[i]["genes"].split(";")
+                    genes_j = go_inf[j]["genes"].split(";")
                     overlappingGenes = set(genes_i).intersection(genes_j)
 
                     geneStr = ""
                     for k in overlappingGenes:
-                        geneStr += k+"|"
+                        geneStr += k+";"
 
                     #get gene name
                     matrix_geneName[str(i)+"-"+str(j)] = geneStr[:-1]

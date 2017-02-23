@@ -229,7 +229,7 @@ def parseInputGOs(go_csvFormat):
             cols = line.split(",",2) # do not split genes
             if cols[0] == "GO_id":
                 continue
-            genes = cols[2].split(",")
+            genes = cols[2].split(";")
             count = len(genes)
 
             go_inf = getGONameAndCatergory(cols[0])
