@@ -138,7 +138,8 @@
     var clusterHierNodeTextView;
     var groupElements;
     var groupLayout;
-    var groupText;
+    var groupTexts;
+    var gt;
     var chordElements;
     var chordLayout;
     var textBackground;
@@ -1444,6 +1445,7 @@
 
       }
 
+      
       updateMoanaGOLayout(clusterHierData);
       updateLabel();
     }
@@ -1900,7 +1902,7 @@
         });
 
         highlight_index = i;
-        groupText.transition().duration(300).style("fill", function(d,i) {
+        gt.transition().duration(300).style("fill", function(d,i) {
           if(d.index == highlight_index){
             return "black";
           }else{
@@ -2107,7 +2109,7 @@
         //text.transition().duration(500).text(function(d){return go_inf[d.index].GO_id;}).attr("x",8);
         groupLayout.transition().duration(500).attr("d",d3.svg.arc().innerRadius(r0).outerRadius(r1));
         chordLayout.transition().duration(500).attr("d",d3.svg.chord().radius(r0));
-        groupText.transition().duration(500).attr("x",8);
+        groupTexts.transition().duration(500).attr("x",8);
         //moveInHierCluster();
     }
 
@@ -2174,7 +2176,7 @@
                 function(d){return (d.index!=i)? r1:r1+10;}));
 
 
-          groupText.transition().attr("x",function(d){  
+          gt.transition().attr("x",function(d){  
             if(d.index==i){
               if ((d.startAngle+d.endAngle)/2 < 3.1415)
                 return 20;
@@ -2241,7 +2243,7 @@
                  d3.svg.arc().innerRadius(function(d){return (popUpList.indexOf(d.index)==-1)? r0:r0+5;}).outerRadius(
                   function(d,i){return (popUpList.indexOf(d.index)==-1)? r1:r1+5;}));
 
-            groupText.transition().attr("x",function(d){
+            gt.transition().attr("x",function(d){
               if(popUpList.indexOf(d.index)!=-1){
                 if ((d.startAngle+d.endAngle)/2 < 3.1415)
                   return 20;
@@ -2427,46 +2429,44 @@
 
       labelOff = 0;
 
-      // clusterArc.style("display","none");
-      // clusterLine1.style("display","none");
-      // clusterLine2.style("display","none");
-      // clusterHierNodeView.style("display","none");
-      // clusterHierNodeTextView.style("display","none");
-      // groupText.style("display","")
+
 
       updateLabel();
     }
 
     function updateLabel(){
-      groupText.remove();
+      // groupText.remove();
+    
+      gt.remove()
 
-      groupText = circleSvg.append("svg:g")
-            .selectAll("g")
-            .data(chord.groups)
-            .enter().append("svg:g")
-            .attr("transform", function(d) {
-            return "rotate(" + (((d.startAngle+d.endAngle)/2 * 180 / Math.PI - 90)+5) + ")"
-               + "translate(" + (r1 + 0) + ",0)";
-            }).append("svg:text")
-            .style('fill', 'grey')
-            .attr("x", function(d){
-              if(popUpList.indexOf(d.index)!=-1){
-                if ((d.startAngle+d.endAngle)/2 < 3.1415)
-                  return 20;
-                else
-                  return -10;
-              }else{
-                return 8;
-              }
-            })
-            .attr("dy", ".45em")
-            .attr("text-anchor", function(d) {
-             return (d.startAngle+d.endAngle)/2 > Math.PI ? "end" : null;
-            })
-            .attr("transform", function(d) {
-             return (d.startAngle+d.endAngle)/2 > Math.PI ? "rotate(180)translate(-16)" : null;
-            })
-            .text(function(d) {return (typeof that.go_inf[d.index].GO_id == "string")? that.go_inf[d.index].GO_name:getMaxLabel(that.go_inf[d.index].GO_name)+"+"});
+      gt = groupTexts.selectAll("g")
+             .data(chord.groups)
+           .enter().append("svg:g")
+
+      gt
+        .attr("transform", function(d) {
+        return "rotate(" + (((d.startAngle+d.endAngle)/2 * 180 / Math.PI - 90)+5) + ")"
+           + "translate(" + (r1 + 0) + ",0)";
+        }).append("svg:text")
+        .style('fill', 'grey')
+        .attr("x", function(d){
+          if(popUpList.indexOf(d.index)!=-1){
+            if ((d.startAngle+d.endAngle)/2 < 3.1415)
+              return 20;
+            else
+              return -10;
+          }else{
+            return 8;
+          }
+        })
+        .attr("dy", ".45em")
+        .attr("text-anchor", function(d) {
+         return (d.startAngle+d.endAngle)/2 > Math.PI ? "end" : null;
+        })
+        .attr("transform", function(d) {
+         return (d.startAngle+d.endAngle)/2 > Math.PI ? "rotate(180)translate(-16)" : null;
+        })
+        .text(function(d) {return (typeof that.go_inf[d.index].GO_id == "string")? that.go_inf[d.index].GO_name:getMaxLabel(that.go_inf[d.index].GO_name)+"+"});
     }
 
     function getMaxLabel(d){
@@ -2919,10 +2919,11 @@
          .data(clusterHierData)
        .enter().append("path");
 
-      groupText = circleSvg.append("svg:g")
-           .selectAll("g")
+      groupTexts = circleSvg.append("svg:g")
+
+      gt = groupTexts.selectAll("g")
              .data(chord.groups)
-            .enter().append("svg:g");
+        .enter().append("svg:g")
 
       clusterHierNodeView = circleSvg.append("svg:g")
        .selectAll("g")
@@ -3043,6 +3044,7 @@
       createClusterNodesStatus(clusterHierData,[],"",[]);
       setUpView();
       determineLabelSize();
+      
       drawHierCluster();
       drawLable();
 
@@ -3096,6 +3098,7 @@
       clusterLine2.remove()
       clusterLine1.remove()
 
+      
       drawHierCluster();
       drawLable();
 
