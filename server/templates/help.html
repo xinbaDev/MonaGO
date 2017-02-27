@@ -194,21 +194,21 @@ textarea{
                 (1) Pasting enriched GO terms in the section of ‘‘submit enriched GO terms manually.
                 Following is a list of enriched GO terms, each of which includes GO_id, p-value and genes. Genes are separated by semicolon.
             </p>
-                <center><img src="../img/upload1.png" style="width:600px"/></center>
+                <center><img src="../img/upload1.png" style="width:500px"/></center>
             
             <p>
                 (2) Submit enriched GO terms by uploading csv file. 
                     An example csv file:
             
             </p>
-                <center><img src="../img/upload2.png" style="width:600px"/></center>
+                <center><img src="../img/upload2.png" style="width:500px"/></center>
             <p></p>        
         
         
         
         <h3>Interface<h3>
         <center>
-            <img src="../img/help_screenshot.png" style="width:600px">
+            <img src="../img/help_screenshot.png" style="width:500px">
         </center>
         <h4>1. Main visualization panel</h4>
 
@@ -265,13 +265,18 @@ textarea{
         
         <h3>What does visualisation result mean</h3>
             <p>
-            MonaGO helps users reduce redundancy by assisting user to cluster similar GO term. In  MonaGO, enriched GO terms are ordered and visualised in a way that  GO terms that shared common genes are close to each other. In this way, user can easily group them as cluster in which only the most represented GO terms will be displayed in the chord diagram, thereby reducing the “information overload”. Following is an example of GO enrichment result visualised in MonaGO. As shown in the picture, many enriched GO terms are redundant. An example is the redundancy between negative regulation of biological process and negative regulation of cellular process(The former one is direct ancestor of the later one in GO hierarchical tree). These two terms has 32 common genes as shown in the graph and considered to be highly related. Therefore they are placed right next to each other.</p>
-            
+            MonaGO helps users reduce redundancy by assisting user to cluster similar GO term. In  MonaGO, enriched GO terms are ordered and visualised in a way that  GO terms that shared common genes are close to each other. In this way, user can easily group them as cluster in which only the most represented GO terms will be displayed in the chord diagram, thereby reducing the “information overload”. Following is an example of GO enrichment result visualised in MonaGO. As shown in the picture below, many enriched GO terms are redundant. An example is the redundancy between negative regulation of biological process and negative regulation of cellular process(The former one is direct ancestor of the later one in GO hierarchical tree). These two terms has 32 common genes as shown in the graph and considered to be highly related. Therefore they are placed right next to each other.</p>
+            <center>
+                <img src="../img/result1.png" style="width:500px"/>
+            </center>
             <p>
             Curved lines inside the circle are indicators that the GO terms connected share common genes. User can move the cursor on a particular line to see a list of common genes shared the two connected GO terms on the detailed panel.</p>
-
+            
+            <center>
+                <img src="../img/result2.png" style="width:500px"/>
+            </center>
             <p>
-            When grouped these two enriched GO terms together, the one that is most represented(with lower p-value), in this case, negative regulation of cellular process is displayed.  As a result, the redundancy of the enriched GO term is reduced and help user to have better understanding of the enrichment result. </p>
+            When grouped these two enriched GO terms together as shown above, the one that is most represented(with lower p-value), in this case, negative regulation of cellular process is displayed.  As a result, the redundancy of the enriched GO term is reduced and help user to have better understanding of the enrichment result. </p>
         
 
         <h2>Contacts:</h2>
