@@ -174,17 +174,37 @@ textarea{
             </h2>
        
         <h3>Usage</h3>
-            <p>MonaGO is a visualization tool for Gene Ontology (GO) enrichment analysis which facilitates a better interpretation of GO enrichment results by using innovative visualization techniques. The basic workflow is as following:<p>
-            <div style="padding-left: 50px">
-                <p>(1) Input a list of genes to identify over-represented GO terms.
-                <p>(2) Select the gene identifier given.
-                <p>(3) Choose p-value to filter the enrichment result.
-                <p>(4) Choose the GO annotation type (Biological Process, Molecular Function, Cellular Component). The GO annotation data are from <a href="https://david.ncifcrf.gov" target="blank">DAVID</a>.
-            </div>
-
-
-            <p></p>
+            <p>MonaGO is a visualization tool for Gene Ontology (GO) enrichment analysis which facilitates a better interpretation of GO enrichment results by using innovative visualization techniques. <p>
             
+            <p>To get GO enrichment visualisation, users can either:</p>
+            
+            <p>(A)Submit genes to DAVID for GO enrichment and visualisation:</p>
+
+                <div style="padding-left: 50px">
+                    <p>(1) Input a list of genes to identify over-represented GO terms.
+                    <p>(2) Select the gene identifier given.
+                    <p>(3) Choose p-value to filter the enrichment result.
+                    <p>(4) Choose the GO annotation type (Biological Process, Molecular Function, Cellular Component). The GO annotation data are from <a href="https://david.ncifcrf.gov" target="blank">DAVID</a>.
+                </div>
+            <p>OR</p>
+            <p> (B)Submit enriched GO terms for visualisation:</p>
+                
+
+            <p> There are two ways to submit enriched GO terms.
+                (1) Pasting enriched GO terms in the section of ‘‘submit enriched GO terms manually.
+                Following is a list of enriched GO terms, each of which includes GO_id, p-value and genes. Genes are separated by semicolon.
+            </p>
+                <center><img src="../img/upload1.png" style="width:600px"/></center>
+            
+            <p>
+                (2) Submit enriched GO terms by uploading csv file. 
+                    An example csv file:
+            
+            </p>
+                <center><img src="../img/upload2.png" style="width:600px"/></center>
+            <p></p>        
+        
+        
         
         <h3>Interface<h3>
         <center>
@@ -241,6 +261,18 @@ textarea{
         <p>The search panel allows the search of GO terms by gene names, and IDs or names of GO terms (search by its full name).
 
         <p>All GO terms/clusters relevant to a search query will be highlighted (popping out) on the chord diagram in the  main visualization panel. Moreover, relevant GO terms/clusters will be listed in the details panel. 
+
+        
+        <h3>What does visualisation result mean</h3>
+            <p>
+            MonaGO helps users reduce redundancy by assisting user to cluster similar GO term. In  MonaGO, enriched GO terms are ordered and visualised in a way that  GO terms that shared common genes are close to each other. In this way, user can easily group them as cluster in which only the most represented GO terms will be displayed in the chord diagram, thereby reducing the “information overload”. Following is an example of GO enrichment result visualised in MonaGO. As shown in the picture, many enriched GO terms are redundant. An example is the redundancy between negative regulation of biological process and negative regulation of cellular process(The former one is direct ancestor of the later one in GO hierarchical tree). These two terms has 32 common genes as shown in the graph and considered to be highly related. Therefore they are placed right next to each other.</p>
+            
+            <p>
+            Curved lines inside the circle are indicators that the GO terms connected share common genes. User can move the cursor on a particular line to see a list of common genes shared the two connected GO terms on the detailed panel.</p>
+
+            <p>
+            When grouped these two enriched GO terms together, the one that is most represented(with lower p-value), in this case, negative regulation of cellular process is displayed.  As a result, the redundancy of the enriched GO term is reduced and help user to have better understanding of the enrichment result. </p>
+        
 
         <h2>Contacts:</h2>
         <p>Alex Xin: <a href="mailto:zxin9@student.monash.edu">zxin9@student.monash.edu</a></p>
