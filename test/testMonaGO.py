@@ -31,7 +31,18 @@ class Test(unittest.TestCase):
 		with self.assertRaises(Exception):
 			go = self.davidScrawler.run()
 
-	
+	def test_Scrawler_parseGenes_success(self):
+		with open("gene_list.html","r") as fr:
+			data = fr.read()
+			parsedGenes = self.davidScrawler._parseGenes(data)
+			self.assertTrue(len(parsedGenes) > 0)
+		
+
+
+	def test_Scrawler_parseGenes_failed(self):
+		with self.assertRaises(Exception):
+			parsedGenes = self.davidScrawler._parseGenes("")
+		
 
 
 if __name__ == '__main__':
