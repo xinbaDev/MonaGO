@@ -2448,7 +2448,6 @@
         return "rotate(" + (((d.startAngle+d.endAngle)/2 * 180 / Math.PI - 90)+5) + ")"
            + "translate(" + (r1 + 0) + ",0)";
         }).append("svg:text")
-        .style('fill', 'grey')
         .attr("x", function(d){
           if(popUpList.indexOf(d.index)!=-1){
             if ((d.startAngle+d.endAngle)/2 < 3.1415)
