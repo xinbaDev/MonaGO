@@ -152,7 +152,7 @@ textarea{
 
 <html>
     <head>
-        <title>MonaGO: Gene Ontology Enrichment Analysis Visualisation from Monash University</title>
+        <title>MonaGO: Gene Ontology Enrichment Analysis Visualization from Monash University</title>
         <title>MonaGO: Help</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     </head>
@@ -164,7 +164,7 @@ textarea{
 
                 </map>
 
-                <img src="../img/header.png" class="img-fluid header-img" alt="Responsive image" title="Visualization tool for Gene Ontology enrichment analysis">
+                <a href="./"><img src="../img/header.png" class="img-fluid header-img" alt="Responsive image" title="Visualization tool for Gene Ontology enrichment analysis"></a>
 
 
         </div>
@@ -174,31 +174,34 @@ textarea{
             </h2>
        
         <h3>Usage</h3>
-            <p>MonaGO is a visualization tool for Gene Ontology (GO) enrichment analysis which facilitates a better interpretation of GO enrichment results by using innovative visualization techniques. <p>
+            <p>MonaGO is a visualization tool for Gene Ontology (GO) enrichment analysis which facilitates a better interpretation of GO enrichment results by using innovative interactive visualization techniques. MonaGO can visualize GO enrichment analysis results produced by <a href="https://david.ncifcrf.gov/" target="_blank">DAVID</a>, or enriched GO terms directly.</p>
+
+            <h4>Using DAVID as input</h4>
+            <!-- <p>To produce a GO enrichment visualization, users can either:</p> -->
             
-            <p>To get GO enrichment visualisation, users can either:</p>
-            
-            <p>(A)Submit genes to DAVID for GO enrichment and visualisation:</p>
+            <p>A user can submit a list of genes on MonaGO to <a href="https://david.ncifcrf.gov/" target="_blank">DAVID</a> to obtain GO enrichment results and visualize them.</p>
 
                 <div style="padding-left: 50px">
-                    <p>(1) Input a list of genes to identify over-represented GO terms.
-                    <p>(2) Select the gene identifier given.
-                    <p>(3) Choose p-value to filter the enrichment result.
-                    <p>(4) Choose the GO annotation type (Biological Process, Molecular Function, Cellular Component). The GO annotation data are from <a href="https://david.ncifcrf.gov" target="blank">DAVID</a>.
+                    <p>(1) Input a list of genes to identify over-represented GO terms.</p>
+                    <p>(2) Select the appropriate gene identifier.</p>
+                    <p>(3) Choose p-value to filter the enrichment result.</p>
+                    <p>(4) Choose the GO annotation type (Biological Process, Molecular Function, Cellular Component). </p>
                 </div>
-            <p>OR</p>
-            <p> (B)Submit enriched GO terms for visualisation:</p>
+
+                <code>
+                    
+                </code>
+                <center><img src="../img/david.png" style="width:500px"/></center>
+            <!-- <p>or</p> -->
+            <h4>Submit enriched GO terms for visualization directly.</h4>
                 
 
-            <p> There are two ways to submit enriched GO terms.
-                (1) Pasting enriched GO terms in the section of ‘‘submit enriched GO terms manually.
-                Following is a list of enriched GO terms, each of which includes GO_id, p-value and genes. Genes are separated by semicolon.
+            <p> There are two ways to submit enriched GO terms.</p>
+            <p>(1) Pasting enriched GO terms in the text area manually. The text needs to be in a comma-delimited format, where each line contains three columns: (1) the enriched GO term ("GO_id"), (2) the p-value ("pVal"), and (3) the list of genes ("genes"). As shown in the screenshot below, the list of genes of an enriched GO term should be separated by semicolons. Note that the header shouldn't be included.
             </p>
                 <center><img src="../img/upload1.png" style="width:500px"/></center>
             
-            <p>
-                (2) Submit enriched GO terms by uploading csv file. 
-                    An example csv file:
+            <p>(2) Submiting enriched GO terms by uploading a csv file, which should be in the same format as above. The following screenshot shows an example csv file:
             
             </p>
                 <center><img src="../img/upload2.png" style="width:500px"/></center>
@@ -263,7 +266,7 @@ textarea{
         <p>All GO terms/clusters relevant to a search query will be highlighted (popping out) on the chord diagram in the  main visualization panel. Moreover, relevant GO terms/clusters will be listed in the details panel. 
 
         
-        <h3>What does visualisation result mean</h3>
+        <h3>What does visualization result mean</h3>
             <p>
             MonaGO helps users reduce redundancy by assisting user to cluster similar GO term. In  MonaGO, enriched GO terms are ordered and visualised in a way that  GO terms that shared common genes are close to each other. In this way, user can easily group them as cluster in which only the most represented GO terms will be displayed in the chord diagram, thereby reducing the “information overload”. Following is an example of GO enrichment result visualised in MonaGO. As shown in the picture below, many enriched GO terms are redundant. An example is the redundancy between negative regulation of biological process and negative regulation of cellular process(The former one is direct ancestor of the later one in GO hierarchical tree). These two terms has 32 common genes as shown in the graph and considered to be highly related. Therefore they are placed right next to each other.</p>
             <center>
