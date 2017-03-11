@@ -64,7 +64,8 @@
 							</div>
 						</div>
 				
-						<input type="Button" value="Clear" onclick="clearDavidPaste();" name="B3">
+						<input type="Button" value="Clear" class="btn" onclick="clearDavidPaste();" name="B3">
+						<input type="file" id="Upload1" style="display: none"> <label for="Upload1" class="btn" id="Upload_label">Upload CSV</label>
 					</div>
 
 
@@ -172,7 +173,7 @@
 								</p>
 							</div>
 					<input type="Button" value="Clear" class="btn" onclick="clearManualPaste();" name="B3">
-					<input type="file" id="Upload" style="display: none"> <label for="Upload" class="btn" id="Upload_label">Upload CSV</label>
+					<input type="file" id="Upload2" style="display: none"> <label for="Upload2" class="btn" id="Upload_label">Upload CSV</label>
 					<div class="btn btn-success btn-rounded btn-lg submit-btn" onclick="manualSubmitClicked()">Submit</div>
 				</div>
 					
@@ -237,7 +238,30 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
           $goList.slideToggle(500);
 		})
 
-		$('#Upload').click(function(){
+		$('#Upload1').click(function(){
+
+		    function readSingleFile(evt) {
+			    //Retrieve the first (and only!) File from the FileList object
+			    var f = evt.target.files[0]; 
+
+			    if (f) {
+			      var r = new FileReader();
+
+			      r.onload = function(e) { 
+			        var contents = e.target.result; 
+			        document.frmManager.inputIds.value = contents;
+			      }
+			      r.readAsText(f);
+			    } else { 
+			      alert("Failed to load file");
+			    }
+		  	}
+
+    	document.getElementById('Upload1').addEventListener('change', readSingleFile, false);
+     
+		});
+
+		$('#Upload2').click(function(){
 
 		    function readSingleFile(evt) {
 			    //Retrieve the first (and only!) File from the FileList object
@@ -256,7 +280,7 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 			    }
 		  	}
 
-    	document.getElementById('Upload').addEventListener('change', readSingleFile, false);
+    	document.getElementById('Upload2').addEventListener('change', readSingleFile, false);
      
 		});
 
