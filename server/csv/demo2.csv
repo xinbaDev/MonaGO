@@ -1,4 +1,4 @@
-GO_id,pVal,genes
+GO_id,p-value,genes
 GO:0042221,1.08E-04,"cytochrome P450 family 2 subfamily A member 6(CYP2A6);thyroid hormone receptor, alpha(THRA);replication factor C subunit 2(RFC2);paired box 8(PAX8);cytochrome P450 family 2 subfamily E member 1(CYP2E1);protein tyrosine phosphatase, non-receptor type 21(PTPN21);C-C motif chemokine ligand 5(CCL5);estrogen related receptor alpha(ESRRA);guanylate cyclase activator 1A(GUCA1A);EPH receptor B3(EPHB3);growth arrest specific 6(GAS6"
 GO:0009893,0.007231789,"thyroid hormone receptor,alpha(THRA);replication factor C subunit 2(RFC2);paired box 8(PAX8);C-C motif chemokine ligand 5(CCL5);estrogen related receptor alpha(ESRRA);guanylate cyclase activator 1A(GUCA1A);growth arrest specific 6(GAS6"
 GO:0051716,0.007623017,"thyroid hormone receptor, alpha(THRA);paired box 8(PAX8);cytochrome P450 family 2 subfamily E member 1(CYP2E1);C-C motif chemokine ligand 5(CCL5);estrogen related receptor alpha(ESRRA'"

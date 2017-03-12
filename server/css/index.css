@@ -28,6 +28,10 @@
 	width:500px;
 }
 
+.k-upload{
+    width:500px;
+}
+
 #inputGOs{
     width:500px;
     margin-top: 20px
@@ -157,10 +161,19 @@
 }
 
 .btn{
-    background-color: #8e8686;
-    border-color: #2196F3;
+    background-color: #f5f5f5;
+    border:1px solid #ccc !important;
 }
 
 .large_label{
     font-size:20px;
+}
+
+.example_upload_format{
+    position: relative;
+    width: 300px;
+    left: -20px;
+    float: right;
+    margin-top: -50px;
+    cursor:pointer;
 }

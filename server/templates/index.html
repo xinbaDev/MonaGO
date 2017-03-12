@@ -4,6 +4,9 @@
 <link  rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 <link  rel="stylesheet" type="text/css" href="css/bootstrap-select.min.css">
 <link rel="stylesheet" href="css/nouislider.min.css">
+<link rel="stylesheet" href="css/kendo.common.min.css" />
+<link rel="stylesheet" href="css/kendo.bootstrap.min.css" />
+<link rel="stylesheet" href="css/font-awesome-4.6.3/css/font-awesome.min.css">
 <title>MonaGO: Gene Ontology Enrichment Analysis Visualisation from Monash University</title><meta name="keywords" content="MonaGO,GO,enrichment analysis,chord diagram" />
 </head>
 
@@ -13,6 +16,7 @@
 <script type="text/javascript" src="js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/bootstrap-select.min.js"></script>
 <script src="js/nouislider.min.js"></script>
+<script src="js/kendo.all.min.js"></script>
 
 <form method="post" action="" name="frmManager" id="frmManager" enctype="multipart/form-data">
 <input type="Hidden" name="listType" value="null">
@@ -20,7 +24,7 @@
 <input type="Hidden" name="Mode" value="null">
 <input type="Hidden" name="pVal" value="null">
 <input type="Hidden" name="type" value="null">
-
+;
 
 <div class="dummy_header"></div>
 
@@ -39,8 +43,11 @@
 
 					<div class="step1">
 						<h2><span class="label label-primary" title="paste a list of genes seperated by comma, newline or space">Step 1: Enter Gene List</span></h2>
+
+						<input class="dropzone1" name="files1" id="files1" type="file" />
+						<span class="example_upload_format">Upload File Format<br><a href="csv/demo.csv" id="csvDownload">csv<i class="fa fa-download"></i></a></span>
 						<br>
-						<font class="regular"> Paste a list</font>
+						<font class="regular">Or paste a list</font>
 						<p>
 						<div >
 							<textarea rows="6" id="LISTBox" class="form-control" name="inputIds"></textarea>
@@ -65,7 +72,8 @@
 						</div>
 				
 						<input type="Button" value="Clear" class="btn" onclick="clearDavidPaste();" name="B3">
-						<input type="file" id="Upload1" style="display: none"> <label for="Upload1" class="btn" id="Upload_label">Upload CSV</label>
+						<!-- <input type="file" id="Upload1" style="display: none"> <label for="Upload1" class="btn" id="Upload_label">Upload CSV</label> -->
+						
 					</div>
 
 
@@ -165,6 +173,11 @@
 				<div class="manual_submit_button btn-success"><label class="large_label">Submit enriched GO terms for visualisation</label></div>
 				<div class="manual_input " style="display:none">
 					<h2><span class="label label-primary" title="enter enriched GO term manually">Enter Enriched GO Terms Manually (Beta)</span></h2>
+
+					<input class="dropzone2" name="files2" id="files2" type="file" />
+					<span class="example_upload_format">Upload File Format<br><a href="csv/demo2.csv" id="csvDownload">csv<i class="fa fa-download"></i></a></span>
+					<br>
+					<font class="regular">Or paste a list</font>
 					<textarea rows="6" id="inputGOs" class="form-control" name="inputGOs"></textarea>
 					<div class="example_go" onclick="copyDemoGOs()"><p>Demo enriched GO terms (click to paste):</p> 
 								<p class="demo_GOs">
@@ -217,7 +230,39 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 
 	init();
 
+
+
 	function init(){
+
+        $("#files1").kendoUpload({
+        	multiple:false,
+			async: {
+			    saveUrl: "save",
+			    removeUrl: "remove",
+			    autoUpload: false
+			},
+        	validation: {
+                allowedExtensions: [".csv"]
+            },
+            dropZone: ".dropzone"
+        });
+
+        $("#files2").kendoUpload({
+        	multiple:false,
+			async: {
+			    saveUrl: "save",
+			    removeUrl: "remove",
+			    autoUpload: false
+			},
+        	validation: {
+                allowedExtensions: [".csv"]
+            },
+            dropZone: ".dropzone"
+        });
+
+        $(".k-dropzone").append("  Drag & drop file(csv)")
+
+
 		setUpRangeSlider(ranger,inputFormat);
 
 		if($("body .background").length!=0){
@@ -283,7 +328,6 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
     	document.getElementById('Upload2').addEventListener('change', readSingleFile, false);
      
 		});
-
 	}
 
 
@@ -394,8 +438,8 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 
 
 		if(type == "david"){
-			if(FM.inputIds.value == ""){
-				alert("Error: Please paste a list in step 1.");
+			if((FM.inputIds.value == "") && ((!FM.files1.length))){
+				alert("Error: Please upload csv file or paste a list in step 1.");
 				return false;
 			}
 
@@ -409,8 +453,8 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 		}
 
 		if(type == "manual"){
-			if(FM.inputGOs.value == ""){
-				alert("Error: Please paste GO terms.");
+			if((FM.inputGOs.value == "") && (!FM.files2.length)){
+				alert("Error: Please upload csv file or paste GO terms");
 				return false;
 			}
 		}
@@ -447,9 +491,5 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 	}
 
 
-
-	function chooseSubmitType($type){
-
-	}
 </script>
 

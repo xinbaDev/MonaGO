@@ -58,16 +58,23 @@ def index():
         return render_template("index.html")
     else:
         if request.form['type'] == "manual":
-            go = parseInputGOs(request.form['inputGOs'])
+            if request.form['inputGOs'] == "":
+                go = parseInputGOsFromCSV(request.files['files2'])
+            else:
+                go = parseInputGOs(request.form['inputGOs'])
         else:
             #parameters needed for querying DAVID
-            inputIds = request.form['inputIds']
+            if request.form['inputIds'] == "":
+                inputIds = parseInputIdsFromCSV(request.files['files1'])
+            else:
+                inputIds = request.form['inputIds']
+
             idType = request.form['idType']
             annotCat = request.form['annotCat']
             pVal = request.form['pVal']
             #transform annotation name to number recognized by DAVID(e.g. GOTERM_BP_FAT to 25) .
             annotCat = ','.join([annotCatDict[cat] for cat in annotCat.split(",")])
-            print annotCat
+
             go,status = getDataFromDavid(inputIds,idType,annotCat,pVal)
 
             if status == False:
@@ -199,6 +206,26 @@ def export():
         mimetype="file/txt",
         headers={"Content-disposition":
                  "attachment; filename=export.monago"})
+
+@app.route('/csv/<filename>')
+def getDemoCSV(filename):
+    return send_from_directory(root_dir+'csv', filename)
+
+def parseInputGOsFromCSV(file):
+    data = file.read()
+    return parseInputGOs(data)
+
+def parseInputIdsFromCSV(file):
+    data = file.read()
+    inputId = []
+    for line in data.split("\n"):
+        if line.strip("\n\r") != "":
+            if line == "geneID":
+                continue 
+            inputId.append(line)
+    return ','.join(inputId)
+
+
 
 def loadGOHier():
 
