@@ -16,7 +16,9 @@
 <script type="text/javascript" src="js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/bootstrap-select.min.js"></script>
 <script src="js/nouislider.min.js"></script>
-<script src="js/kendo.all.min.js"></script>
+
+<script src="js/kendo.core.min.js"></script>
+<script src="js/kendo.upload.min.js"></script>
 
 <form method="post" action="" name="frmManager" id="frmManager" enctype="multipart/form-data">
 <input type="Hidden" name="listType" value="null">
@@ -186,7 +188,7 @@
 								</p>
 							</div>
 					<input type="Button" value="Clear" class="btn" onclick="clearManualPaste();" name="B3">
-					<input type="file" id="Upload2" style="display: none"> <label for="Upload2" class="btn" id="Upload_label">Upload CSV</label>
+<!-- 					<input type="file" id="Upload2" style="display: none"> <label for="Upload2" class="btn" id="Upload_label">Upload CSV</label> -->
 					<div class="btn btn-success btn-rounded btn-lg submit-btn" onclick="manualSubmitClicked()">Submit</div>
 				</div>
 					
@@ -260,7 +262,7 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
             dropZone: ".dropzone"
         });
 
-        $(".k-dropzone").append("  Drag & drop file(csv)")
+        $(".k-dropzone").append("Drag & drop file(csv)")
 
 
 		setUpRangeSlider(ranger,inputFormat);
