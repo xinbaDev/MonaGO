@@ -505,6 +505,9 @@ class DataProcess():
         if size==0:
             raise Exception("go_inf is empty")
 
+        # with open("test.html","w") as fw:
+        #     fw.write(str(go_inf))
+
         matrix = self.createMatrix(go_inf)
 
         D = np.ndarray(size * (size - 1) / 2,dtype=np.int)
@@ -520,7 +523,7 @@ class DataProcess():
         go_inf_reOrder = self.reOrder(go_index_reord,go_inf)
 
         matrix_reOrder = self.createMatrixReord(go_inf_reOrder)#create matrix and clusterHierData
-
+        
         go_hier = self.getGODependency(go_inf_reOrder)
 
         return {"matrix":matrix_reOrder,"go_index_reord":go_index_reord,"clusterHierData":self.clusterHierData,"go_inf":go_inf_reOrder,"go_hier":go_hier}

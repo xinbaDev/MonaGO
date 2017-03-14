@@ -1959,7 +1959,7 @@
         });
         geneListInHtml += "</div>";
 
-        templ="<p>Overlapping genes between <a class='go_id'>" + that.go_inf[d.source.index].GO_id + "(" + that.go_inf[d.source.index].GO_name + ")" + 
+        templ="<p>Overlapping genes between <a class='go_id'>" + " number of overlapping genes:"+ that.dic[index].split(";").length + that.go_inf[d.source.index].GO_id + "(" + that.go_inf[d.source.index].GO_name + ")" + 
         "</a> and <a class='go_id'>" +  that.go_inf[d.source.subindex].GO_id + "(" + that.go_inf[d.source.subindex].GO_name +")" +"</a>:\n</p>"+geneListInHtml;
 
         return templ;

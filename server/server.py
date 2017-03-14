@@ -230,7 +230,7 @@ def parseInputIdsFromCSV(file):
 def loadGOHier():
 
     if len(GO_dict) == 0:
-        with open(root_dir+"data/GO.txt") as fr:
+        with open(root_dir+"data/GO.go") as fr:
             for line in fr:
                 go_inf = line.split(",",1)
                 GO_dict.update({go_inf[0]:go_inf[1]})
