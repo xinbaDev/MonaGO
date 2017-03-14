@@ -49,9 +49,9 @@ app = Flask(__name__)
 def index():
 
     annotCatDict = {
-        'GOTERM_BP_FAT':'25',#biological process
-        'GOTERM_CC_FAT':'32',#celluar component
-        'GOTERM_MF_FAT':'39'#melocular function
+        'GOTERM_BP':'30',#biological process
+        'GOTERM_CC':'38',#celluar component
+        'GOTERM_MF':'46'#melocular function
     }
 
     if request.method == 'GET':
@@ -93,48 +93,6 @@ def index():
 
         return data+html
 
-@app.route('/index2', methods=['POST','GET'])
-def index2():
-
-    annotCatDict = {
-        'GOTERM_BP_FAT':'25',#biological process
-        'GOTERM_CC_FAT':'32',#celluar component
-        'GOTERM_MF_FAT':'39'#melocular function
-    }
-
-    if request.method == 'GET':
-        return render_template("index2.html")
-    else:
-
-        if request.form['inputGOs']:
-            go = request.form['inputGOs']
-
-        else:
-        #parameters needed for querying DAVID
-            inputIds = request.form['inputIds']
-            idType = request.form['idType']
-            annotCat = request.form['annotCat']
-            pVal = request.form['pVal'];
-            #transform annotation name to number recognized by DAVID(e.g. GOTERM_BP_FAT to 25) .
-            annotCat = ','.join([annotCatDict[cat] for cat in annotCat.split(",")])
-
-            go,status = getDataFromDavid(inputIds,idType,annotCat,pVal)
-
-            if status == False:
-                return "Failure to get data, please make sure the identifier is correct"
-
-        matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData2(go)
-
-        if not matrix_count:
-            return "Failure to process data"
-
-        with open(root_dir+'templates/chord_layout.html',"r") as fr_html:
-            html = "".join(fr_html.readlines())
-
-        data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+str(matrix_count)+";"+"var array_order="+str(array_order)+";"\
-        +"var clusterHierData="+str(clusterHierData) +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
-
-        return data+html
 
 @app.route('/css/<fileName>')
 def getCss(fileName):
