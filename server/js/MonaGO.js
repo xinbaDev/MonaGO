@@ -1959,9 +1959,11 @@
         });
         geneListInHtml += "</div>";
 
+
         templ = "<p>Overlapping genes between <a class='go_id'>" + that.go_inf[d.source.index].GO_id + " (" + that.go_inf[d.source.index].GO_name + ")" +
 		"</a> and <a class='go_id'>" +  that.go_inf[d.source.subindex].GO_id + " (" + that.go_inf[d.source.subindex].GO_name +")" + "</a>:\n</p>"+ 
 		"Number of overlapping genes: "+ that.dic[index].split(";").length+"</a>\n</p>" + geneListInHtml;
+
 
         return templ;
     }
@@ -2449,7 +2451,6 @@
         return "rotate(" + (((d.startAngle+d.endAngle)/2 * 180 / Math.PI - 90)+5) + ")"
            + "translate(" + (r1 + 0) + ",0)";
         }).append("svg:text")
-        .style('fill', 'grey')
         .attr("x", function(d){
           if(popUpList.indexOf(d.index)!=-1){
             if ((d.startAngle+d.endAngle)/2 < 3.1415)

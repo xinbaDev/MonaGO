@@ -19,7 +19,6 @@ import logging
 
 from logTime import logTime
 
-
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
@@ -73,23 +72,28 @@ class DavidDataScrawler(object):
             for t in threads:
                 t.join()
 
-            getGO_response = thread1.getRes()
-            geneList_response = thread2.getRes()
 
-            with open('test1.html',"w") as fr_html:
-                fr_html.write(getGO_response) 
+            try:
+                getGO_response = thread1.getRes()
+                geneList_response = thread2.getRes()
+            except:
+                raise Exception("get response from david failed") ##unlikely to happen but good to have
+
+            # with open('test1.html',"w") as fr_html:
+            #     fr_html.write(getGO_response) 
 
             go,geneIds = self._parseGO(getGO_response, s)
 
             geneList = self._parseGenes(geneList_response)
+
                 
-            with open("go.txt","w") as fw:
-                fw.write(str(go))
+            # with open("go.txt","w") as fw:
+            #     fw.write(str(go))
 
             go_filtered = self._filterGO(self.pVal,go)
 
-            with open("go_filtered.txt","w") as fw:
-                fw.write(str(go_filtered))
+            # with open("go_filtered.txt","w") as fw:
+            #     fw.write(str(go_filtered))
 
             geneIds = self._getUniqueGeneIds(geneIds)
 
@@ -103,7 +107,7 @@ class DavidDataScrawler(object):
 
 
             if not go_processed:
-                raise Exception("get final GO failed")
+                raise Exception("get go_processed failed")
             
 
             #before return, close the connection to DAVID explicitly
@@ -146,6 +150,10 @@ class DavidDataScrawler(object):
         parser = DavidDataScrawler.geneParser()
         parser.feed(geneList_response)
         genesIdName = parser.getParsedGeneNameWithId()
+
+        if len(genesIdName) == 0:
+            raise Exception("parse gene list failed") 
+
         return genesIdName
 
 

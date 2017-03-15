@@ -410,12 +410,12 @@ class DataProcess():
     def getGODependency(self,GO_inf):
 
         def recuriveGetGOId(GO_id):
+            if GO_id in GO_hier:
+                GO_hier_list[GO_id]=GO_hier[GO_id]
 
-            GO_hier_list[GO_id]=GO_hier[GO_id]
-
-            for i in GO_hier[GO_id]["p"]:
-                if not GO_hier_list.has_key(i):
-                    recuriveGetGOId(i.encode('ascii','ignore'))
+                for i in GO_hier[GO_id]["p"]:
+                    if not GO_hier_list.has_key(i):
+                        recuriveGetGOId(i.encode('ascii','ignore'))
 
         remote_server = False;
 
@@ -504,6 +504,9 @@ class DataProcess():
 
         if size==0:
             raise Exception("go_inf is empty")
+
+        with open("test.html","w") as fw:
+            fw.write(str(go_inf))
 
         matrix = self.createMatrix(go_inf)
 

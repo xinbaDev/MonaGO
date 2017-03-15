@@ -49,25 +49,32 @@ app = Flask(__name__)
 def index():
 
     annotCatDict = {
-        'GOTERM_BP_FAT':'25',#biological process
-        'GOTERM_CC_FAT':'32',#celluar component
-        'GOTERM_MF_FAT':'39'#melocular function
+        'GOTERM_BP':'30',#biological process
+        'GOTERM_CC':'38',#celluar component
+        'GOTERM_MF':'46'#melocular function
     }
 
     if request.method == 'GET':
         return render_template("index.html")
     else:
         if request.form['type'] == "manual":
-            go = parseInputGOs(request.form['inputGOs'])
+            if request.form['inputGOs'] == "":
+                go = parseInputGOsFromCSV(request.files['files2'])
+            else:
+                go = parseInputGOs(request.form['inputGOs'])
         else:
             #parameters needed for querying DAVID
-            inputIds = request.form['inputIds']
+            if request.form['inputIds'] == "":
+                inputIds = parseInputIdsFromCSV(request.files['files1'])
+            else:
+                inputIds = request.form['inputIds']
+
             idType = request.form['idType']
             annotCat = request.form['annotCat']
             pVal = request.form['pVal']
             #transform annotation name to number recognized by DAVID(e.g. GOTERM_BP_FAT to 25) .
             annotCat = ','.join([annotCatDict[cat] for cat in annotCat.split(",")])
-            print annotCat
+
             go,status = getDataFromDavid(inputIds,idType,annotCat,pVal)
 
             if status == False:
@@ -86,48 +93,6 @@ def index():
 
         return data+html
 
-@app.route('/index2', methods=['POST','GET'])
-def index2():
-
-    annotCatDict = {
-        'GOTERM_BP_FAT':'25',#biological process
-        'GOTERM_CC_FAT':'32',#celluar component
-        'GOTERM_MF_FAT':'39'#melocular function
-    }
-
-    if request.method == 'GET':
-        return render_template("index2.html")
-    else:
-
-        if request.form['inputGOs']:
-            go = request.form['inputGOs']
-
-        else:
-        #parameters needed for querying DAVID
-            inputIds = request.form['inputIds']
-            idType = request.form['idType']
-            annotCat = request.form['annotCat']
-            pVal = request.form['pVal'];
-            #transform annotation name to number recognized by DAVID(e.g. GOTERM_BP_FAT to 25) .
-            annotCat = ','.join([annotCatDict[cat] for cat in annotCat.split(",")])
-
-            go,status = getDataFromDavid(inputIds,idType,annotCat,pVal)
-
-            if status == False:
-                return "Failure to get data, please make sure the identifier is correct"
-
-        matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData2(go)
-
-        if not matrix_count:
-            return "Failure to process data"
-
-        with open(root_dir+'templates/chord_layout.html',"r") as fr_html:
-            html = "".join(fr_html.readlines())
-
-        data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+str(matrix_count)+";"+"var array_order="+str(array_order)+";"\
-        +"var clusterHierData="+str(clusterHierData) +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
-
-        return data+html
 
 @app.route('/css/<fileName>')
 def getCss(fileName):
@@ -200,10 +165,30 @@ def export():
         headers={"Content-disposition":
                  "attachment; filename=export.monago"})
 
+@app.route('/csv/<filename>')
+def getDemoCSV(filename):
+    return send_from_directory(root_dir+'csv', filename)
+
+def parseInputGOsFromCSV(file):
+    data = file.read()
+    return parseInputGOs(data)
+
+def parseInputIdsFromCSV(file):
+    data = file.read()
+    inputId = []
+    for line in data.split("\n"):
+        if line.strip("\n\r") != "":
+            if line == "geneID":
+                continue 
+            inputId.append(line)
+    return ','.join(inputId)
+
+
+
 def loadGOHier():
 
     if len(GO_dict) == 0:
-        with open(root_dir+"data/GO.txt") as fr:
+        with open(root_dir+"data/GO.go") as fr:
             for line in fr:
                 go_inf = line.split(",",1)
                 GO_dict.update({go_inf[0]:go_inf[1]})
