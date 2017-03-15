@@ -1732,7 +1732,7 @@
 
            goNameArr.push(d);
 
-           var tmp = "<li>" + (i+1) +"."+"<n class='Go_name go_detail_dropmenu'>"+ d + 
+           var tmp = "<li>" + (i+1) +". "+"<n class='Go_name go_detail_dropmenu'>"+ d + 
            "</n> <b id='caret_GO_details' class='caret'></b>"+ goDetail + "</li>";
            goList += tmp;
       });
@@ -1954,17 +1954,14 @@
         
         var geneListInHtml = "<div class='gene_content'>";
         that.dic[index].split(";").forEach(function(d,i){
-             var tmp = "<li>" + "<a class='gene_name'>"+ (i+1) +"."+ d + "</a> "+ "</li>";
+             var tmp = "<li>" + " <a class='gene_name'>"+ (i+1) +"."+ d + "</a> "+ "</li>";
              geneListInHtml+=tmp;
         });
         geneListInHtml += "</div>";
 
-        // templ="<p>Overlapping genes between <a class='go_id'>" + that.go_inf[d.source.index].GO_id + "(" + that.go_inf[d.source.index].GO_name + ")" + 
-        // "</a> and <a class='go_id'>" +  that.go_inf[d.source.subindex].GO_id + "(" + that.go_inf[d.source.subindex].GO_name +")" +"</a>:\n</p>"+geneListInHtml;
-
-        templ="<p>Overlapping genes between <a class='go_id'>" +that.go_inf[d.source.index].GO_id + "(" + that.go_inf[d.source.index].GO_name + ")" +
-		"</a> and <a class='go_id'>" +  that.go_inf[d.source.subindex].GO_id + "(" + that.go_inf[d.source.subindex].GO_name +")" +"</a>:\n</p>"+ 
-		"Number of overlapping genes:"+ that.dic[index].split(";").length+"</a>\n</p>"+geneListInHtml;
+        templ = "<p>Overlapping genes between <a class='go_id'>" + that.go_inf[d.source.index].GO_id + " (" + that.go_inf[d.source.index].GO_name + ")" +
+		"</a> and <a class='go_id'>" +  that.go_inf[d.source.subindex].GO_id + " (" + that.go_inf[d.source.subindex].GO_name +")" + "</a>:\n</p>"+ 
+		"Number of overlapping genes: "+ that.dic[index].split(";").length+"</a>\n</p>" + geneListInHtml;
 
         return templ;
     }
@@ -2045,7 +2042,7 @@
 
       that.go_inf[num].genes.forEach(function(d,i){
 
-           var tmp = "<li>" + (i+1) +".<n class='gene_name'>"+ d + "</n></li>";
+           var tmp = "<li>" + (i+1) +". <n class='gene_name'>"+ d + "</n></li>";
            genes+=tmp;
         });
 
