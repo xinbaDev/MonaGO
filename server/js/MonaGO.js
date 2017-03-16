@@ -1671,12 +1671,12 @@
     function createGeneListHtml(go){
       var geneListInHtml = "";
 
-      geneListInHtml += "<div class='gene_content'>";
+      geneListInHtml += "<div class='gene_content'><ol>";
       go.genes.forEach(function(d,i){
-           var tmp = "<p>" + (i+1) +"."+"<n class='gene_name'>"+ d + "</n> "+ "</p>";
+           var tmp = "<li>"+" <div class='gene_name'>"+ d + "</div> "+ "</li>";
            geneListInHtml+=tmp;
       });
-      geneListInHtml += "</div>";
+      geneListInHtml += "</ol></div>";
 
       return geneListInHtml;
     }
@@ -1724,7 +1724,7 @@
     }
 
     function createGOList(go_names){
-      var goList = "<div class='go_List'>";
+      var goList = "<div class='go_List'><ol>";
       goNameArr = [];
 
       go_names.forEach(function(d,i){
@@ -1732,13 +1732,13 @@
 
            goNameArr.push(d);
 
-           var tmp = "<li>" + (i+1) +". "+"<n class='Go_name go_detail_dropmenu'>"+ d + 
+           var tmp = "<li>" + "<n class='Go_name go_detail_dropmenu'>"+ d + 
            "</n> <b id='caret_GO_details' class='caret'></b>"+ goDetail + "</li>";
            goList += tmp;
       });
 
 
-      goList += "</div>";
+      goList += "</li></div>";
       return goList;
     }
 
@@ -1952,12 +1952,12 @@
 
     function createChordTempl(index,d){
         
-        var geneListInHtml = "<div class='gene_content'>";
+        var geneListInHtml = "<div class='gene_content'><ol>";
         that.dic[index].split(";").forEach(function(d,i){
-             var tmp = "<li>" + " <a class='gene_name'>"+ (i+1) +"."+ d + "</a> "+ "</li>";
+             var tmp = "<li>" + " <a class='gene_name'>"+ d + "</a> "+ "</li>";
              geneListInHtml+=tmp;
         });
-        geneListInHtml += "</div>";
+        geneListInHtml += "</ol></div>";
 
 
         templ = "<p>Overlapping genes between <a class='go_id'>" + that.go_inf[d.source.index].GO_id + " (" + that.go_inf[d.source.index].GO_name + ")" +
@@ -2040,15 +2040,15 @@
     }
 
     function getGenesFromACluster(num){
-      var genes = "<div class='gene_content'>";
+      var genes = "<div class='gene_content'><ol>";
 
       that.go_inf[num].genes.forEach(function(d,i){
 
-           var tmp = "<li>" + (i+1) +". <n class='gene_name'>"+ d + "</n></li>";
+           var tmp = "<li>" + "<div class='gene_name'>"+ d + "</div></li>";
            genes+=tmp;
         });
 
-      genes += "</div>";
+      genes += "</ol></div>";
 
       return genes;
     }
