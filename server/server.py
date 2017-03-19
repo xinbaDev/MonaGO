@@ -49,9 +49,9 @@ app = Flask(__name__)
 def index():
 
     annotCatDict = {
-        'GOTERM_BP':'30',#biological process
-        'GOTERM_CC':'38',#celluar component
-        'GOTERM_MF':'46'#melocular function
+        'GOTERM_BP':'30',#biological process direct
+        'GOTERM_CC':'38',#celluar component direct
+        'GOTERM_MF':'46'#melocular function direct
     }
 
     if request.method == 'GET':
@@ -198,6 +198,7 @@ def getGONameAndCatergory(GO_id):
         GO_inf = GO_dict[GO_id]
     except:
         logger.error("could not find GO id in GO_dict")
+        return ""
     else:
         return GO_inf
 
@@ -218,10 +219,11 @@ def parseInputGOs(go_csvFormat):
             count = len(genes)
 
             go_inf = getGONameAndCatergory(cols[0])
-            go_cat,go_name = go_inf.split(",")
 
-            goDictContainer.append({"count": count,"genes":str(cols[2].strip("\r\"")), "GO_id": str(cols[0]), "GO_name": go_name, "cat": go_cat,
-                "pVal": str(cols[1])})
+            if go_inf != "":
+                go_cat,go_name = go_inf.split(",")
+                goDictContainer.append({"count": count,"genes":str(cols[2].strip("\r\"")), "GO_id": str(cols[0]), "GO_name": go_name, "cat": go_cat,
+                    "pVal": str(cols[1])})
 
     return goDictContainer
 
