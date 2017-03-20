@@ -155,11 +155,6 @@ ul.skoslabel{
 	content: " / ";
 }
 
-li{
-	list-style: none;
-
-}
-
 
 .resProp{
 	line-height: 1.7;
@@ -457,9 +452,6 @@ a {
   cursor:pointer;
 }
 
-.gene_content li{
-    padding-left: 20px;
-}
 
 n {
     color: #15B59C;
