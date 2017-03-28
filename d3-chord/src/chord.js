@@ -41,10 +41,6 @@ export default function() {
       k += x;
     }
 
-    // Computer the position for each group(GO term)
-
-
-
     // Sort groups…
     if (sortGroups) groupIndex.sort(function(a, b) {
       return sortGroups(groupSums[a], groupSums[b]);
@@ -63,31 +59,49 @@ export default function() {
     k = max(0, tau - padAngle * n) / k;
     dx = k ? padAngle : tau / n;
 
-    // Compute the start and end angle for each group and subgroup.
-    // Note: Opera has a bug reordering object literal properties!
+
+    // Computer the position for each group(GO term)
     x = 0, i = -1; while (++i < n) {
-      x0 = x, j = -1; while (++j < n) {
-        var di = groupIndex[i],
-            dj = subgroupIndex[di][j],
-            v = matrix[di][dj],
-            a0 = x,
-            a1 = x += v * k;
-        subgroups[dj * n + di] = {
-          index: di,
-          subindex: dj,
-          startAngle: a0,
-          endAngle: a1,
-          value: v
-        };
-      }
+      x0 = x;
+      x += groupSizes[di] * k
       groups[di] = {
         index: di,
         startAngle: x0,
         endAngle: x,
-        value: groupSums[di]
+        value: groupSizes[di]
       };
-      x += dx;
+      x += dx
     }
+
+    // Computer the position for each sub group(GO term intersection)
+
+    
+
+    // Compute the start and end angle for each group and subgroup.
+    // Note: Opera has a bug reordering object literal properties!
+    // x = 0, i = -1; while (++i < n) {
+    //   x0 = x, j = -1; while (++j < n) {
+    //     var di = groupIndex[i],
+    //         dj = subgroupIndex[di][j],
+    //         v = matrix[di][dj],
+    //         a0 = x,
+    //         a1 = x += v * k;
+    //     subgroups[dj * n + di] = {
+    //       index: di,
+    //       subindex: dj,
+    //       startAngle: a0,
+    //       endAngle: a1,
+    //       value: v
+    //     };
+    //   }
+    //   groups[di] = {
+    //     index: di,
+    //     startAngle: x0,
+    //     endAngle: x,
+    //     value: groupSums[di]
+    //   };
+    //   x += dx;
+    // }
 
     // Generate chords for each (non-empty) subgroup-subgroup link.
     i = -1; while (++i < n) {
