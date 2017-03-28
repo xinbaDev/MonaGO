@@ -2613,7 +2613,7 @@
       });
 
       ranger.noUiSlider.on('update',function(values,handle){
-          inputFormat.value = values[handle];
+          inputFormat.value =parseInt(values[handle] );
       });
 
       ranger.noUiSlider.on('change', function( values, handle ) {
