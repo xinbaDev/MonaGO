@@ -27,19 +27,17 @@ from DavidDataScrawler import DavidDataScrawler
 import logging
 import time
 
+import base64
+
 from logTime import logTime
+
+import ast
 
 logging.basicConfig(filename="debug.txt",level=logging.INFO)
 logger = logging.getLogger(__name__)
+remote_server = False;
 
-config = {}
-
-with open("config.ini","r") as fr:
-    for line in fr:
-        opition = line.split(":")
-        config.update({opition[0]:opition[1].strip()})
-
-if(config["remote_server"]=="true"):
+if(remote_server):
     root_dir = "/home/ubuntu/"
 else:
     root_dir = ""
@@ -317,10 +315,6 @@ def processedData2(go):
         
         return matrix,go_index_reord,go_hier,go_inf_reord,clusterHierData
 
-def loadConfig():
-    pass
-
 if __name__ == '__main__':
-    loadConfig()
     loadGOHier()
-    app.run(debug= (config["debug"]=="true"), host="0.0.0.0", port=80, threaded = True)
+    app.run(debug="true",host="0.0.0.0", port=80, threaded = True)
