@@ -2468,7 +2468,10 @@
         .attr("transform", function(d) {
          return (d.startAngle+d.endAngle)/2 > Math.PI ? "rotate(180)translate(-16)" : null;
         })
-        .text(function(d) {return (typeof that.go_inf[d.index].GO_id == "string")? that.go_inf[d.index].GO_name:getMaxLabel(that.go_inf[d.index].GO_name)+"+"});
+        .text(function(d) {
+         var text1= (d.startAngle+d.endAngle)/2 > Math.PI ?that.go_inf[d.index].GO_name+"  "+that.go_inf[d.index].cat.slice(7,9):that.go_inf[d.index].cat.slice(7,9)+"  "+that.go_inf[d.index].GO_name;
+        return (typeof that.go_inf[d.index].GO_id == "string")? text1:getMaxLabel(that.go_inf[d.index].GO_name)+"+"});
+        //return (typeof that.go_inf[d.index].GO_id == "string")? that.go_inf[d.index].GO_name:getMaxLabel(that.go_inf[d.index].GO_name)+"+"});
     }
 
     function getMaxLabel(d){
