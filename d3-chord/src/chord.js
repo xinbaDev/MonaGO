@@ -74,7 +74,27 @@ export default function() {
     }
 
     // Computer the position for each sub group(GO term intersection)
+    x = 0, di = -1; while (++di < n) {
+      startAngle = groups[di].startAngle;
+      endAngle = group[di].endAngle;
+      angleRange = endAngle - startAngle;
+      //calculate angle
+      a = (angleRange/groupSums[di]);
+      xi = startAngle, j = -1; while (++j < n){
+        dj = subgroupIndex[di][j];
+        v = a * matrix[di][dj];
+        xj = xi + v;
+        subgroups[dj * n + di] = {
+          index: di,
+          subindex: dj,
+          startAngle: xi,
+          endAngle: xj,
+          value: v
+        }
+        xi += v;
+      }
 
+    }
     
 
     // Compute the start and end angle for each group and subgroup.

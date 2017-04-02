@@ -67,6 +67,7 @@
     this.go_inf = [];
     this.goNodes = [];
     this.matrix = [];
+    this.groupSize = [];
     this.clusterHierData = [];
     this.clusterHierDataStatic = [];
     this.memCache = {};
@@ -1062,6 +1063,13 @@
       return newMatrix;
     }
 
+    function updateGroupSize(){
+      that.groupSize = []
+      that.go_inf.forEach(function(d){
+        that.groupSize.push(d.count)
+      }) 
+    }
+
     function drawLayout(newMatrix){
 
 
@@ -1360,7 +1368,8 @@
         var removeNodeInArray = removeNodesInArrayOrder(nodePositions);
 
         matrix = updateMatrix();
-        chord = chordMatrix.matrix(matrix);
+        updateGroupSize();
+        chord = chordMatrix.matrix(matrix).groupSize(that.groupSize);
 
         var collapseResults = collapseHierClustering(nodePositions,clusterNodesLevel,nodeBeingClickedIndex,Object.keys(that.memCache),that.memCache["clusterNodesRadius"]);
         removedHierData = collapseResults[0];
@@ -2772,7 +2781,8 @@
       $('#export').click(function(){
 
           var save_file = "{\"size\":" + size + "," + "\"go_inf\":" + JSON.stringify(go_inf) + "," + "\"clusterHierData\":" +JSON.stringify(clusterHierData)
-          + "," + "\"matrix\":"+ JSON.stringify(that.matrix) + "," +"\"array_order\":" + JSON.stringify(array_order) + "," + "\"goNodes\":" + JSON.stringify(goNodes)+"}";
+          + "," + "\"matrix\":" + JSON.stringify(that.matrix) + "," +"\"array_order\":" + JSON.stringify(array_order) + "," + "\"goNodes\":" + JSON.stringify(goNodes)
+          + "," + "\"groupSize\":" + JSON.stringify(that.groupSize) + "}";
 
             post("/export", {
                 filename: 'file',
@@ -3006,7 +3016,7 @@
        .sortSubgroups(d3.descending);
        
 
-      chord = chordMatrix.matrix(that.matrix);
+      chord = chordMatrix.matrix(that.matrix).groupSize(that.groupSize);
 
       //store the nodes for hierarchical clustering visualzaition
       chordGroupsNodePosition = [];
@@ -3022,6 +3032,9 @@
       that.goNodes = goNodes;
       that.go_inf_ori = copyGOInfFrom(go_inf);
       that.matrix = matrix;
+      go_inf.forEach(function(d){
+        that.groupSize.push(d.count);
+      })
 
       that.clusterHierData = clusterHierData;
 
@@ -3067,6 +3080,7 @@
       that.goNodes = content["goNodes"];
       that.go_inf_ori = copyGOInfFrom(that.go_inf);
       that.matrix = content["matrix"];
+      that.groupSize = content["groupSize"];
 
 
       array_order = content["array_order"];
