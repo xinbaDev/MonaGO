@@ -1637,6 +1637,7 @@
           $('#content').append("<div id=\"go_chart\"></div>");
       
       var go_chart = d3.select("#go_chart").append("svg")
+        .attr("id","go_chart1")
         .attr("width", width)
         .attr("height", height);
       go_chart.append('rect')
@@ -1800,7 +1801,7 @@
         var genesListTempl = "<a class='prop-field gene_dropmenu'>Genes:</a><b id='caret_gene' class='caret rotate180'></b>"+geneListInHtml+"</p>";
 
 
-        var chartTempl = (numOfGOTerms == 1)?"<p><a class='prop-field'>GO Hierarchy: </a><button id='export' class='btn' z-index:50'>Export Hierarchy Image</button></p> <div id='go_chart'></div> ":"";
+        var chartTempl = (numOfGOTerms == 1)?"<p><a class='prop-field'>GO Hierarchy: </a><button id='exporthier' class='btn' z-index:50'>Export Hierarchy Image</button></p> <div id='go_chart'></div> ":"";
 
         detailPanelTempl += goInfTempl + genesListTempl + chartTempl;
 
@@ -1854,7 +1855,9 @@
             $('#filter').val($(this).html());
             refreshDetailPanel();
         });
-        
+        $("#exporthier").click(function() {
+         saveSvgAsPng(document.getElementById("go_chart1"), "hierarchy.png", {scale: 5});
+        });
 
         $('.go_dropmenu').click(function(d){
               
