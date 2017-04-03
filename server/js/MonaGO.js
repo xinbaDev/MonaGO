@@ -1709,7 +1709,7 @@
 
       goDetail += "<div class='go_detail_content'>";
       goDetail += "<p> <a class='prop-field'> GO_id: </a>" + goDetailArr.GO_id + "</p>";
-      goDetail += " <p> <a class='prop-field'>Num of genes: </a>"+ goDetailArr.count + "</p>" +
+      goDetail += " <p> <a class='prop-field'>Num of genes: </a>"+ goDetailArr.count + "</p>" +" <p> <a class='prop-field'>Annotation type: </a>"+ goDetailArr.cat + "</p>"
                        "<p> <a class='prop-field'>P-value: </a>" + goDetailArr.pVal + "</p>";
 
       var geneListInHtml = createGeneListHtml(goDetailArr);
@@ -1786,12 +1786,12 @@
 
         if(numOfGOTerms == 1){
            goInfTempl += "<p> <a class='prop-field'>GO_Name: </a>"+ recursiveGetArrays(that.go_inf[i].GO_name) + "</p>";
-           goInfTempl += " <p> <a class='prop-field'>Num of genes: </a>"+ that.go_inf[i].count + "</p>"+
-           "<p> <a class='prop-field'>P-value: </a>" + roundPval(that.go_inf[i].pVal,5) + "</p>";
+           goInfTempl += " <p> <a class='prop-field'>Num of genes: </a>"+ that.go_inf[i].count + "</p>"+"</p>"+ " <p> <a class='prop-field'>Annotation type: </a>"
+           + that.go_inf[i].cat+ "</p>"+"<p> <a class='prop-field'>P-value: </a>" + roundPval(that.go_inf[i].pVal,5) + "</p>";
         }else{
            goInfTempl += "<a class='prop-field go_dropmenu'> GO_name: <b id='caret_GO' class='caret rotate180'></b></a>" + 
                           createGOList(recursiveGetArrays(that.go_inf[i].GO_name)) + "<p>";
-           goInfTempl += " <p> <a class='prop-field'>Num of genes: </a>"+ that.go_inf[i].count + "</p>"+
+           goInfTempl += " <p> <a class='prop-field'>Num of genes: </a>"+ that.go_inf[i].count  +
            "<p> <a class='prop-field'>P-value(Average): </a>" + roundPval(that.go_inf[i].pVal,5) + "</p>";
         }
            
@@ -1800,7 +1800,7 @@
         var genesListTempl = "<a class='prop-field gene_dropmenu'>Genes:</a><b id='caret_gene' class='caret rotate180'></b>"+geneListInHtml+"</p>";
 
 
-        var chartTempl = (numOfGOTerms == 1)?"<p><a class='prop-field'>GO Hierarchy:</a></p> <div id='go_chart'></div> ":"";
+        var chartTempl = (numOfGOTerms == 1)?"<p><a class='prop-field'>GO Hierarchy: </a><button id='export' class='btn' z-index:50'>Export Hierarchy Image</button></p> <div id='go_chart'></div> ":"";
 
         detailPanelTempl += goInfTempl + genesListTempl + chartTempl;
 
@@ -2074,7 +2074,7 @@
 
         var line = "<button class=\"dropbtn\""+ "id=GO_button_"+ num +">" + GO + "</button>";
         line += "<div class=\"Go_content\">" + "<p><a class='prop-field'>" + ((numOfGOTerms == 1)?" P-value:</a> ":" P-value(Average):</a>")
-         + that.go_inf[num].pVal + " <p><a class='prop-field'> Num of genes: </a>"+ that.go_inf[num].count +
+         + that.go_inf[num].pVal + " <p><a class='prop-field'> Num of genes: </a>"+ that.go_inf[num].count + " <p> <a class='prop-field'>Annotatino type: </a>"+ that.go_inf[i].cat+ "</p>"
         "<p><a class='prop-field'>Genes: </a>" +  getGenesFromACluster(num) + "</div>";
         GOterms += line; 
 
