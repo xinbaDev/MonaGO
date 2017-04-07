@@ -1427,7 +1427,8 @@
         that.memCache["clusterNodesRadius"] = clusterNodesRadius;
 
         matrix = updateMatrix();
-        chord = chordMatrix.matrix(matrix);
+        updateGroupSize();
+        chord = chordMatrix.matrix(matrix).groupSize(that.groupSize);
 
 
         that.clusterHierData = expandHierClustering(nodeBeingMemorized["clusterHierData"],clusterNodesLevel,nodeBeingClickedIndex,collapsedNodes,clusterNodesRadius);
