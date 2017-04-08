@@ -1094,7 +1094,7 @@
 
         chordLayout = chordElements
           .attr("class", "chord")
-          //.style("fill", function(d) { return fill(d.source.index%10); })
+          .style("fill", function(d) { return fill(1); })
           //.style("opacity",".5")
           .attr("d", d3.svg.chord().radius(r0))
           .attr("id","chordChords")
@@ -2982,7 +2982,7 @@
 
       chordLayout = chordElements
             .attr("class", "chord")
-            //.style("fill", function(d) { return fill(d.source.index%10); })
+            .style("fill", function(d) { return fill(1); })
             //.style("opacity",".5")
             .attr("d", d3.svg.chord().radius(r0))
             .attr("id","chordChords")

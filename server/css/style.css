@@ -237,6 +237,7 @@ ul.skoslabel{
 path.chord {
   stroke: #000;
   stroke-width: .25px;
+  opacity: 0.5;
 }
 
 #circle:hover path.fade {
@@ -525,4 +526,8 @@ hr {
 .control-panel-button{
     margin-top: 30;
     margin-left: 200px;
+}
+
+.fade{
+  opacity: 0 !important;
 }
