@@ -513,7 +513,7 @@ hr {
 
 .highlight {
     stroke: rgb(244, 54, 54)!important;
-    stroke-width: 2px;;
+    stroke-width: 2px !important;
 }
 
 

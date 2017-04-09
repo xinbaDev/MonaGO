@@ -72,7 +72,7 @@
     this.clusterHierDataStatic = [];
     this.memCache = {};
     this.level_g = 0;
-
+    this.userHighlightChordIndex = -1;
     var that = this;
 
     var maxpVal;
@@ -126,7 +126,7 @@
     var zoom = d3.behavior.zoom().translate([w/2, h/2]);
     var zoomLevel = 1;
 
-  
+    
     var clusterNodesIndex = [];
     var details_opened = true;
     var control_opened = true;
@@ -1094,15 +1094,46 @@
 
         chordLayout = chordElements
           .attr("class", "chord")
-          .style("fill", function(d) { return fill(1); })
+          .style("fill", function(d) { return fill(0.3); })
           //.style("opacity",".5")
           .attr("d", d3.svg.chord().radius(r0))
           .attr("id","chordChords")
-          .on("mouseover", mouseover_chord);
+          .on("mouseover", mouseover_chord)
+          .on("click", click_chord);
 
         chordLayout.classed("fade", function(p) {
           return 1;
         });
+
+    }
+
+    function click_chord(d,i){
+      if(i != that.userHighlightChordIndex){
+          //highlight the chord
+          chordLayout.classed("highlight", function(d,j){
+            if(i == j) return true;
+            return false;
+          });
+
+          //freeze mouseover event
+          chordLayout.on("mouseover", function(){return false});
+          groupLayout.on("mouseover", function(){return false});
+          that.userHighlightChordIndex = i
+
+        if(that.userHighlightChordIndex !=-1){// click when the chord is already freezed
+          updateDetailPanelBasedOnChord(d,i);
+        }
+
+      }else{
+        //back to normal
+        chordLayout.classed("highlight", function(d,j){
+          return false;
+        });
+
+        chordLayout.on("mouseover", mouseover_chord);
+        groupLayout.on("mouseover", mouseover_group);
+        that.userHighlightChordIndex = -1;
+      }
 
     }
 
@@ -1907,8 +1938,26 @@
       })
     }
 
-    function mouseover_group(d, i) {
+    function updateDetailPanelBasedOnChord(d,i){
         $('#content').empty();
+        var index = d.source.index+"-"+d.source.subindex;
+        var chordTempl = createChordTempl(index,d);
+        $('#content').append(chordTempl);
+        setUpDetailPanelListener();
+    }
+
+    function updateDetailPanelBasedOnGroup(i){
+        $('#content').empty();
+        var detailPanelTempl = createDetailPanelTempl(i);
+        $('#content').append(detailPanelTempl);
+
+        setUpDetailPanelListener();
+        createGoHierifNecessary(that.go_inf[i].GO_id);
+        createGOHierForClusterGO();
+    }
+
+    function mouseover_group(d, i) {
+        //update chord layout
         chordLayout.classed("fade", function(p) {
           return p.source.index != i
               && p.target.index != i;
@@ -1922,16 +1971,12 @@
             return "grey";
           }
         });
-        
-        var detailPanelTempl = createDetailPanelTempl(i);
-        $('#content').append(detailPanelTempl);
-
-        setUpDetailPanelListener();
-
-        createGoHierifNecessary(that.go_inf[i].GO_id);
-        createGOHierForClusterGO();
-
+        //update pvalue panel
         changePvalPanel(d.index);
+
+        //updateDetailPanel
+        updateDetailPanelBasedOnGroup(i)
+
     }
 
     function mouseleave_group(){
@@ -1982,14 +2027,7 @@
     }
 
     function mouseover_chord(d, i) {
-        $('#content').empty();
-
-        var index = d.source.index+"-"+d.source.subindex;
-
-        var chordTempl = createChordTempl(index,d);
-
-        $('#content').append(chordTempl);
-        setUpDetailPanelListener();
+      updateDetailPanelBasedOnChord(d,i)
     }
 
 
@@ -2982,11 +3020,12 @@
 
       chordLayout = chordElements
             .attr("class", "chord")
-            .style("fill", function(d) { return fill(1); })
+            .style("fill", function(d) { return fill(0.3); })
             //.style("opacity",".5")
             .attr("d", d3.svg.chord().radius(r0))
             .attr("id","chordChords")
-            .on("mouseover", mouseover_chord);
+            .on("mouseover", mouseover_chord)
+            .on("click",click_chord);
 
       setUpControlPanel();
     }
