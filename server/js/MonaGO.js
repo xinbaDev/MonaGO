@@ -125,7 +125,7 @@
 
     var zoom = d3.behavior.zoom().translate([w/2, h/2]);
     var zoomLevel = 1;
-
+    var zoomhier=d3.behavior.zoom().translate([20,0]);
     
     var clusterNodesIndex = [];
     var details_opened = true;
@@ -1672,15 +1672,30 @@
         .attr("id","go_chart1")
         .attr("width", width)
         .attr("height", height);
-      go_chart.append('rect')
+	      
+     var hier_group = go_chart.append("svg:g")
+     	          .call(zoomhier.on("zoom", zoomed));
+     hier_group.selectAll("line")
+	.attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+     hier_group.selectAll("circle")
+        .attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });
+     hier_group.selectAll("text")
+        .attr("x", function(d) { return d.x; })
+        .attr("y", function(d) { return d.y + radiusScale(d.r) + 10; });
+
+     /* go_chart.append('rect')
         .style('fill','white')
         .style('stroke','gray')
         .attr('width',width)
         .attr('height',height)
         .attr('x',0)
-        .attr('y',0);
+        .attr('y',0);*/
 
-      update(goid,go_chart,width,height);
+      update(goid,hier_group,width,height);
 
       }
 
@@ -1922,22 +1937,48 @@
         var hierWidth = width-50;
 
         var go_chart = d3.select("#"+goNameID).append("svg")
+	.attr("id","go_chart1")
         .attr("width", hierWidth)
         .attr("height", hierHeight);
 
-        go_chart.append('rect')
+	var hier_group = go_chart.append("svg:g")
+     	.call(zoomhier.on("zoom", zoomed));
+	hier_group.selectAll("line")
+	.attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+        hier_group.selectAll("circle")
+        .attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });
+        hier_group.selectAll("text")
+        .attr("x", function(d) { return d.x; })
+        .attr("y", function(d) { return d.y + radiusScale(d.r) + 10; });
+
+        /*go_chart.append('rect')
           .style('fill','white')
           .style('stroke','gray')
           .attr('width',hierWidth)
           .attr('height',hierHeight)
           .attr('x',0)
-          .attr('y',0);
+          .attr('y',0);*/
 
-        update(goDetail.GO_id,go_chart,hierWidth,hierHeight);
+        update(goDetail.GO_id,hier_group,hierWidth,hierHeight);
 
       })
     }
 
+     function zoomed() {
+          if(zoomhier.scale()<0.5){
+            //reset zoom scale and do nothing
+             zoomhier.scale(0.5)
+          }else{
+          //  (transition ? hier_group.transition() : hier_group)
+          d3.select(this)
+    //      .attr("transform", "translate("  + 50+","+10+ " ) scale(" + zoomhier.scale() + ")");
+      .attr("transform", "translate("+zoomhier.translate()+" ) scale(" + zoomhier.scale() + ")");
+          }
+    }
     function updateDetailPanelBasedOnChord(d,i){
         $('#content').empty();
         var index = d.source.index+"-"+d.source.subindex;
