@@ -1666,17 +1666,30 @@
     function createGoHierifNecessary(goid){
 
       if(typeof goid == "string"){
-          $('#content').append("<div id=\"go_chart\"></div>");
-      
-      var go_chart = d3.select("#go_chart").append("svg")
+          $('#content').append("<div style=\"position:relative;\"><div id=\"go_chart\"></div>")
+             .on("mouseover",function(){
+            if(!$('[id="exporthier"]').hasClass("btn"))
+            {
+//          $('#content').append("<div style=\"position:relative;left:25px;bottom:"+(height-20)+"px;\"><input type=\"button\" id=\"exporthier\" class=\"btn\" value=\"export\" /><div>")
+            $('#content').append("<div style=\"position:relative;left:25px;bottom:"+(height-5)+"px;\"><button id='exporthier' class='btn'>Export</button><div>")
+            setexporthierbtn();
+             }
+             else if($('#exporthier').hide())
+                $('#exporthier').show();
+             })
+           .on("mouseout",function(){
+            if($('[id="exporthier"]').hasClass("btn"))
+             $('#exporthier').hide();
+             })
+        var go_chart = d3.select("#go_chart").append("svg")
         .attr("id","go_chart1")
         .attr("width", width)
         .attr("height", height);
 	      
      var hier_group = go_chart.append("svg:g")
-     	          .call(zoomhier.on("zoom", zoomed));
+        .call(zoomhier.on("zoom", zoomed));
      hier_group.selectAll("line")
-	.attr("x1", function(d) { return d.source.x; })
+	    .attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; });
@@ -1694,14 +1707,17 @@
         .attr('height',height)
         .attr('x',0)
         .attr('y',0);*/
-
       update(goid,hier_group,width,height);
 
-      }
 
-      
     }
-
+    }
+    function setexporthierbtn()
+    {
+         $("#exporthier").click(function() {
+         saveSvgAsPng(document.getElementById("go_chart1"), "hierarchy.png", {scale: 5});
+      })
+    }
     function replaceCommaWithUnderline(term){
         return term.replace(":","_");
     }
@@ -1848,8 +1864,8 @@
         var genesListTempl = "<a class='prop-field gene_dropmenu'>Genes:</a><b id='caret_gene' class='caret rotate180'></b>"+geneListInHtml+"</p>";
 
 
-        var chartTempl = (numOfGOTerms == 1)?"<p><a class='prop-field'>GO Hierarchy: </a><button id='exporthier' class='btn' z-index:50'>Export Hierarchy Image</button></p> <div id='go_chart'></div> ":"";
-
+//        var chartTempl = (numOfGOTerms == 1)?"<p><a class='prop-field'>GO Hierarchy: </a><button id='exporthier' class='btn' z-index:50'>Export Hierarchy Image</button></p> <div id='go_chart'></div> ":"";
+        var chartTempl = (numOfGOTerms == 1)?"<p><a class='prop-field'>GO Hierarchy: </a></p> <div id='go_chart'></div> ":"";
         detailPanelTempl += goInfTempl + genesListTempl + chartTempl;
 
         return detailPanelTempl;
@@ -1902,9 +1918,9 @@
             $('#filter').val($(this).html());
             refreshDetailPanel();
         });
-        $("#exporthier").click(function() {
+    /*    $("#exporthier").click(function() {
          saveSvgAsPng(document.getElementById("go_chart1"), "hierarchy.png", {scale: 5});
-        });
+        });*/
 
         $('.go_dropmenu').click(function(d){
               
@@ -1995,6 +2011,7 @@
         setUpDetailPanelListener();
         createGoHierifNecessary(that.go_inf[i].GO_id);
         createGOHierForClusterGO();
+
     }
 
     function mouseover_group(d, i) {
@@ -2258,7 +2275,6 @@
           $('#content').append(detailPanelTempl);
 
           setUpDetailPanelListener();
-
           createGoHierifNecessary(that.go_inf[i].GO_id);
 
           chordLayout.classed("fade", function(p) {
