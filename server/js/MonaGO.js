@@ -1681,12 +1681,15 @@
             if($('[id="exporthier"]').hasClass("btn"))
              $('#exporthier').hide();
              })
-        var go_chart = d3.select("#go_chart").append("svg")
+      var go_chart = d3.select("#go_chart").append("svg")
         .attr("id","go_chart1")
         .attr("width", width)
         .attr("height", height);
-	      
-     var hier_group = go_chart.append("svg:g")
+  //      .attr("viewBox","0,0,"+width+","+height)
+       $('#go_chart1').css ("border", "1px solid grey");
+
+     var hier_group = go_chart.append("svg:svg")
+        .attr("id","hier_group")
         .call(zoomhier.on("zoom", zoomed));
      hier_group.selectAll("line")
 	    .attr("x1", function(d) { return d.source.x; })
@@ -1715,7 +1718,7 @@
     function setexporthierbtn()
     {
          $("#exporthier").click(function() {
-         saveSvgAsPng(document.getElementById("go_chart1"), "hierarchy.png", {scale: 5});
+         saveSvgAsPng(document.getElementById("hier_group"), "hierarchy.png", {scale: 5});
       })
     }
     function replaceCommaWithUnderline(term){
@@ -1953,14 +1956,15 @@
         var hierWidth = width-50;
 
         var go_chart = d3.select("#"+goNameID).append("svg")
-	.attr("id","go_chart1")
+	    .attr("id","go_chart1")
         .attr("width", hierWidth)
         .attr("height", hierHeight);
+        $('#go_chart1').css ("border", "1px solid grey");
 
-	var hier_group = go_chart.append("svg:g")
+	var hier_group = go_chart.append("svg:svg")
      	.call(zoomhier.on("zoom", zoomed));
 	hier_group.selectAll("line")
-	.attr("x1", function(d) { return d.source.x; })
+	    .attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; });
