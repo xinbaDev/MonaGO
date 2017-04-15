@@ -1690,7 +1690,7 @@
 
      var hier_group = go_chart.append("svg:svg")
         .attr("id","hier_group")
-        .call(zoomhier.on("zoom", zoomed));
+     //   .call(zoomhier.on("zoom", zoomed));
      hier_group.selectAll("line")
 	    .attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
@@ -1962,7 +1962,7 @@
         $('#go_chart1').css ("border", "1px solid grey");
 
 	var hier_group = go_chart.append("svg:svg")
-     	.call(zoomhier.on("zoom", zoomed));
+  //   	.call(zoomhier.on("zoom", zoomed));
 	hier_group.selectAll("line")
 	    .attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
@@ -2692,9 +2692,15 @@
 
           //add save image button
           element += '<div class="control-panel-button">';
-          element += '<button id="editor_save" class="btn" z-index:100">Save image</button>';
-          element +=  '<button id="export" class="btn" z-index:100">Export File</button>';
-          element +=  '<input type="file" id="import" style="display: none"> <label for="import" class="btn" id="import_label">Import File</label>'
+          element //+= '<button id="editor_save" class="btn " z-index:100">Save image</button>';
+          element+='<button type="button" id="editor_save" class="btn dropdown-toggle" data-toggle="dropdown">Save image<span class="caret"></span></button>'
+          element+=	'<ul class="dropdown-menu" role="menu">';
+          //element+='<button id="export" class="btn" z-index:100">pdf</button></ul>';
+		  element+='<li><a href="" id="PDF">PDF</a></li>'
+		  element+='<li><a href="" id="PNG">PNG</a></li>'
+		  element+='<li><a href=""id="SVG">SVG</a></li></ul>'
+          element+=  '<button id="export" class="btn" z-index:100">Export File</button>';
+          element+=  '<input type="file" id="import" style="display: none"> <label for="import" class="btn" id="import_label">Import File</label>'
           
           // element +=  '<input id="import" type="file" class="btn" z-index:100"></input>';
           element += '</div>';
@@ -2804,7 +2810,7 @@
       });
 
       $("#editor_save").click(function() {
-
+      $('.dropdown-menu').slideToggle();
 
           // d3.select("canvas").attr("width",w).attr("height",h);
 
@@ -2822,7 +2828,7 @@
           }, null);*/
 
           //(1) save high resolution png, fast, small size
-          saveSvgAsPng(document.getElementById("main_vis"), "diagram.png", {scale: 5});
+  //      saveSvgAsPng(document.getElementById("main_vis"), "diagram.png", {scale: 5});
 
           //(2) save pdf , slow, large file.
           // svgAsPngUri(document.getElementById("main_vis"),{scale: 3},function(data){
@@ -2879,8 +2885,20 @@
 
 
         });
+       $('#PNG').click(function(){
+       saveSvgAsPng(document.getElementById("main_vis"), "diagram.png", {scale: 5});
+       });
+       $('#PDF').click(function(){
+        svgAsPngUri(document.getElementById("main_vis"),{scale: 3},function(data){
+        var doc = new jsPDF();
+        doc.addImage(data, 'PNG', 0, 0, 250, 250/widthToheightRatio);
+        doc.save('pic.pdf');
+         })
 
-
+       });
+       $('#SVG').click(function(){
+        saveSvg(document.getElementById("main_vis"), "diagram.svg", {scale: 2});
+       });
       $('#export').click(function(){
 
           var save_file = "{\"size\":" + size + "," + "\"go_inf\":" + JSON.stringify(go_inf) + "," + "\"clusterHierData\":" +JSON.stringify(clusterHierData)
