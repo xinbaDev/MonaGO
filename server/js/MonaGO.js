@@ -90,7 +90,11 @@
     var color_scheme = ["#1249C9","#0F399B","#0A2B76","#0F2147","#2C3645","#82733D","#E1C03B","#E6AE29","#F2AB1C","#FFAB00"].reverse();
     var pValLevel = ["p-1","p-2","p-3","p-4","p-5","p-6","p-7","p-8","p-9","p-10"];
     var preElement = "p-1";
-
+    var annotation_manual={
+    biological_process:"bp",
+    cellular_component:"cc",
+    molecular_function:"mf"
+    };
     var chordMatrix;
     var chord;
     var detailPanelWidth = $(window).width()*0.25;
@@ -1762,6 +1766,7 @@
 
         that.go_inf_ori.forEach(function(d,i){
           if(d.GO_name == goName){
+
             goDetailArr = d;
           }
         });
@@ -2581,9 +2586,20 @@
          return (d.startAngle+d.endAngle)/2 > Math.PI ? "rotate(180)translate(-16)" : null;
         })
         .text(function(d) {
-         var text1= (d.startAngle+d.endAngle)/2 > Math.PI ?that.go_inf[d.index].GO_name+"  "+that.go_inf[d.index].cat.slice(7,9):that.go_inf[d.index].cat.slice(7,9)+"  "+that.go_inf[d.index].GO_name;
-        return (typeof that.go_inf[d.index].GO_id == "string")? text1:getMaxLabel(that.go_inf[d.index].GO_name)+"+"});
+         if(that.go_inf[d.index].cat in annotation_manual)
+         {
+             var annotation=annotation_manual[that.go_inf[d.index].cat];
+             var text1= (d.startAngle+d.endAngle)/2 > Math.PI ?that.go_inf[d.index].GO_name+"  "+annotation:annotation+"  "+that.go_inf[d.index].GO_name;
+             return (typeof that.go_inf[d.index].GO_id == "string")? text1:getMaxLabel(that.go_inf[d.index].GO_name)+"+";
+         }
+         else
+         {
+           var text1= (d.startAngle+d.endAngle)/2 > Math.PI ?that.go_inf[d.index].GO_name+"  "+that.go_inf[d.index].cat.slice(7,9):that.go_inf[d.index].cat.slice(7,9)+"  "+that.go_inf[d.index].GO_name;
+           return (typeof that.go_inf[d.index].GO_id == "string")? text1:getMaxLabel(that.go_inf[d.index].GO_name)+"+";
+         }
+
         //return (typeof that.go_inf[d.index].GO_id == "string")? that.go_inf[d.index].GO_name:getMaxLabel(that.go_inf[d.index].GO_name)+"+"});
+    });
     }
 
     function getMaxLabel(d){
