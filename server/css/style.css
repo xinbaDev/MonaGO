@@ -236,8 +236,8 @@ ul.skoslabel{
 
 path.chord {
   stroke: #000;
-  stroke-width: .25px;
-  opacity: 0.5;
+  stroke-width: .1px;
+  opacity: 1;
 }
 
 #circle:hover path.fade {
@@ -513,7 +513,7 @@ hr {
 
 .highlight {
     stroke: rgb(46, 139, 87)!important;
-    stroke-width: 10px !important;
+    stroke-width: 3px !important;
 }
 
 

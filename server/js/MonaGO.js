@@ -2696,9 +2696,9 @@
           element+='<button type="button" id="editor_save" class="btn dropdown-toggle" data-toggle="dropdown">Save image<span class="caret"></span></button>'
           element+=	'<ul class="dropdown-menu" role="menu">';
           //element+='<button id="export" class="btn" z-index:100">pdf</button></ul>';
-		  element+='<li><a href="" id="PDF">PDF</a></li>'
-		  element+='<li><a href="" id="PNG">PNG</a></li>'
-		  element+='<li><a href=""id="SVG">SVG</a></li></ul>'
+    		  element+='<li><a href="" id="PDF">PDF</a></li>'
+    		  element+='<li><a href="" id="PNG">PNG</a></li>'
+    		  element+='<li><a href=""id="SVG">SVG</a></li></ul>'
           element+=  '<button id="export" class="btn" z-index:100">Export File</button>';
           element+=  '<input type="file" id="import" style="display: none"> <label for="import" class="btn" id="import_label">Import File</label>'
           
@@ -3099,7 +3099,7 @@
 
       chordLayout = chordElements
             .attr("class", "chord")
-            .style("fill", function(d) { return fill(0.3); })
+            .style("fill", function(d) { return "#A0A0A0"; })
             //.style("opacity",".5")
             .attr("d", d3.svg.chord().radius(r0))
             .attr("id","chordChords")
