@@ -73,6 +73,7 @@
     this.memCache = {};
     this.level_g = 0;
     this.userHighlightChordIndex = -1;
+    this.MonaGOData = [];
     var that = this;
 
     var maxpVal;
@@ -91,9 +92,9 @@
     var pValLevel = ["p-1","p-2","p-3","p-4","p-5","p-6","p-7","p-8","p-9","p-10"];
     var preElement = "p-1";
     var annotation_manual={
-    biological_process:"bp",
-    cellular_component:"cc",
-    molecular_function:"mf"
+      biological_process:"[BP]",
+      cellular_component:"[CC]",
+      molecular_function:"[MF]"
     };
     var chordMatrix;
     var chord;
@@ -149,6 +150,8 @@
     var chordLayout;
     var textBackground;
     var app = angular.module('MonaGO');
+
+
 
     app.directive('clearBtn', ['$parse', function ($parse) {
         return {
@@ -1098,7 +1101,7 @@
 
         chordLayout = chordElements
           .attr("class", "chord")
-          .style("fill", function(d) { return fill(0.3); })
+          .style("fill", function(d) { return "#A0A0A0"; })
           //.style("opacity",".5")
           .attr("d", d3.svg.chord().radius(r0))
           .attr("id","chordChords")
@@ -2750,7 +2753,7 @@
       });
 
       ranger.noUiSlider.on('update',function(values,handle){
-          inputFormat.value =parseInt(values[handle] );
+          inputFormat.value = parseInt(values[handle] );
       });
 
       ranger.noUiSlider.on('change', function( values, handle ) {
@@ -2917,9 +2920,11 @@
        });
       $('#export').click(function(){
 
-          var save_file = "{\"size\":" + size + "," + "\"go_inf\":" + JSON.stringify(go_inf) + "," + "\"clusterHierData\":" +JSON.stringify(clusterHierData)
-          + "," + "\"matrix\":" + JSON.stringify(that.matrix) + "," +"\"array_order\":" + JSON.stringify(array_order) + "," + "\"goNodes\":" + JSON.stringify(goNodes)
-          + "," + "\"groupSize\":" + JSON.stringify(that.groupSize) + "}";
+          nodeCollapse = $("#input_slider").val()
+
+          var save_file = "{\"size\":" + size + "," + "\"go_inf\":" + JSON.stringify(that.MonaGOData.go_inf) + "," + "\"clusterHierData\":" +JSON.stringify(that.MonaGOData.clusterHierData)
+          + "," + "\"matrix\":" + JSON.stringify(that.MonaGOData.matrix) + "," +"\"array_order\":" + JSON.stringify(that.MonaGOData.array_order) + "," + "\"goNodes\":" + JSON.stringify(goNodes)
+          + "," + "\"groupSize\":" + JSON.stringify(that.MonaGOData.groupSize) + "," + "\"nodeCollapse\":" + nodeCollapse + "}";
 
             post("/export", {
                 filename: 'file',
@@ -3164,7 +3169,16 @@
       });
     }
 
-    this.init = function(size,go_inf,clusterHierData,goNodes,matrix){
+    function clusterGO(nodeCollapse){
+      console.log(nodeCollapse)
+      var level = getLevelFromNumOfOverlappingGenes(nodeCollapse);
+      console.log(level)
+      getClusterNodesIndexBeingSelected(level);
+
+      $("#input_slider").val(nodeCollapse);
+    }
+
+    this.init = function(size,go_inf,array_order,clusterHierData,goNodes,matrix){
 
       that.go_inf = go_inf;
       that.goNodes = goNodes;
@@ -3188,6 +3202,8 @@
       that.go_inf.forEach(function(d,i){
         that.go_inf[i].genes = d.genes.split(";");
       });
+
+      that.MonaGOData = {"go_inf":that.go_inf_ori, "matrix": matrix, "array_order":array_order, "groupSize": that.groupSize, "clusterHierData": clusterHierData}
 
       perparePvalue();
 
@@ -3219,9 +3235,9 @@
       that.go_inf_ori = copyGOInfFrom(that.go_inf);
       that.matrix = content["matrix"];
       that.groupSize = content["groupSize"];
+      that.nodeCollapse = content["nodeCollapse"];
 
-
-      array_order = content["array_order"];
+      //array_order = content["array_order"];
 
       nodesSize = content["size"];
       maxNodeIndex = content["size"];
@@ -3261,11 +3277,14 @@
 
       setUpListener();
 
+      if(that.nodeCollapse < that.maxNumOfOverlappingGens+1)
+        clusterGO(that.nodeCollapse)
+
     }
 
   }
 
-  monago = new MonaGO().init(size,go_inf,clusterHierData,goNodes,matrix);
+  monago = new MonaGO().init(size,go_inf,array_order,clusterHierData,goNodes,matrix);
 
 
 })();
