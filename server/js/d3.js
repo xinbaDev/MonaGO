@@ -6115,7 +6115,7 @@
   d3.layout.chord = function() {
     var chord = {}, chords, groups, matrix, n, padding = 0, sortGroups, sortSubgroups, sortChords, groupSize;
     function relayout() {
-      var subgroups = {}, groupSums = [], groupIndex = d3.range(n), subgroupIndex = [], k, x, x0, i, j;
+      var subgroups = {}, groupSums = [], groupIndex = d3.range(n), subgroupIndexPre = [], subgroupIndex = [], k, x, x0, i, j;
       chords = [];
       groups = [];
       // k = 0, 
@@ -6126,7 +6126,7 @@
           x += matrix[i][j];
         }
         groupSums.push(x);
-        subgroupIndex.push(d3.range(n));
+        subgroupIndexPre.push(d3.range(n));
         //k += x;
       }
 
@@ -6135,18 +6135,30 @@
         k += parseInt(d)
       })
 
-      if (sortGroups) {
-        groupIndex.sort(function(a, b) {
-          return sortGroups(groupSums[a], groupSums[b]);
-        });
-      }
+      // if (sortGroups) {
+      //   groupIndex.sort(function(a, b) {
+      //     return sortGroups(groupSums[a], groupSums[b]);
+      //   });
+      // }
+
+      
       if (sortSubgroups) {
-        subgroupIndex.forEach(function(d, i) {
-          d.sort(function(a, b) {
-            return sortSubgroups(matrix[i][a], matrix[i][b]);
-          });
+        subgroupIndexPre.forEach(function(group, i) {
+          arr1 = [];
+          arr2 = [];
+          group.forEach(function(d, j){
+            if(i < j){
+              arr1.push(j)
+            }else{
+              arr2.push(j)
+            }
+          })
+
+          subgroupIndex.push(arr2.reverse().concat(arr1.reverse()))
+
         });
       }
+      console.log(subgroupIndex)
 
       k = (τ - padding * n) / k;
 
@@ -6199,6 +6211,8 @@
         a = (angleRange/groupSums[di]);
       }
       xi = startAngle, j = -1; while (++j < n){
+        
+
         dj = subgroupIndex[di][j];
         v = a * matrix[di][dj];
         xj = xi + v;
@@ -8534,7 +8548,7 @@
     var source = d3_source, target = d3_target, radius = d3_svg_chordRadius, startAngle = d3_svg_arcStartAngle, endAngle = d3_svg_arcEndAngle;
     function chord(d, i) {
       var s = subgroup(this, source, d, i), t = subgroup(this, target, d, i);
-      return "M" + s.p0 + arc(s.r, s.p1, s.a1 - s.a0) + (equals(s, t) ? curve(s.r, s.p1, s.r, s.p0) : curve(s.r, s.p1, t.r, t.p0) + arc(t.r, t.p1, t.a1 - t.a0) + curve(t.r, t.p1, s.r, s.p0)) + "Z";
+      return "M" + s.p0 + arc(s.r, s.p1, s.a1 - s.a0) + curve(t.p0) + arc(t.r, t.p1, t.a1 - t.a0) + curve(s.p0) + "Z";
     }
     function subgroup(self, f, d, i) {
       var subgroup = f.call(self, d, i), r = radius.call(self, subgroup, i), a0 = startAngle.call(self, subgroup, i) - halfπ, a1 = endAngle.call(self, subgroup, i) - halfπ;
@@ -8552,7 +8566,7 @@
     function arc(r, p, a) {
       return "A" + r + "," + r + " 0 " + +(a > π) + ",1 " + p;
     }
-    function curve(r0, p0, r1, p1) {
+    function curve(p1) {
       return "Q 0,0 " + p1;
     }
     chord.radius = function(v) {
