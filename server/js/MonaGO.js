@@ -90,7 +90,11 @@
     var color_scheme = ["#1249C9","#0F399B","#0A2B76","#0F2147","#2C3645","#82733D","#E1C03B","#E6AE29","#F2AB1C","#FFAB00"].reverse();
     var pValLevel = ["p-1","p-2","p-3","p-4","p-5","p-6","p-7","p-8","p-9","p-10"];
     var preElement = "p-1";
-
+    var annotation_manual={
+    biological_process:"BP",
+    cellular_component:"CC",
+    molecular_function:"MF"
+    };
     var chordMatrix;
     var chord;
     var detailPanelWidth = $(window).width()*0.25;
@@ -642,6 +646,7 @@
     }
 
     function drawClusterNodes(){
+
       var clusterNodes = [];
       clusterHierNodesStatus.map(function(d){
         if(d["numOfOverlappingGenes"]>0)
@@ -654,7 +659,9 @@
 
       clusterHierNodeView.exit().remove();
 
-      clusterHierNodeView.transition().duration(500).attrTween("transform", tween).attr("class","clusterNodeView");
+      clusterHierNodeView.transition().duration(500).attrTween("transform", tween);
+      clusterHierNodeView.attr("class","clusterNodeView");
+      clusterHierNodeView.attr("value",rotate_angle)
 
       clusterHierNodeView.selectAll("circle").remove();
 
@@ -676,12 +683,13 @@
 
       clusterHierNodeTextView.exit().remove();
 
-      clusterHierNodeTextView.transition().duration(500).attrTween("transform", tween).attr("class","clusterText");
-      
+      clusterHierNodeTextView.transition().duration(500).attrTween("transform", tween);
+      clusterHierNodeTextView.attr("class","clusterText");
       textBackground = clusterHierNodeTextView.append("g");
 
       text = textBackground.attr("transform", function(d) {
-         return "rotate("  + (90 - d.angle * 180 / Math.PI) +")" + "translate(" + 0 + ",5)";
+         var text_angle=90 - d.angle * 180 / Math.PI;
+         return "rotate("  + text_angle +")" + "translate(" + 0 + ",5)";
        }).append("text");
 
       text.attr('height', 'auto')
@@ -696,7 +704,10 @@
       function tween(d, i, a) {
         var interpolate;
         var str;
-        
+
+
+       // node_angle.push(d["angle"] * 180 / Math.PI - 90);
+
         str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
          + "translate(" + ( d["radius"] + 5 ) + ",0)";
         interpolate = d3.interpolate(a,str);
@@ -706,7 +717,13 @@
             return interpolate(t);
           };
       }
+
+       function rotate_angle(d){
+       return d.angle * 180 / Math.PI - 90;
+       }
+
     }
+
 
     function drawArc(clusterHierData){
 
@@ -1513,7 +1530,7 @@
          return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
              + "translate(" + (d.radius+10) + ",0)";
        });
-
+      //clusterNode.setAttribute("data-rotate",d.angle * 180 / Math.PI - 90);
       var clusterArc = d3.selectAll(".clusterArc");
 
       clusterArc.transition().duration(500).attr("d",function(d){
@@ -1543,7 +1560,9 @@
       var clusterNode = d3.selectAll(".clusterNode");
 
       clusterNode.transition().duration(500).attr("transform",function(d) {
-         return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+         var node_angle=d.angle * 180 / Math.PI - 90;
+
+         return "rotate(" + node_angle + ")"
              + "translate(" + (d.radius) + ",0)";
        });
 
@@ -1690,7 +1709,7 @@
 
      var hier_group = go_chart.append("svg:svg")
         .attr("id","hier_group")
-        .call(zoomhier.on("zoom", zoomed));
+     //   .call(zoomhier.on("zoom", zoomed));
      hier_group.selectAll("line")
 	    .attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
@@ -1762,6 +1781,7 @@
 
         that.go_inf_ori.forEach(function(d,i){
           if(d.GO_name == goName){
+
             goDetailArr = d;
           }
         });
@@ -1962,7 +1982,7 @@
         $('#go_chart1').css ("border", "1px solid grey");
 
 	var hier_group = go_chart.append("svg:svg")
-     	.call(zoomhier.on("zoom", zoomed));
+  //   	.call(zoomhier.on("zoom", zoomed));
 	hier_group.selectAll("line")
 	    .attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
@@ -2491,8 +2511,13 @@
     }
 
     function popUpClusterNodes(){
+
       clusterHierNodeView.transition().duration(300).attrTween("transform", tween).attr("class","clusterNodeView");
+
+      var clusternode=$(".clusterNodeView");
+
       clusterHierNodeTextView.transition().duration(300).attrTween("transform", tween).attr("class","clusterText");
+
 
       function tween(d, i, a) {
               var interpolate;
@@ -2510,7 +2535,9 @@
     }
 
     function resetClusterNodes(){
+
       clusterHierNodeView.transition().duration(300).attrTween("transform", tween).attr("class","clusterNodeView");
+
       clusterHierNodeTextView.transition().duration(300).attrTween("transform", tween).attr("class","clusterText");
 
       function tween(d, i, a) {
@@ -2551,16 +2578,43 @@
 
     function updateLabel(){
       // groupText.remove();
-    
+      //var label_angle;
+      var node_angle=[];
+      var label_angle;
+      var clusternode=$('.clusterNodeView');
+     // console.log(clusternode.length);
+        for (var i=0;i<clusternode.length;i++)
+        {
+            //var transform_attr=clusternode[i].getAttribute("value");
+            //console.log(transform_attr)
+            //var startindex=transform_attr.indexOf("(");
+           // var endindex=transform_attr.indexOf(")");
+            node_angle.push(clusternode[i].getAttribute("value"));
+            console.log(node_angle[i]);
+        }
       gt.remove()
-
+      var label_angle=[];
       gt = groupTexts.selectAll("g")
              .data(chord.groups)
-           .enter().append("svg:g")
+           .enter().append("svg:g").attr("class","labeltext");
+
+
 
       gt
         .attr("transform", function(d) {
-        return "rotate(" + (((d.startAngle+d.endAngle)/2 * 180 / Math.PI - 90)+5) + ")"
+            label_angle=(d.startAngle+d.endAngle)/2 * 180 / Math.PI - 90;
+            var node_angle1=node_angle.map(function(t){
+            return t-label_angle;});
+            //console.log(node_angle1)
+            var node_angle2=node_angle1.filter(function(t){if(Math.abs(t)<4)
+                    return t});
+                    //console.log(node_angle2)
+        if(node_angle2.length!=0)
+        {
+        //console.log(1)
+        node_angle2[0]<0?label_angle+=3:label_angle-=3;}
+
+           return "rotate(" + label_angle + ")"
            + "translate(" + (r1 + 0) + ",0)";
         }).append("svg:text")
         .attr("x", function(d){
@@ -2581,10 +2635,27 @@
          return (d.startAngle+d.endAngle)/2 > Math.PI ? "rotate(180)translate(-16)" : null;
         })
         .text(function(d) {
-         var text1= (d.startAngle+d.endAngle)/2 > Math.PI ?that.go_inf[d.index].GO_name+"  "+that.go_inf[d.index].cat.slice(7,9):that.go_inf[d.index].cat.slice(7,9)+"  "+that.go_inf[d.index].GO_name;
-        return (typeof that.go_inf[d.index].GO_id == "string")? text1:getMaxLabel(that.go_inf[d.index].GO_name)+"+"});
+         if(that.go_inf[d.index].cat in annotation_manual)
+         {
+             var annotation=annotation_manual[that.go_inf[d.index].cat];
+             var text1= (d.startAngle+d.endAngle)/2 > Math.PI ?that.go_inf[d.index].GO_name+"  "+annotation:annotation+"  "+that.go_inf[d.index].GO_name;
+             return (typeof that.go_inf[d.index].GO_id == "string")? text1:getMaxLabel(that.go_inf[d.index].GO_name)+"+";
+         }
+         else
+         {
+           var text1= (d.startAngle+d.endAngle)/2 > Math.PI ?that.go_inf[d.index].GO_name+"  "+that.go_inf[d.index].cat.slice(7,9):that.go_inf[d.index].cat.slice(7,9)+"  "+that.go_inf[d.index].GO_name;
+           return (typeof that.go_inf[d.index].GO_id == "string")? text1:getMaxLabel(that.go_inf[d.index].GO_name)+"+";
+         }
+
         //return (typeof that.go_inf[d.index].GO_id == "string")? that.go_inf[d.index].GO_name:getMaxLabel(that.go_inf[d.index].GO_name)+"+"});
+    });
+    /*var labeltext=$('.labeltext');
+    for (var i=0;i<labeltext.length;i++)
+        {
+            labeltext[i].setAttribute("data-rotate",label_angle[i]);
+        }*/
     }
+
 
     function getMaxLabel(d){
       var position = 0;
@@ -2692,9 +2763,15 @@
 
           //add save image button
           element += '<div class="control-panel-button">';
-          element += '<button id="editor_save" class="btn" z-index:100">Save image</button>';
-          element +=  '<button id="export" class="btn" z-index:100">Export File</button>';
-          element +=  '<input type="file" id="import" style="display: none"> <label for="import" class="btn" id="import_label">Import File</label>'
+          element //+= '<button id="editor_save" class="btn " z-index:100">Save image</button>';
+          element+='<button type="button" id="editor_save" class="btn dropdown-toggle" data-toggle="dropdown">Save image<span class="caret"></span></button>'
+          element+=	'<ul class="dropdown-menu" role="menu">';
+          //element+='<button id="export" class="btn" z-index:100">pdf</button></ul>';
+		  element+='<li><a href="" id="PDF">PDF</a></li>'
+		  element+='<li><a href="" id="PNG">PNG</a></li>'
+		  element+='<li><a href=""id="SVG">SVG</a></li></ul>'
+          element+=  '<button id="export" class="btn" z-index:100">Export File</button>';
+          element+=  '<input type="file" id="import" style="display: none"> <label for="import" class="btn" id="import_label">Import File</label>'
           
           // element +=  '<input id="import" type="file" class="btn" z-index:100"></input>';
           element += '</div>';
@@ -2804,7 +2881,7 @@
       });
 
       $("#editor_save").click(function() {
-
+      $('.dropdown-menu').slideToggle();
 
           // d3.select("canvas").attr("width",w).attr("height",h);
 
@@ -2822,7 +2899,7 @@
           }, null);*/
 
           //(1) save high resolution png, fast, small size
-          saveSvgAsPng(document.getElementById("main_vis"), "diagram.png", {scale: 5});
+  //      saveSvgAsPng(document.getElementById("main_vis"), "diagram.png", {scale: 5});
 
           //(2) save pdf , slow, large file.
           // svgAsPngUri(document.getElementById("main_vis"),{scale: 3},function(data){
@@ -2879,8 +2956,20 @@
 
 
         });
+       $('#PNG').click(function(){
+       saveSvgAsPng(document.getElementById("main_vis"), "diagram.png", {scale: 5});
+       });
+       $('#PDF').click(function(){
+        svgAsPngUri(document.getElementById("main_vis"),{scale: 3},function(data){
+        var doc = new jsPDF();
+        doc.addImage(data, 'PNG', 0, 0, 250, 250/widthToheightRatio);
+        doc.save('pic.pdf');
+         })
 
-
+       });
+       $('#SVG').click(function(){
+        saveSvg(document.getElementById("main_vis"), "diagram.svg", {scale: 2});
+       });
       $('#export').click(function(){
 
           var save_file = "{\"size\":" + size + "," + "\"go_inf\":" + JSON.stringify(go_inf) + "," + "\"clusterHierData\":" +JSON.stringify(clusterHierData)
