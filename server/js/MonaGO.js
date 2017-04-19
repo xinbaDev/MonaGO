@@ -74,6 +74,7 @@
     this.level_g = 0;
     this.userHighlightChordIndex = -1;
     this.MonaGOData = [];
+    this.ranger;
     var that = this;
 
     var maxpVal;
@@ -2730,16 +2731,16 @@
 
       }
 
-      var ranger = document.getElementById('slider');
+      that.ranger = document.getElementById('slider');
       var inputFormat = document.getElementById('input_slider');
-      setUpRangeSlider(ranger,inputFormat,that.minNumOfOverlappingGens,that.maxNumOfOverlappingGens);
+      setUpRangeSlider(inputFormat,that.minNumOfOverlappingGens,that.maxNumOfOverlappingGens);
     }
 
-    function setUpRangeSlider(ranger,inputFormat,minNumOfOverlappingGens,maxNumOfOverlappingGens){
-      if(ranger.noUiSlider)
-        ranger.noUiSlider.destroy();
+    function setUpRangeSlider(inputFormat,minNumOfOverlappingGens,maxNumOfOverlappingGens){
+      if(that.ranger.noUiSlider)
+        that.ranger.noUiSlider.destroy();
 
-      noUiSlider.create(ranger, {
+      noUiSlider.create(that.ranger, {
         start: [ maxNumOfOverlappingGens+1 ], // Handle start position
         step: 1, // Slider moves in increments of '10'
         margin: 0, // Handles must be more than '20' apart
@@ -2752,11 +2753,11 @@
         }
       });
 
-      ranger.noUiSlider.on('update',function(values,handle){
+      that.ranger.noUiSlider.on('update',function(values,handle){
           inputFormat.value = parseInt(values[handle] );
       });
 
-      ranger.noUiSlider.on('change', function( values, handle ) {
+      that.ranger.noUiSlider.on('change', function( values, handle ) {
           var level = getLevelFromNumOfOverlappingGenes(values.toString());
           getClusterNodesIndexBeingSelected(level);
 
@@ -2766,7 +2767,7 @@
       });
 
       inputFormat.addEventListener('change',function(){
-          ranger.noUiSlider.set(this.value);
+          that.ranger.noUiSlider.set(this.value);
           var level = getLevelFromNumOfOverlappingGenes(this.value);
           getClusterNodesIndexBeingSelected(level);
 
@@ -3176,6 +3177,7 @@
       getClusterNodesIndexBeingSelected(level);
 
       $("#input_slider").val(nodeCollapse);
+      that.ranger.noUiSlider.set(nodeCollapse);
     }
 
     this.init = function(size,go_inf,array_order,clusterHierData,goNodes,matrix){
