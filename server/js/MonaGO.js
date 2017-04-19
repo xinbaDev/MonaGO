@@ -661,7 +661,11 @@
 
       clusterHierNodeView.exit().remove();
 
-      clusterHierNodeView.transition().duration(500).attrTween("transform", tween).attr("class","clusterNodeView");
+      clusterHierNodeView.transition().duration(500).attrTween("transform", tween);
+      clusterHierNodeView.attr("class","clusterNodeView");
+      clusterHierNodeView.attr("value",function(d){return d.angle * 180 / Math.PI - 90;})
+      clusterHierNodeView.attr("translate_value",function(d){return d["radius"] + 5;});
+      clusterHierNodeView.selectAll("circle").remove();
 
       clusterHierNodeView.selectAll("circle").remove();
 
@@ -704,7 +708,7 @@
         var interpolate;
         var str;
         
-        str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
+        str = "rotate(" + $('.clusterNodeView')[i].getAttribute("value") + ")"
          + "translate(" + ( d["radius"] + 5 ) + ",0)";
         interpolate = d3.interpolate(a,str);
 
@@ -713,6 +717,7 @@
             return interpolate(t);
           };
       }
+
     }
 
     function drawArc(clusterHierData){
@@ -2559,16 +2564,49 @@
 
     function updateLabel(){
       // groupText.remove();
-    
+      var node_angle=[];
+      var translate_value=[];
+      var label_angle;
+      var clusternode=$('.clusterNodeView');
+        for (var i=0;i<clusternode.length;i++)
+        {
+            node_angle.push(clusternode[i].getAttribute("value"));
+            translate_value.push(clusternode[i].getAttribute("translate_value"));
+        }
       gt.remove()
 
       gt = groupTexts.selectAll("g")
              .data(chord.groups)
-           .enter().append("svg:g")
+           .enter().append("svg:g").attr("class","labeltext");
 
       gt
         .attr("transform", function(d) {
-        return "rotate(" + (((d.startAngle+d.endAngle)/2 * 180 / Math.PI - 90)+5) + ")"
+        label_angle=(d.startAngle+d.endAngle)/2 * 180 / Math.PI - 90+2;
+        var node_angle2=[];
+        var index;
+        var node_angle1=node_angle.map(function(t){
+            return t-label_angle;});
+
+        for (i=0;i<node_angle1.length;i++)
+           {
+             if (Math.abs(node_angle1[i]) < 3)
+             node_angle2.push(i);
+           }
+
+        if(node_angle2.length!=0)
+        {
+        for (i=0;i<node_angle2.length;i++)
+        {
+
+        index=node_angle2[i]
+        node_angle1[index]>0?node_angle[index]-=-2:node_angle[index]-=2;
+
+        $('.clusterNodeView')[index].setAttribute("transform","rotate(" + node_angle[index] + ")"+ "translate(" + translate_value[index] + ",0)");
+        $('.clusterNodeView')[index].setAttribute("value",node_angle[index]);
+        }
+        }
+
+        return "rotate(" + label_angle + ")"
            + "translate(" + (r1 + 0) + ",0)";
         }).append("svg:text")
         .attr("x", function(d){
