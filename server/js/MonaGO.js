@@ -650,6 +650,7 @@
     }
 
     function drawClusterNodes(){
+      var index;
       var clusterNodes = [];
       clusterHierNodesStatus.map(function(d){
         if(d["numOfOverlappingGenes"]>0)
@@ -665,7 +666,9 @@
       clusterHierNodeView.transition().duration(500).attrTween("transform", tween);
       clusterHierNodeView.attr("class","clusterNodeView");
       clusterHierNodeView.attr("value",function(d){return d.angle * 180 / Math.PI - 90;})
+      clusterHierNodeView.attr("index",function(d){return d.index;});
       clusterHierNodeView.attr("translate_value",function(d){return d["radius"] + 5;});
+
       clusterHierNodeView.selectAll("circle").remove();
 
       clusterHierNodeView.selectAll("circle").remove();
@@ -688,8 +691,11 @@
 
       clusterHierNodeTextView.exit().remove();
 
-      clusterHierNodeTextView.transition().duration(500).attrTween("transform", tween).attr("class","clusterText");
-      
+      clusterHierNodeTextView.transition().duration(500).attrTween("transform", tween);
+      clusterHierNodeTextView.attr("class","clusterText");
+      //clusterHierNodeTextView.attr("value",function(d){return d.angle * 180 / Math.PI - 90;})
+      //clusterHierNodeTextView.attr("translate_value",function(d){return d["radius"] + 5;});
+
       textBackground = clusterHierNodeTextView.append("g");
 
       text = textBackground.attr("transform", function(d) {
@@ -708,9 +714,11 @@
       function tween(d, i, a) {
         var interpolate;
         var str;
-        
-        str = "rotate(" + $('.clusterNodeView')[i].getAttribute("value") + ")"
+
+        //str = "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+        str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
          + "translate(" + ( d["radius"] + 5 ) + ",0)";
+
         interpolate = d3.interpolate(a,str);
 
 
@@ -2511,8 +2519,9 @@
       function tween(d, i, a) {
               var interpolate;
               var str;
-              
-              str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
+              //console.log("popup")
+              str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
+              //str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
                + "translate(" + ( d["radius"] + 10 ) + ",0)";
               interpolate = d3.interpolate(a,str);
 
@@ -2526,12 +2535,13 @@
     function resetClusterNodes(){
       clusterHierNodeView.transition().duration(300).attrTween("transform", tween).attr("class","clusterNodeView");
       clusterHierNodeTextView.transition().duration(300).attrTween("transform", tween).attr("class","clusterText");
-
+      console.log("reset")
       function tween(d, i, a) {
               var interpolate;
               var str;
               
-              str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
+              str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
+              //str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
                + "translate(" + ( d["radius"] + 5 ) + ",0)";
               interpolate = d3.interpolate(a,str);
 
@@ -2634,9 +2644,9 @@
              var text1= (d.startAngle+d.endAngle)/2 > Math.PI ?that.go_inf[d.index].GO_name+"  "+annotation:annotation+"  "+that.go_inf[d.index].GO_name;
              return (typeof that.go_inf[d.index].GO_id == "string")? text1:getMaxLabel(that.go_inf[d.index].GO_name)+"+";
          }
-         else
+         else if(that.go_inf[d.index].cat!=undefined)
          {
-           var text1= (d.startAngle+d.endAngle)/2 > Math.PI ?that.go_inf[d.index].GO_name+"  "+that.go_inf[d.index].cat.slice(7,9):that.go_inf[d.index].cat.slice(7,9)+"  "+that.go_inf[d.index].GO_name;
+           var text1= (d.startAngle+d.endAngle)/2 > Math.PI ?that.go_inf[d.index].GO_name+"  ["+that.go_inf[d.index].cat.slice(7,9)+"]  ":"  ["+that.go_inf[d.index].cat.slice(7,9)+"]  "+that.go_inf[d.index].GO_name;
            return (typeof that.go_inf[d.index].GO_id == "string")? text1:getMaxLabel(that.go_inf[d.index].GO_name)+"+";
          }
 
