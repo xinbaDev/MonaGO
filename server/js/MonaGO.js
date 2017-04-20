@@ -709,8 +709,12 @@
         var interpolate;
         var str;
         
-        str = "rotate(" + $('.clusterNodeView')[i].getAttribute("value") + ")"
-         + "translate(" + ( d["radius"] + 5 ) + ",0)";
+        // str = "rotate(" + $('.clusterNodeView')[i].getAttribute("value") + ")"
+        //  + "translate(" + ( d["radius"] + 5 ) + ",0)";
+
+        str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
+           + "translate(" + ( d["radius"] + 5 ) + ",0)";
+
         interpolate = d3.interpolate(a,str);
 
 
@@ -2982,13 +2986,15 @@
 
               r.onload = function(e) { 
                 var contents = e.target.result; 
-                monago.reload(contents);
+                that.reload(contents);
               }
               r.readAsText(f);
             } else { 
               alert("Failed to load file");
             }
           }
+
+          document.getElementById('import').value=""
 
         document.getElementById('import').addEventListener('change', readSingleFile, false);
       })
@@ -3317,8 +3323,9 @@
 
       setUpListener();
 
-      if(that.nodeCollapse < that.maxNumOfOverlappingGens+1)
+      if(that.nodeCollapse < that.maxNumOfOverlappingGens+1){
         clusterGO(that.nodeCollapse)
+      }
 
     }
 
