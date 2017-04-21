@@ -131,7 +131,7 @@
 
     var zoom = d3.behavior.zoom().translate([w/2, h/2]);
     var zoomLevel = 1;
-    var zoomhier=d3.behavior.zoom().translate([20,0]);
+    //var zoomhier=d3.behavior.zoom().translate([20,0]);
     
     var clusterNodesIndex = [];
     var details_opened = true;
@@ -1688,9 +1688,19 @@
 
       if(typeof goid == "string"){
           $('#content').append("<div style=\"position:relative;\"><div id=\"go_chart\"></div>")
-             .on("mouseover",function(){
+      var go_chart = d3.select("#go_chart").append("svg")
+        .attr("id","go_chart1")
+        .attr("width", width)
+        .attr("height", height);
+  //      .attr("viewBox","0,0,"+width+","+height)
+       $('#go_chart1').css ("border", "1px solid grey");
+
+     var hier_group = go_chart.append("svg:svg")
+        .attr("id","hier_group");
+     $('#hier_group') .on("mouseover",function(){
             if(!$('[id="exporthier"]').hasClass("btn"))
             {
+            console.log("show")
 //          $('#content').append("<div style=\"position:relative;left:25px;bottom:"+(height-20)+"px;\"><input type=\"button\" id=\"exporthier\" class=\"btn\" value=\"export\" /><div>")
             $('#content').append("<div style=\"position:relative;left:25px;bottom:"+(height-5)+"px;\"><button id='exporthier' class='btn'>Export</button><div>")
             setexporthierbtn();
@@ -1702,15 +1712,6 @@
             if($('[id="exporthier"]').hasClass("btn"))
              $('#exporthier').hide();
              })
-      var go_chart = d3.select("#go_chart").append("svg")
-        .attr("id","go_chart1")
-        .attr("width", width)
-        .attr("height", height);
-  //      .attr("viewBox","0,0,"+width+","+height)
-       $('#go_chart1').css ("border", "1px solid grey");
-
-     var hier_group = go_chart.append("svg:svg")
-        .attr("id","hier_group")
      //   .call(zoomhier.on("zoom", zoomed));
      hier_group.selectAll("line")
 	    .attr("x1", function(d) { return d.source.x; })
@@ -2010,7 +2011,7 @@
       })
     }
 
-     function zoomed() {
+    /* function zoomed() {
           if(zoomhier.scale()<0.5){
             //reset zoom scale and do nothing
              zoomhier.scale(0.5)
@@ -2020,7 +2021,7 @@
     //      .attr("transform", "translate("  + 50+","+10+ " ) scale(" + zoomhier.scale() + ")");
       .attr("transform", "translate("+zoomhier.translate()+" ) scale(" + zoomhier.scale() + ")");
           }
-    }
+    }*/
     function updateDetailPanelBasedOnChord(d,i){
         $('#content').empty();
         var index = d.source.index+"-"+d.source.subindex;
@@ -2614,7 +2615,7 @@
 
         index=node_angle2[i]
         //node_angle1[index]>0?node_angle[index]-=-3:node_angle[index]-=3;
-        node_angle1[index]>0?node_angle[index]-=-(4-node_angle1[index]):node_angle[index]-=4+node_angle1[index];
+        node_angle1[index]>0?node_angle[index]-=-(4.1-node_angle1[index]):node_angle[index]-=4.1+node_angle1[index];
         $('.clusterNodeView')[index].setAttribute("transform","rotate(" + node_angle[index] + ")"+ "translate(" + translate_value[index] + ",0)");
         $('.clusterNodeView')[index].setAttribute("value",node_angle[index]);
         }
