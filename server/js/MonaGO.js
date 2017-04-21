@@ -715,15 +715,16 @@
         var interpolate;
         var str;
 
-        str = "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
-        // str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
+        //str = "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+        str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
          + "translate(" + ( d["radius"] + 5 ) + ",0)";
 
         interpolate = d3.interpolate(a,str);
 
+
         return function(t) {
-          return interpolate(t);
-        };
+            return interpolate(t);
+          };
       }
 
     }
@@ -2518,8 +2519,9 @@
       function tween(d, i, a) {
               var interpolate;
               var str;
-              //str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
-              str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
+              //console.log("popup")
+              str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
+              //str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
                + "translate(" + ( d["radius"] + 10 ) + ",0)";
               interpolate = d3.interpolate(a,str);
 
@@ -2538,8 +2540,8 @@
               var interpolate;
               var str;
               
-              //str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
-              str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
+              str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
+              //str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
                + "translate(" + ( d["radius"] + 5 ) + ",0)";
               interpolate = d3.interpolate(a,str);
 
@@ -2576,12 +2578,13 @@
       var node_angle=[];
       var translate_value=[];
       var label_angle;
+      var last_label_angle
       var clusternode=$('.clusterNodeView');
-      for(var i=0;i<clusternode.length;i++)
-      {
-          node_angle.push(clusternode[i].getAttribute("value"));
-          translate_value.push(clusternode[i].getAttribute("translate_value"));
-      }
+        for (var i=0;i<clusternode.length;i++)
+        {
+            node_angle.push(clusternode[i].getAttribute("value"));
+            translate_value.push(clusternode[i].getAttribute("translate_value"));
+        }
       gt.remove()
 
       gt = groupTexts.selectAll("g")
@@ -2596,33 +2599,28 @@
         var node_angle1=node_angle.map(function(t){
             return t-label_angle;});
 
-        for(i=0;i<node_angle1.length;i++){
-          if (Math.abs(node_angle1[i]) < 3)
-          node_angle2.push(i);
+        for (i=0;i<node_angle1.length;i++)
+           {
+             if (Math.abs(node_angle1[i]) < 4)
+             node_angle2.push(i);
+           }
+
+        if(node_angle2.length!=0)
+        {
+        if (Math.abs(label_angle-last_label_angle)>=5)
+        {
+        for (i=0;i<node_angle2.length;i++)
+        {
+
+        index=node_angle2[i]
+        //node_angle1[index]>0?node_angle[index]-=-3:node_angle[index]-=3;
+        node_angle1[index]>0?node_angle[index]-=-(4-node_angle1[index]):node_angle[index]-=4+node_angle1[index];
+        $('.clusterNodeView')[index].setAttribute("transform","rotate(" + node_angle[index] + ")"+ "translate(" + translate_value[index] + ",0)");
+        $('.clusterNodeView')[index].setAttribute("value",node_angle[index]);
         }
-
-        if(node_angle2.length!=0){
-          for (i=0;i<node_angle2.length;i++){
-            index=node_angle2[i]
-            node_angle1[index]>0?node_angle[index]-=-2:node_angle[index]-=2;
-
-            $('.clusterNodeView')[index].setAttribute("transform","rotate(" + node_angle[index] + ")"+ "translate(" + translate_value[index] + ",0)");
-            $('.clusterNodeView')[index].setAttribute("value",node_angle[index]);
-          }
         }
-
-        node_angle.forEach(function(d){
-          console.log("node_angle")
-          console.log(label_angle)
-          console.log(d)
-          if((-5 < label_angle - d) && (label_angle - d < 0)){
-            label_angle -= 5
-          }else if((0 < label_angle - d) && (label_angle - d < 5)){
-            label_angle += 5
-          }
-        })
-        
-
+        }
+        last_label_angle=label_angle
         return "rotate(" + label_angle + ")"
            + "translate(" + (r1 + 0) + ",0)";
         }).append("svg:text")
