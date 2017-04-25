@@ -653,23 +653,25 @@
       var index;
       var clusterNodes = [];
       clusterHierNodesStatus.map(function(d){
-        if(d["numOfOverlappingGenes"]>0)
+        if(d["numOfOverlappingGenes"] > 0){
           clusterNodes.push(d);
+        }
       })
 
-      clusterHierNodeView = clusterHierNodeView.data(clusterHierNodesStatus,function(d){return d.index;});
+     
+      clusterHierNodeView = clusterHierNodeView.data(clusterHierNodesStatus, function(d){return d.index;});
 
       clusterHierNodeView.enter().append("g");
 
       clusterHierNodeView.exit().remove();
 
-      clusterHierNodeView.transition().duration(500).attrTween("transform", tween);
+      console.log("clusterHierNodeView");
+      console.log(clusterHierNodeView)
       clusterHierNodeView.attr("class","clusterNodeView");
       clusterHierNodeView.attr("value",function(d){return d.angle * 180 / Math.PI - 90;})
       clusterHierNodeView.attr("index",function(d){return d.index;});
       clusterHierNodeView.attr("translate_value",function(d){return d["radius"] + 5;});
-
-      clusterHierNodeView.selectAll("circle").remove();
+      clusterHierNodeView.transition().duration(500).attrTween("transform", tween);
 
       clusterHierNodeView.selectAll("circle").remove();
 
@@ -680,7 +682,9 @@
         return 6;
       }).style("fill", function(d){
         return (d["status"]=="Expanded")?"rgb(94, 141, 141)":"red";
-      }).on("click",onClusterNodeClick)
+      }).attr("id","cluster")
+
+      .on("click",onClusterNodeClick)
       .append("title").text(function(d, i) {return "Click to cluster"});
 
       clusterHierNodeTextView.selectAll("text").remove();
@@ -714,19 +718,20 @@
       function tween(d, i, a) {
         var interpolate;
         var str;
+        console.log( $('[index='+d.index+']'))
 
-        //str = "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
-        str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
-         + "translate(" + ( d["radius"] + 5 ) + ",0)";
+        //str = "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"  
 
-        interpolate = d3.interpolate(a,str);
+        if ($('[index='+d.index+']').length !=0 ){
+          str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
+              + "translate(" + ( d["radius"] + 5 ) + ",0)";
+          interpolate = d3.interpolate(a,str);
 
-
-        return function(t) {
-            return interpolate(t);
+          return function(t) {
+              return interpolate(t);
           };
+        }
       }
-
     }
 
     function drawArc(clusterHierData){
@@ -1223,7 +1228,7 @@
     *@param collapsedNodeRadius: the radius of the collapsed node
     */
     function createClusterNodesStatus(clusterHierData,nodeBeingClicked,status,collpasedNodes,clusterNodesRadius,collapsedNodeRadius){
-
+      clusterHierNodesStatus = [];
       for(i=0;i<clusterHierData.length;i++){
         if(clusterHierData[i]!=undefined){
 
@@ -1515,9 +1520,7 @@
     function updateMoanaGOLayout(clusterHierData){
 
       createGOAndUpdateChordLayout();
-
-      //if(labelOff==1)
-          drawHierarchicalClustering(clusterHierData);
+      drawHierarchicalClustering(clusterHierData);
     }
 
     function createGOAndUpdateChordLayout(){
@@ -1603,8 +1606,6 @@
     }
 
     function getClusterNodesIndexBeingSelected(level){
-      console.log(level);
-      console.log(that.level_g);
       var clusterDataLevel = [];
       if(level>=that.level_g){//collapse
         
@@ -2601,10 +2602,10 @@
             return t-label_angle;});
 
         for (i=0;i<node_angle1.length;i++)
-           {
-             if (Math.abs(node_angle1[i]) < 4)
-             node_angle2.push(i);
-           }
+        {
+         if (Math.abs(node_angle1[i]) < 4)
+         node_angle2.push(i);
+        }
 
         if(node_angle2.length!=0)
         {
@@ -2615,7 +2616,10 @@
 
         index=node_angle2[i]
         //node_angle1[index]>0?node_angle[index]-=-3:node_angle[index]-=3;
+
         node_angle1[index]>0?node_angle[index]-=-(4.1-node_angle1[index]):node_angle[index]-=4.1+node_angle1[index];
+
+
         $('.clusterNodeView')[index].setAttribute("transform","rotate(" + node_angle[index] + ")"+ "translate(" + translate_value[index] + ",0)");
         $('.clusterNodeView')[index].setAttribute("value",node_angle[index]);
         }
@@ -3224,9 +3228,7 @@
     }
 
     function clusterGO(nodeCollapse){
-      console.log(nodeCollapse)
       var level = getLevelFromNumOfOverlappingGenes(nodeCollapse);
-      console.log(level)
       getClusterNodesIndexBeingSelected(level);
 
       $("#input_slider").val(nodeCollapse);

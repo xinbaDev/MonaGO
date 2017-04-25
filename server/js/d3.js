@@ -6158,7 +6158,6 @@
 
         });
       }
-      console.log(subgroupIndex)
 
       k = (τ - padding * n) / k;
 
