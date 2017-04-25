@@ -75,6 +75,8 @@
     this.userHighlightChordIndex = -1;
     this.MonaGOData = [];
     this.ranger;
+    this.clickCollapseNodeArr = [];
+
     var that = this;
 
     var maxpVal;
@@ -650,23 +652,13 @@
     }
 
     function drawClusterNodes(){
-      var index;
-      var clusterNodes = [];
-      clusterHierNodesStatus.map(function(d){
-        if(d["numOfOverlappingGenes"] > 0){
-          clusterNodes.push(d);
-        }
-      })
-
-     
+      var index;     
       clusterHierNodeView = clusterHierNodeView.data(clusterHierNodesStatus, function(d){return d.index;});
 
       clusterHierNodeView.enter().append("g");
 
       clusterHierNodeView.exit().remove();
 
-      console.log("clusterHierNodeView");
-      console.log(clusterHierNodeView)
       clusterHierNodeView.attr("class","clusterNodeView");
       clusterHierNodeView.attr("value",function(d){return d.angle * 180 / Math.PI - 90;})
       clusterHierNodeView.attr("index",function(d){return d.index;});
@@ -718,7 +710,6 @@
       function tween(d, i, a) {
         var interpolate;
         var str;
-        console.log( $('[index='+d.index+']'))
 
         //str = "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"  
 
@@ -1412,9 +1403,12 @@
     }
 
     function collapseMonaGO(nodeBeingClickedIndex){
-      //get leaf nodes(associated with the cluster) info(node index & cluster level)
+        if (that.clickCollapseNodeArr.indexOf(nodeBeingClickedIndex) == -1){
+          that.clickCollapseNodeArr.push(nodeBeingClickedIndex);
+        }
+        //get leaf nodes(associated with the cluster) info(node index & cluster level)
         var nodes = getHierNodes(nodeBeingClickedIndex);
-
+        
         //get the leaf nodes position in the chord layout
         var nodePositions = getLeafNodesPosition(nodes["leafNodes"]).unique();
         var clusterNodesLevel = nodes["clusterNodesLevel"];
@@ -1459,6 +1453,12 @@
     }
 
     function expandMonaGO(nodeBeingClickedIndex){
+
+        var index = that.clickCollapseNodeArr.indexOf(nodeBeingClickedIndex);
+
+        if (index > -1) {
+          that.clickCollapseNodeArr.splice(index, 1);
+        }
 
         nodeBeingMemorized = that.memCache[nodeBeingClickedIndex];
 
@@ -2982,7 +2982,8 @@
 
           var save_file = "{\"size\":" + size + "," + "\"go_inf\":" + JSON.stringify(that.MonaGOData.go_inf) + "," + "\"clusterHierData\":" +JSON.stringify(that.MonaGOData.clusterHierData)
           + "," + "\"matrix\":" + JSON.stringify(that.MonaGOData.matrix) + "," +"\"array_order\":" + JSON.stringify(that.MonaGOData.array_order) + "," + "\"goNodes\":" + JSON.stringify(goNodes)
-          + "," + "\"groupSize\":" + JSON.stringify(that.MonaGOData.groupSize) + "," + "\"nodeCollapse\":" + nodeCollapse + "}";
+          + "," + "\"groupSize\":" + JSON.stringify(that.MonaGOData.groupSize) + "," + "\"nodeCollapse\":" + nodeCollapse
+          + "," + "\"clickCollapseNodeArr\":" + JSON.stringify(that.clickCollapseNodeArr) + "}";
 
             post("/export", {
                 filename: 'file',
@@ -3293,6 +3294,7 @@
       that.matrix = content["matrix"];
       that.groupSize = content["groupSize"];
       that.nodeCollapse = content["nodeCollapse"];
+      that.clickCollapseNodeArr = content["clickCollapseNodeArr"]
 
       //array_order = content["array_order"];
 
@@ -3334,8 +3336,17 @@
 
       setUpListener();
 
-      if(that.nodeCollapse < that.maxNumOfOverlappingGens+1)
+      if (that.clickCollapseNodeArr.length != 0){
+        that.clickCollapseNodeArr.forEach(function(d){
+          result = collapseMonaGO(d);
+          updateMoanaGOLayout(result);
+          updateLabel();
+        })
+      }
+
+      if (that.nodeCollapse < that.maxNumOfOverlappingGens+1){
         clusterGO(that.nodeCollapse)
+      }
 
     }
 
