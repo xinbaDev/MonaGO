@@ -1772,7 +1772,7 @@
 
       geneListInHtml += "<div class='gene_content'><ol>";
       go.genes.forEach(function(d,i){
-           var tmp = "<li>"+" <div class='gene_name'>"+ d + "</div> "+ "</li>";
+           var tmp = "<li>"+" <n class='gene_name'>"+ d + "</n> "+ "</li>";
            geneListInHtml+=tmp;
       });
       geneListInHtml += "</ol></div>";
@@ -2098,7 +2098,7 @@
         
         var geneListInHtml = "<div class='gene_content'><ol>";
         that.dic[index].split(";").forEach(function(d,i){
-             var tmp = "<li>" + " <a class='gene_name'>"+ d + "</a> "+ "</li>";
+             var tmp = "<li>" + " <n class='gene_name'>"+ d + "</n> "+ "</li>";
              geneListInHtml+=tmp;
         });
         geneListInHtml += "</ol></div>";
@@ -2181,7 +2181,7 @@
 
       that.go_inf[num].genes.forEach(function(d,i){
 
-           var tmp = "<li>" + "<div class='gene_name'>"+ d + "</div></li>";
+           var tmp = "<li>" + "<n class='gene_name'>"+ d + "</n></li>";
            genes+=tmp;
         });
 
@@ -2191,7 +2191,7 @@
     }
 
     function renderGOTerm(go_num_array){
-      var GOterms="";
+      var GOterms = "";
       var num = 0;
       var GO = "";
       for(i=0;i<go_num_array.length;i++){
@@ -2202,11 +2202,12 @@
 
         var line = "<button class=\"dropbtn\""+ "id=GO_button_"+ num +">" + GO + "</button>";
         line += "<div class=\"Go_content\">" + "<p><a class='prop-field'>" + ((numOfGOTerms == 1)?" P-value:</a> ":" P-value(Average):</a>")
-         + that.go_inf[num].pVal + " <p><a class='prop-field'> Num of genes: </a>"+ that.go_inf[num].count + " <p> <a class='prop-field'>Annotatino type: </a>"+ that.go_inf[i].cat+ "</p>"
-        "<p><a class='prop-field'>Genes: </a>" +  getGenesFromACluster(num) + "</div>";
+         + that.go_inf[num].pVal + " <p><a class='prop-field'> Num of genes: </a>"+ that.go_inf[num].count + " <p> <a class='prop-field'>Annotatino type: </a>"+ that.go_inf[i].cat+ "</p>" + 
+        "<p><a class='prop-field'>Genes: </a></p>" +  getGenesFromACluster(num) + "</div>";
         GOterms += line; 
 
       }
+      console.log(GOterms)
       return GOterms;
     }
 
