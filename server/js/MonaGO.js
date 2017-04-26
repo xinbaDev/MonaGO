@@ -1690,29 +1690,15 @@
       if(typeof goid == "string"){
           $('#content').append("<div style=\"position:relative;\"><div id=\"go_chart\"></div>")
       var go_chart = d3.select("#go_chart").append("svg")
+
         .attr("id","go_chart1")
         .attr("width", width)
         .attr("height", height);
-  //      .attr("viewBox","0,0,"+width+","+height)
-       $('#go_chart1').css ("border", "1px solid grey");
+      $('#go_chart1').css ("border", "1px solid grey");
 
      var hier_group = go_chart.append("svg:svg")
         .attr("id","hier_group");
-     $('#hier_group') .on("mouseover",function(){
-            if(!$('[id="exporthier"]').hasClass("btn"))
-            {
-            console.log("show")
-//          $('#content').append("<div style=\"position:relative;left:25px;bottom:"+(height-20)+"px;\"><input type=\"button\" id=\"exporthier\" class=\"btn\" value=\"export\" /><div>")
-            $('#content').append("<div style=\"position:relative;left:25px;bottom:"+(height-5)+"px;\"><button id='exporthier' class='btn'>Export</button><div>")
-            setexporthierbtn();
-             }
-             else if($('#exporthier').hide())
-                $('#exporthier').show();
-             })
-           .on("mouseout",function(){
-            if($('[id="exporthier"]').hasClass("btn"))
-             $('#exporthier').hide();
-             })
+
      //   .call(zoomhier.on("zoom", zoomed));
      hier_group.selectAll("line")
 	    .attr("x1", function(d) { return d.source.x; })
@@ -1725,7 +1711,8 @@
      hier_group.selectAll("text")
         .attr("x", function(d) { return d.x; })
         .attr("y", function(d) { return d.y + radiusScale(d.r) + 10; });
-
+     $('#go_chart').on("mouseover",mouseoverHier);
+     $('#go_chart').on("mouseout",mouseoutHier);
      /* go_chart.append('rect')
         .style('fill','white')
         .style('stroke','gray')
@@ -1738,8 +1725,19 @@
 
     }
     }
-    function setexporthierbtn()
-    {
+    function mouseoverHier(){
+       if(!$('[id="exporthier"]').hasClass("btn")){
+            $('#go_chart').append("<div style=\"position:relative;left:25px;bottom:"+(height-5)+"px;\"><button id='exporthier' class='btn'>Export</button><div>")
+            setexporthierbtn();
+       }
+       else if($('#exporthier').hide())
+            $('#exporthier').show();
+       }
+    function mouseoutHier(){
+       if($('[id="exporthier"]').hasClass("btn"))
+            $('#exporthier').hide();
+    }
+    function setexporthierbtn(){
          $("#exporthier").click(function() {
          saveSvgAsPng(document.getElementById("hier_group"), "hierarchy.png", {scale: 5});
       })
@@ -2727,7 +2725,7 @@
 
       $('#arrow_controlPanel').css('transform', function(){ return control_opened ? 'rotate(180deg)' : 'rotate(0deg)'});
       
-      var shiftleft = controlPanelWidth - 20;
+      var shiftleft = controlPanelWidth + 30;
       $('#control-panel').css('margin-left', function(){ return control_opened ? '-' + shiftleft+ 'px' : '0'});
       control_opened = !control_opened;
     }
@@ -3103,7 +3101,7 @@
 
       $("#details").css("width",detailPanelWidth);
       $("#pval-label").css("margin-left",-detailPanelWidth-160);
-      $("#control-panel").css("width",controlPanelWidth);
+      $("#control-panel").css("width",controlPanelWidth+50);
       $("#control-panel").css("height",controlPanelHeight);
 
       svg = main_div
