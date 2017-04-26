@@ -2202,10 +2202,12 @@
         line += "<div class=\"Go_content\">" + "<p><a class='prop-field'>" + ((numOfGOTerms == 1)?" P-value:</a> ":" P-value(Average):</a>")
          + that.go_inf[num].pVal + " <p><a class='prop-field'> Num of genes: </a>"+ that.go_inf[num].count + " <p> <a class='prop-field'>Annotatino type: </a>"+ that.go_inf[i].cat+ "</p>"
         "<p><a class='prop-field'>Genes: </a>" +  getGenesFromACluster(num) + "</div>";
-        GOterms += line; 
+        //GOterms += line;
+        $('#content').append(line);
+
 
       }
-      return GOterms;
+      //return GOterms;
     }
 
     function getGoIndex(go_id){
@@ -2359,7 +2361,8 @@
             }
             
 
-            $('#content').append(renderGOTerm(go_contents));
+            //$('#content').append(renderGOTerm(go_contents));
+            renderGOTerm(go_contents);
             $('.dropbtn').css("width",detailPanelWidth-50);
 
             $('.gene_name').click(function(){
