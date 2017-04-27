@@ -2254,8 +2254,6 @@
     function refreshDetailPanel(){
       $('#content').empty();
 
-      
-
       function isGO(searchTerm){
         if(isNum(searchTerm)||searchTerm.split(":")[0].toUpperCase()=="GO")
           return true;
@@ -2265,8 +2263,6 @@
             return true;
           }
         }
-
-
         return false;
       }
       
@@ -2359,8 +2355,8 @@
             }
             
 
-            //$('#content').append(renderGOTerm(go_contents));
-            renderGOTerm(go_contents);
+            $('#content').append(renderGOTerm(go_contents));
+            //renderGOTerm(go_contents);
             $('.dropbtn').css("width",detailPanelWidth-50);
 
             $('.gene_name').click(function(){
