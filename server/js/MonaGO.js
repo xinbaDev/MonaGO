@@ -2780,7 +2780,7 @@
           element+='<button type="button" id="editor_save" class="btn dropdown-toggle" data-toggle="dropdown">Save image    <span class="caret"></span></button>'
           element+=	'<ul class="dropdown-menu" role="menu">';
           //element+='<button id="export" class="btn" z-index:100">pdf</button></ul>';
-    		  element+='<li><a href="" id="PDF">PDF</a></li>'
+    		  // element+='<li><a href="" id="PDF">PDF</a></li>'
     		  element+='<li><a href="" id="PNG">PNG</a></li>'
     		  element+='<li><a href=""id="SVG">SVG</a></li></ul>'
           element+=  '<button id="export" class="btn" z-index:100">Export File</button>';
@@ -2972,14 +2972,14 @@
        $('#PNG').click(function(){
        saveSvgAsPng(document.getElementById("main_vis"), "diagram.png", {scale: 5});
        });
-       $('#PDF').click(function(){
-        svgAsPngUri(document.getElementById("main_vis"),{scale: 3},function(data){
-        var doc = new jsPDF();
-        doc.addImage(data, 'PNG', 0, 0, 250, 250/widthToheightRatio);
-        doc.save('pic.pdf');
-         })
+       // $('#PDF').click(function(){
+       //  svgAsPngUri(document.getElementById("main_vis"),{scale: 3},function(data){
+       //  var doc = new jsPDF();
+       //  doc.addImage(data, 'PNG', 0, 0, 250, 250/widthToheightRatio);
+       //  doc.save('pic.pdf');
+       //   })
 
-       });
+       // });
        $('#SVG').click(function(){
         saveSvg(document.getElementById("main_vis"), "diagram.svg", {scale: 2});
        });
