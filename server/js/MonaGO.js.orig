@@ -75,6 +75,8 @@
     this.userHighlightChordIndex = -1;
     this.MonaGOData = [];
     this.ranger;
+    this.clickCollapseNodeArr = [];
+
     var that = this;
 
     var maxpVal;
@@ -131,7 +133,7 @@
 
     var zoom = d3.behavior.zoom().translate([w/2, h/2]);
     var zoomLevel = 1;
-    var zoomhier=d3.behavior.zoom().translate([20,0]);
+    //var zoomhier=d3.behavior.zoom().translate([20,0]);
     
     var clusterNodesIndex = [];
     var details_opened = true;
@@ -650,26 +652,18 @@
     }
 
     function drawClusterNodes(){
-      var index;
-      var clusterNodes = [];
-      clusterHierNodesStatus.map(function(d){
-        if(d["numOfOverlappingGenes"]>0)
-          clusterNodes.push(d);
-      })
-
-      clusterHierNodeView = clusterHierNodeView.data(clusterHierNodesStatus,function(d){return d.index;});
+      var index;     
+      clusterHierNodeView = clusterHierNodeView.data(clusterHierNodesStatus, function(d){return d.index;});
 
       clusterHierNodeView.enter().append("g");
 
       clusterHierNodeView.exit().remove();
 
-      clusterHierNodeView.transition().duration(500).attrTween("transform", tween);
       clusterHierNodeView.attr("class","clusterNodeView");
       clusterHierNodeView.attr("value",function(d){return d.angle * 180 / Math.PI - 90;})
       clusterHierNodeView.attr("index",function(d){return d.index;});
       clusterHierNodeView.attr("translate_value",function(d){return d["radius"] + 5;});
-
-      clusterHierNodeView.selectAll("circle").remove();
+      clusterHierNodeView.transition().duration(500).attrTween("transform", tween);
 
       clusterHierNodeView.selectAll("circle").remove();
 
@@ -680,7 +674,9 @@
         return 6;
       }).style("fill", function(d){
         return (d["status"]=="Expanded")?"rgb(94, 141, 141)":"red";
-      }).on("click",onClusterNodeClick)
+      }).attr("id","cluster")
+
+      .on("click",onClusterNodeClick)
       .append("title").text(function(d, i) {return "Click to cluster"});
 
       clusterHierNodeTextView.selectAll("text").remove();
@@ -714,28 +710,19 @@
       function tween(d, i, a) {
         var interpolate;
         var str;
-<<<<<<< HEAD
-        
-        // str = "rotate(" + $('.clusterNodeView')[i].getAttribute("value") + ")"
-        //  + "translate(" + ( d["radius"] + 5 ) + ",0)";
 
-        str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
-           + "translate(" + ( d["radius"] + 5 ) + ",0)";
-=======
+        //str = "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"  
 
-        //str = "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
-        str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
-         + "translate(" + ( d["radius"] + 5 ) + ",0)";
->>>>>>> 24c1e9805732c3aba9c28b6a4451b349b3752d1c
+        if ($('[index='+d.index+']').length !=0 ){
+          str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
+              + "translate(" + ( d["radius"] + 5 ) + ",0)";
+          interpolate = d3.interpolate(a,str);
 
-        interpolate = d3.interpolate(a,str);
-
-
-        return function(t) {
-            return interpolate(t);
+          return function(t) {
+              return interpolate(t);
           };
+        }
       }
-
     }
 
     function drawArc(clusterHierData){
@@ -1232,7 +1219,7 @@
     *@param collapsedNodeRadius: the radius of the collapsed node
     */
     function createClusterNodesStatus(clusterHierData,nodeBeingClicked,status,collpasedNodes,clusterNodesRadius,collapsedNodeRadius){
-
+      clusterHierNodesStatus = [];
       for(i=0;i<clusterHierData.length;i++){
         if(clusterHierData[i]!=undefined){
 
@@ -1416,9 +1403,12 @@
     }
 
     function collapseMonaGO(nodeBeingClickedIndex){
-      //get leaf nodes(associated with the cluster) info(node index & cluster level)
+        if (that.clickCollapseNodeArr.indexOf(nodeBeingClickedIndex) == -1){
+          that.clickCollapseNodeArr.push(nodeBeingClickedIndex);
+        }
+        //get leaf nodes(associated with the cluster) info(node index & cluster level)
         var nodes = getHierNodes(nodeBeingClickedIndex);
-
+        
         //get the leaf nodes position in the chord layout
         var nodePositions = getLeafNodesPosition(nodes["leafNodes"]).unique();
         var clusterNodesLevel = nodes["clusterNodesLevel"];
@@ -1463,6 +1453,12 @@
     }
 
     function expandMonaGO(nodeBeingClickedIndex){
+
+        var index = that.clickCollapseNodeArr.indexOf(nodeBeingClickedIndex);
+
+        if (index > -1) {
+          that.clickCollapseNodeArr.splice(index, 1);
+        }
 
         nodeBeingMemorized = that.memCache[nodeBeingClickedIndex];
 
@@ -1524,9 +1520,7 @@
     function updateMoanaGOLayout(clusterHierData){
 
       createGOAndUpdateChordLayout();
-
-      //if(labelOff==1)
-          drawHierarchicalClustering(clusterHierData);
+      drawHierarchicalClustering(clusterHierData);
     }
 
     function createGOAndUpdateChordLayout(){
@@ -1612,8 +1606,6 @@
     }
 
     function getClusterNodesIndexBeingSelected(level){
-      console.log(level);
-      console.log(that.level_g);
       var clusterDataLevel = [];
       if(level>=that.level_g){//collapse
         
@@ -1697,29 +1689,16 @@
 
       if(typeof goid == "string"){
           $('#content').append("<div style=\"position:relative;\"><div id=\"go_chart\"></div>")
-             .on("mouseover",function(){
-            if(!$('[id="exporthier"]').hasClass("btn"))
-            {
-//          $('#content').append("<div style=\"position:relative;left:25px;bottom:"+(height-20)+"px;\"><input type=\"button\" id=\"exporthier\" class=\"btn\" value=\"export\" /><div>")
-            $('#content').append("<div style=\"position:relative;left:25px;bottom:"+(height-5)+"px;\"><button id='exporthier' class='btn'>Export</button><div>")
-            setexporthierbtn();
-             }
-             else if($('#exporthier').hide())
-                $('#exporthier').show();
-             })
-           .on("mouseout",function(){
-            if($('[id="exporthier"]').hasClass("btn"))
-             $('#exporthier').hide();
-             })
       var go_chart = d3.select("#go_chart").append("svg")
+
         .attr("id","go_chart1")
         .attr("width", width)
         .attr("height", height);
-  //      .attr("viewBox","0,0,"+width+","+height)
-       $('#go_chart1').css ("border", "1px solid grey");
+      $('#go_chart1').css ("border", "1px solid grey");
 
      var hier_group = go_chart.append("svg:svg")
-        .attr("id","hier_group")
+        .attr("id","hier_group");
+
      //   .call(zoomhier.on("zoom", zoomed));
      hier_group.selectAll("line")
 	    .attr("x1", function(d) { return d.source.x; })
@@ -1732,7 +1711,8 @@
      hier_group.selectAll("text")
         .attr("x", function(d) { return d.x; })
         .attr("y", function(d) { return d.y + radiusScale(d.r) + 10; });
-
+     $('#go_chart').on("mouseover",mouseoverHier);
+     $('#go_chart').on("mouseout",mouseoutHier);
      /* go_chart.append('rect')
         .style('fill','white')
         .style('stroke','gray')
@@ -1745,8 +1725,19 @@
 
     }
     }
-    function setexporthierbtn()
-    {
+    function mouseoverHier(){
+       if(!$('[id="exporthier"]').hasClass("btn")){
+            $('#go_chart').append("<div style=\"position:relative;left:25px;bottom:"+(height-5)+"px;\"><button id='exporthier' class='btn'>Export</button><div>")
+            setexporthierbtn();
+       }
+       else if($('#exporthier').hide())
+            $('#exporthier').show();
+       }
+    function mouseoutHier(){
+       if($('[id="exporthier"]').hasClass("btn"))
+            $('#exporthier').hide();
+    }
+    function setexporthierbtn(){
          $("#exporthier").click(function() {
          saveSvgAsPng(document.getElementById("hier_group"), "hierarchy.png", {scale: 5});
       })
@@ -1779,7 +1770,7 @@
 
       geneListInHtml += "<div class='gene_content'><ol>";
       go.genes.forEach(function(d,i){
-           var tmp = "<li>"+" <div class='gene_name'>"+ d + "</div> "+ "</li>";
+           var tmp = "<li>"+" <n class='gene_name'>"+ d + "</n> "+ "</li>";
            geneListInHtml+=tmp;
       });
       geneListInHtml += "</ol></div>";
@@ -2019,7 +2010,7 @@
       })
     }
 
-     function zoomed() {
+    /* function zoomed() {
           if(zoomhier.scale()<0.5){
             //reset zoom scale and do nothing
              zoomhier.scale(0.5)
@@ -2029,7 +2020,7 @@
     //      .attr("transform", "translate("  + 50+","+10+ " ) scale(" + zoomhier.scale() + ")");
       .attr("transform", "translate("+zoomhier.translate()+" ) scale(" + zoomhier.scale() + ")");
           }
-    }
+    }*/
     function updateDetailPanelBasedOnChord(d,i){
         $('#content').empty();
         var index = d.source.index+"-"+d.source.subindex;
@@ -2100,20 +2091,33 @@
 
     }
 
+   function removeDuplicatedItem3(ar) {
+    var ret = [];
 
+    ar.forEach(function(e, i, ar) {
+        if (ar.indexOf(e) === i) {
+            ret.push(e);
+        }
+    });
+
+   return ret;
+}
     function createChordTempl(index,d){
-        
+
+        var totalGenesNumber=removeDuplicatedItem3(that.go_inf[d.source.index].genes.concat(that.go_inf[d.source.subindex].genes)).length
+        //console.log(totalGenesNumber)
         var geneListInHtml = "<div class='gene_content'><ol>";
         that.dic[index].split(";").forEach(function(d,i){
-             var tmp = "<li>" + " <a class='gene_name'>"+ d + "</a> "+ "</li>";
+             var tmp = "<li>" + " <n class='gene_name'>"+ d + "</n> "+ "</li>";
              geneListInHtml+=tmp;
         });
         geneListInHtml += "</ol></div>";
 
-
+        //console.log(clusterHierData)
         templ = "<p>Overlapping genes between <a class='go_id'>" + that.go_inf[d.source.index].GO_id + " (" + that.go_inf[d.source.index].GO_name + ")" +
-		"</a> and <a class='go_id'>" +  that.go_inf[d.source.subindex].GO_id + " (" + that.go_inf[d.source.subindex].GO_name +")" + "</a>:\n</p>"+ 
-		"Number of overlapping genes: "+ that.dic[index].split(";").length+"</a>\n</p>" + geneListInHtml;
+		"</a> and <a class='go_id'>" +  that.go_inf[d.source.subindex].GO_id + " (" + that.go_inf[d.source.subindex].GO_name +")" + "</a>:\n</p>"+
+		"Number of overlapping genes: "+ that.dic[index].split(";").length+"</a>\n</p>"+"</a></p>"+
+		"Percentage of overlapping genes: "+ parseInt(that.dic[index].split(";").length / totalGenesNumber*100)+"%" +"</a>\n</p>" + geneListInHtml;
 
 
         return templ;
@@ -2136,7 +2140,7 @@
                 });
         });
       }
-        
+
         $(".dropbtn").click(function () {
 
           $header = $(this);
@@ -2188,7 +2192,7 @@
 
       that.go_inf[num].genes.forEach(function(d,i){
 
-           var tmp = "<li>" + "<div class='gene_name'>"+ d + "</div></li>";
+           var tmp = "<li>" + "<n class='gene_name'>"+ d + "</n></li>";
            genes+=tmp;
         });
 
@@ -2197,8 +2201,8 @@
       return genes;
     }
 
-    function renderGOTerm(go_num_array){
-      var GOterms="";
+    function generateGOTermHtml(go_num_array){
+      var GOterms = "";
       var num = 0;
       var GO = "";
       for(i=0;i<go_num_array.length;i++){
@@ -2209,9 +2213,9 @@
 
         var line = "<button class=\"dropbtn\""+ "id=GO_button_"+ num +">" + GO + "</button>";
         line += "<div class=\"Go_content\">" + "<p><a class='prop-field'>" + ((numOfGOTerms == 1)?" P-value:</a> ":" P-value(Average):</a>")
-         + that.go_inf[num].pVal + " <p><a class='prop-field'> Num of genes: </a>"+ that.go_inf[num].count + " <p> <a class='prop-field'>Annotatino type: </a>"+ that.go_inf[i].cat+ "</p>"
-        "<p><a class='prop-field'>Genes: </a>" +  getGenesFromACluster(num) + "</div>";
-        GOterms += line; 
+         + that.go_inf[num].pVal + " <p><a class='prop-field'> Num of genes: </a>"+ that.go_inf[num].count + " <p> <a class='prop-field'>Annotatino type: </a>"+ that.go_inf[i].cat+ "</p>" +
+        "<p><a class='prop-field'>Genes: </a></p>" +  getGenesFromACluster(num) + "</div>";
+        GOterms += line;
 
       }
       return GOterms;
@@ -2263,8 +2267,6 @@
     function refreshDetailPanel(){
       $('#content').empty();
 
-      
-
       function isGO(searchTerm){
         if(isNum(searchTerm)||searchTerm.split(":")[0].toUpperCase()=="GO")
           return true;
@@ -2274,12 +2276,10 @@
             return true;
           }
         }
-
-
         return false;
       }
-      
-      var searchTerm = $('#filter').val(); 
+
+      var searchTerm = $('#filter').val();
 
       if(isGO(searchTerm)){//for GO
         resetVis();
@@ -2300,12 +2300,12 @@
             }
           }
         }
-        
+
 
         if(i != undefined){
 
           genes = getGenesFromACluster(i);
-        
+
           var detailPanelTempl = createDetailPanelTempl(i);
           $('#content').append(detailPanelTempl);
 
@@ -2322,7 +2322,7 @@
                 function(d){return (d.index!=i)? r1:r1+10;}));
 
 
-          gt.transition().attr("x",function(d){  
+          gt.transition().attr("x",function(d){
             if(d.index==i){
               if ((d.startAngle+d.endAngle)/2 < 3.1415)
                 return 20;
@@ -2341,13 +2341,13 @@
 
           chordLayout.transition().attr("d",d3.svg.chord().radius(function(d){return (d.index!=i)? r0:r0+10;}));
 
-          
+
           //moveHierCluster();
         }
       }else{//for genes
         var indexs = that.gene_info[searchTerm];
 
-        
+
         if(indexs!=undefined)
         {
 
@@ -2359,16 +2359,16 @@
 
               var num = parseInt(index_array[i]);
               num_array.push(num);
-              
+
               go_contents.push(num);
             }
 
             if(go_contents.length > 1){//only sort if two go and more exist
               sortGOcontent(go_contents);
             }
-            
 
-            $('#content').append(renderGOTerm(go_contents));
+
+            $('#content').append(generateGOTermHtml(go_contents));
             $('.dropbtn').css("width",detailPanelWidth-50);
 
             $('.gene_name').click(function(){
@@ -2412,7 +2412,7 @@
           resetHierarchy();
           popUpList= [];
 
-         
+
         }
       }
     }
@@ -2424,7 +2424,7 @@
         .transition()
         .duration(300)
         .attr("d",function(d){
-            
+
             var arc = d3.svg.arc()
               .innerRadius(d["radius"]+15)
               .outerRadius(d["radius"]+16)
@@ -2442,7 +2442,7 @@
         .transition()
         .duration(300)
         .attr("d",function(d){
-            
+
             var arc = d3.svg.arc()
               .innerRadius(d["radius"]+10)
               .outerRadius(d["radius"]+11)
@@ -2460,7 +2460,7 @@
         .transition()
         .duration(300)
         .attr("d",function(d){
-            
+
             var firstLine = d3.svg.arc()
             .innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+10:d["LineInnerPosition"])
             .outerRadius(d["LineOuterPosition"]+10)
@@ -2494,7 +2494,7 @@
         .transition()
         .duration(300)
         .attr("d",function(d){
-            
+
             var firstLine = d3.svg.arc()
             .innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
             .outerRadius(d["LineOuterPosition"]+5)
@@ -2548,7 +2548,7 @@
       function tween(d, i, a) {
               var interpolate;
               var str;
-              
+
               str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
               //str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
                + "translate(" + ( d["radius"] + 5 ) + ",0)";
@@ -2587,6 +2587,7 @@
       var node_angle=[];
       var translate_value=[];
       var label_angle;
+      var last_label_angle
       var clusternode=$('.clusterNodeView');
         for (var i=0;i<clusternode.length;i++)
         {
@@ -2608,24 +2609,30 @@
             return t-label_angle;});
 
         for (i=0;i<node_angle1.length;i++)
-           {
-             if (Math.abs(node_angle1[i]) < 3)
-             node_angle2.push(i);
-           }
+        {
+         if (Math.abs(node_angle1[i]) < 4)
+         node_angle2.push(i);
+        }
 
         if(node_angle2.length!=0)
+        {
+        if (Math.abs(label_angle-last_label_angle)>=5)
         {
         for (i=0;i<node_angle2.length;i++)
         {
 
         index=node_angle2[i]
-        node_angle1[index]>0?node_angle[index]-=-2:node_angle[index]-=2;
+        //node_angle1[index]>0?node_angle[index]-=-3:node_angle[index]-=3;
+
+        node_angle1[index]>0?node_angle[index]-=-(4.1-node_angle1[index]):node_angle[index]-=4.1+node_angle1[index];
+
 
         $('.clusterNodeView')[index].setAttribute("transform","rotate(" + node_angle[index] + ")"+ "translate(" + translate_value[index] + ",0)");
         $('.clusterNodeView')[index].setAttribute("value",node_angle[index]);
         }
         }
-
+        }
+        last_label_angle=label_angle
         return "rotate(" + label_angle + ")"
            + "translate(" + (r1 + 0) + ",0)";
         }).append("svg:text")
@@ -2695,13 +2702,13 @@
 
 
       // groupText.style("display","none");
-      
+
       if(popUpList.length != 0){
         drawPopUpHierarchy();
       }else{
         drawHierarchicalClustering(that.clusterHierData);
       }
-      
+
 
       if(textBackground){
         if(zoom.scale()<0.7){
@@ -2726,8 +2733,8 @@
     function toggleControl(){
 
       $('#arrow_controlPanel').css('transform', function(){ return control_opened ? 'rotate(180deg)' : 'rotate(0deg)'});
-      
-      var shiftleft = controlPanelWidth - 20;
+
+      var shiftleft = controlPanelWidth + 30;
       $('#control-panel').css('margin-left', function(){ return control_opened ? '-' + shiftleft+ 'px' : '0'});
       control_opened = !control_opened;
     }
@@ -2770,7 +2777,7 @@
           //add save image button
           element += '<div class="control-panel-button">';
           element //+= '<button id="editor_save" class="btn " z-index:100">Save image</button>';
-          element+='<button type="button" id="editor_save" class="btn dropdown-toggle" data-toggle="dropdown">Save image<span class="caret"></span></button>'
+          element+='<button type="button" id="editor_save" class="btn dropdown-toggle" data-toggle="dropdown">Save image    <span class="caret"></span></button>'
           element+=	'<ul class="dropdown-menu" role="menu">';
           //element+='<button id="export" class="btn" z-index:100">pdf</button></ul>';
     		  element+='<li><a href="" id="PDF">PDF</a></li>'
@@ -2778,7 +2785,7 @@
     		  element+='<li><a href=""id="SVG">SVG</a></li></ul>'
           element+=  '<button id="export" class="btn" z-index:100">Export File</button>';
           element+=  '<input type="file" id="import" style="display: none"> <label for="import" class="btn" id="import_label">Import File</label>'
-          
+
           // element +=  '<input id="import" type="file" class="btn" z-index:100"></input>';
           element += '</div>';
           //add toggle button
@@ -2871,7 +2878,7 @@
 
         $('#arrow_controlPanel').click(function(){
           toggleControl();
-        });  
+        });
       }
 
 
@@ -2882,8 +2889,8 @@
                   break;
               case "1" :
                   drawHierCluster();
-                  break;  
-          }            
+                  break;
+          }
       });
 
       $("#editor_save").click(function() {
@@ -2982,7 +2989,8 @@
 
           var save_file = "{\"size\":" + size + "," + "\"go_inf\":" + JSON.stringify(that.MonaGOData.go_inf) + "," + "\"clusterHierData\":" +JSON.stringify(that.MonaGOData.clusterHierData)
           + "," + "\"matrix\":" + JSON.stringify(that.MonaGOData.matrix) + "," +"\"array_order\":" + JSON.stringify(that.MonaGOData.array_order) + "," + "\"goNodes\":" + JSON.stringify(goNodes)
-          + "," + "\"groupSize\":" + JSON.stringify(that.MonaGOData.groupSize) + "," + "\"nodeCollapse\":" + nodeCollapse + "}";
+          + "," + "\"groupSize\":" + JSON.stringify(that.MonaGOData.groupSize) + "," + "\"nodeCollapse\":" + nodeCollapse
+          + "," + "\"clickCollapseNodeArr\":" + JSON.stringify(that.clickCollapseNodeArr) + "}";
 
             post("/export", {
                 filename: 'file',
@@ -2994,22 +3002,26 @@
 
             function readSingleFile(evt) {
             //Retrieve the first (and only!) File from the FileList object
-            var f = evt.target.files[0]; 
+            var f = evt.target.files[0];
 
             if (f) {
               var r = new FileReader();
 
+<<<<<<< HEAD
               r.onload = function(e) { 
-                var contents = e.target.result; 
-                that.reload(contents);
+                var contents = e.target.result;
+                console.log(contents) 
+=======
+              r.onload = function(e) {
+                var contents = e.target.result;
+>>>>>>> refs/remotes/origin/master
+                monago.reload(contents);
               }
               r.readAsText(f);
-            } else { 
+            } else {
               alert("Failed to load file");
             }
           }
-
-          document.getElementById('import').value=""
 
         document.getElementById('import').addEventListener('change', readSingleFile, false);
       })
@@ -3104,7 +3116,7 @@
 
       $("#details").css("width",detailPanelWidth);
       $("#pval-label").css("margin-left",-detailPanelWidth-160);
-      $("#control-panel").css("width",controlPanelWidth);
+      $("#control-panel").css("width",controlPanelWidth+50);
       $("#control-panel").css("height",controlPanelHeight);
 
       svg = main_div
@@ -3120,7 +3132,7 @@
          .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")")
 
       circleSvg.append("circle").attr("r",r0).style("opacity", "0");
-      
+
       clusterArc = circleSvg.append("svg:g")
          .selectAll("g")
            .data(clusterHierData)
@@ -3207,7 +3219,7 @@
       pVal_sort = sortGO_inf();
 
       step = (maxpVal-minpVal)/10;
-      
+
       for(i=0;i<11;i++){
         seperated_points.push(minpVal+step*i);
       }
@@ -3217,7 +3229,7 @@
       chordMatrix = d3.layout.chord()
        .padding(.03)
        .sortSubgroups(d3.descending);
-       
+
 
       chord = chordMatrix.matrix(that.matrix).groupSize(that.groupSize);
 
@@ -3230,9 +3242,7 @@
     }
 
     function clusterGO(nodeCollapse){
-      console.log(nodeCollapse)
       var level = getLevelFromNumOfOverlappingGenes(nodeCollapse);
-      console.log(level)
       getClusterNodesIndexBeingSelected(level);
 
       $("#input_slider").val(nodeCollapse);
@@ -3245,12 +3255,13 @@
       that.goNodes = goNodes;
       that.go_inf_ori = copyGOInfFrom(go_inf);
       that.matrix = matrix;
+      //console.log(matrix)
       go_inf.forEach(function(d){
         that.groupSize.push(d.count);
       })
 
       that.clusterHierData = clusterHierData;
-
+      //console.log(clusterHierData)
 
       that.maxNumOfOverlappingGens = that.clusterHierData[0][3];
       that.minNumOfOverlappingGens = that.clusterHierData[that.clusterHierData.length-1][3];
@@ -3297,6 +3308,7 @@
       that.matrix = content["matrix"];
       that.groupSize = content["groupSize"];
       that.nodeCollapse = content["nodeCollapse"];
+      that.clickCollapseNodeArr = content["clickCollapseNodeArr"]
 
       //array_order = content["array_order"];
 
@@ -3338,7 +3350,15 @@
 
       setUpListener();
 
-      if(that.nodeCollapse < that.maxNumOfOverlappingGens+1){
+      if (that.clickCollapseNodeArr.length != 0){
+        that.clickCollapseNodeArr.forEach(function(d){
+          result = collapseMonaGO(d);
+          updateMoanaGOLayout(result);
+          updateLabel();
+        })
+      }
+
+      if (that.nodeCollapse < that.maxNumOfOverlappingGens+1){
         clusterGO(that.nodeCollapse)
       }
 

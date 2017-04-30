@@ -416,11 +416,11 @@ class DataProcess():
                 for i in GO_hier[GO_id]["p"]:
                     if not GO_hier_list.has_key(i):
                         recuriveGetGOId(i.encode('ascii','ignore'))
-
-        remote_server = False;
+                        
+        remote_server = False
 
         if(remote_server):
-            root_dir = "/root/alex/myproject/"
+            root_dir = "/home/ubuntu/"
         else:
             root_dir = ""
 
