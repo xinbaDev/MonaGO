@@ -2091,9 +2091,21 @@
 
     }
 
+   function removeDuplicatedItem3(ar) {
+    var ret = [];
 
+    ar.forEach(function(e, i, ar) {
+        if (ar.indexOf(e) === i) {
+            ret.push(e);
+        }
+    });
+
+   return ret;
+}
     function createChordTempl(index,d){
-        
+
+        var totalGenesNumber=removeDuplicatedItem3(that.go_inf[d.source.index].genes.concat(that.go_inf[d.source.subindex].genes)).length
+        //console.log(totalGenesNumber)
         var geneListInHtml = "<div class='gene_content'><ol>";
         that.dic[index].split(";").forEach(function(d,i){
              var tmp = "<li>" + " <n class='gene_name'>"+ d + "</n> "+ "</li>";
@@ -2101,10 +2113,11 @@
         });
         geneListInHtml += "</ol></div>";
 
-
+        //console.log(clusterHierData)
         templ = "<p>Overlapping genes between <a class='go_id'>" + that.go_inf[d.source.index].GO_id + " (" + that.go_inf[d.source.index].GO_name + ")" +
-		"</a> and <a class='go_id'>" +  that.go_inf[d.source.subindex].GO_id + " (" + that.go_inf[d.source.subindex].GO_name +")" + "</a>:\n</p>"+ 
-		"Number of overlapping genes: "+ that.dic[index].split(";").length+"</a>\n</p>" + geneListInHtml;
+		"</a> and <a class='go_id'>" +  that.go_inf[d.source.subindex].GO_id + " (" + that.go_inf[d.source.subindex].GO_name +")" + "</a>:\n</p>"+
+		"Number of overlapping genes: "+ that.dic[index].split(";").length+"</a>\n</p>"+"</a></p>"+
+		"Percentage of overlapping genes: "+ parseInt(that.dic[index].split(";").length / totalGenesNumber*100)+"%" +"</a>\n</p>" + geneListInHtml;
 
 
         return templ;
@@ -2127,7 +2140,7 @@
                 });
         });
       }
-        
+
         $(".dropbtn").click(function () {
 
           $header = $(this);
@@ -2200,9 +2213,9 @@
 
         var line = "<button class=\"dropbtn\""+ "id=GO_button_"+ num +">" + GO + "</button>";
         line += "<div class=\"Go_content\">" + "<p><a class='prop-field'>" + ((numOfGOTerms == 1)?" P-value:</a> ":" P-value(Average):</a>")
-         + that.go_inf[num].pVal + " <p><a class='prop-field'> Num of genes: </a>"+ that.go_inf[num].count + " <p> <a class='prop-field'>Annotatino type: </a>"+ that.go_inf[i].cat+ "</p>" + 
+         + that.go_inf[num].pVal + " <p><a class='prop-field'> Num of genes: </a>"+ that.go_inf[num].count + " <p> <a class='prop-field'>Annotatino type: </a>"+ that.go_inf[i].cat+ "</p>" +
         "<p><a class='prop-field'>Genes: </a></p>" +  getGenesFromACluster(num) + "</div>";
-        GOterms += line; 
+        GOterms += line;
 
       }
       return GOterms;
@@ -2265,8 +2278,8 @@
         }
         return false;
       }
-      
-      var searchTerm = $('#filter').val(); 
+
+      var searchTerm = $('#filter').val();
 
       if(isGO(searchTerm)){//for GO
         resetVis();
@@ -2287,12 +2300,12 @@
             }
           }
         }
-        
+
 
         if(i != undefined){
 
           genes = getGenesFromACluster(i);
-        
+
           var detailPanelTempl = createDetailPanelTempl(i);
           $('#content').append(detailPanelTempl);
 
@@ -2309,7 +2322,7 @@
                 function(d){return (d.index!=i)? r1:r1+10;}));
 
 
-          gt.transition().attr("x",function(d){  
+          gt.transition().attr("x",function(d){
             if(d.index==i){
               if ((d.startAngle+d.endAngle)/2 < 3.1415)
                 return 20;
@@ -2328,13 +2341,13 @@
 
           chordLayout.transition().attr("d",d3.svg.chord().radius(function(d){return (d.index!=i)? r0:r0+10;}));
 
-          
+
           //moveHierCluster();
         }
       }else{//for genes
         var indexs = that.gene_info[searchTerm];
 
-        
+
         if(indexs!=undefined)
         {
 
@@ -2346,14 +2359,14 @@
 
               var num = parseInt(index_array[i]);
               num_array.push(num);
-              
+
               go_contents.push(num);
             }
 
             if(go_contents.length > 1){//only sort if two go and more exist
               sortGOcontent(go_contents);
             }
-            
+
 
             $('#content').append(generateGOTermHtml(go_contents));
             $('.dropbtn').css("width",detailPanelWidth-50);
@@ -2399,7 +2412,7 @@
           resetHierarchy();
           popUpList= [];
 
-         
+
         }
       }
     }
@@ -2411,7 +2424,7 @@
         .transition()
         .duration(300)
         .attr("d",function(d){
-            
+
             var arc = d3.svg.arc()
               .innerRadius(d["radius"]+15)
               .outerRadius(d["radius"]+16)
@@ -2429,7 +2442,7 @@
         .transition()
         .duration(300)
         .attr("d",function(d){
-            
+
             var arc = d3.svg.arc()
               .innerRadius(d["radius"]+10)
               .outerRadius(d["radius"]+11)
@@ -2447,7 +2460,7 @@
         .transition()
         .duration(300)
         .attr("d",function(d){
-            
+
             var firstLine = d3.svg.arc()
             .innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+10:d["LineInnerPosition"])
             .outerRadius(d["LineOuterPosition"]+10)
@@ -2481,7 +2494,7 @@
         .transition()
         .duration(300)
         .attr("d",function(d){
-            
+
             var firstLine = d3.svg.arc()
             .innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
             .outerRadius(d["LineOuterPosition"]+5)
@@ -2535,7 +2548,7 @@
       function tween(d, i, a) {
               var interpolate;
               var str;
-              
+
               str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
               //str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
                + "translate(" + ( d["radius"] + 5 ) + ",0)";
@@ -2689,13 +2702,13 @@
 
 
       // groupText.style("display","none");
-      
+
       if(popUpList.length != 0){
         drawPopUpHierarchy();
       }else{
         drawHierarchicalClustering(that.clusterHierData);
       }
-      
+
 
       if(textBackground){
         if(zoom.scale()<0.7){
@@ -2720,7 +2733,7 @@
     function toggleControl(){
 
       $('#arrow_controlPanel').css('transform', function(){ return control_opened ? 'rotate(180deg)' : 'rotate(0deg)'});
-      
+
       var shiftleft = controlPanelWidth + 30;
       $('#control-panel').css('margin-left', function(){ return control_opened ? '-' + shiftleft+ 'px' : '0'});
       control_opened = !control_opened;
@@ -2764,7 +2777,7 @@
           //add save image button
           element += '<div class="control-panel-button">';
           element //+= '<button id="editor_save" class="btn " z-index:100">Save image</button>';
-          element+='<button type="button" id="editor_save" class="btn dropdown-toggle" data-toggle="dropdown">Save image<span class="caret"></span></button>'
+          element+='<button type="button" id="editor_save" class="btn dropdown-toggle" data-toggle="dropdown">Save image    <span class="caret"></span></button>'
           element+=	'<ul class="dropdown-menu" role="menu">';
           //element+='<button id="export" class="btn" z-index:100">pdf</button></ul>';
     		  element+='<li><a href="" id="PDF">PDF</a></li>'
@@ -2772,7 +2785,7 @@
     		  element+='<li><a href=""id="SVG">SVG</a></li></ul>'
           element+=  '<button id="export" class="btn" z-index:100">Export File</button>';
           element+=  '<input type="file" id="import" style="display: none"> <label for="import" class="btn" id="import_label">Import File</label>'
-          
+
           // element +=  '<input id="import" type="file" class="btn" z-index:100"></input>';
           element += '</div>';
           //add toggle button
@@ -2865,7 +2878,7 @@
 
         $('#arrow_controlPanel').click(function(){
           toggleControl();
-        });  
+        });
       }
 
 
@@ -2876,8 +2889,8 @@
                   break;
               case "1" :
                   drawHierCluster();
-                  break;  
-          }            
+                  break;
+          }
       });
 
       $("#editor_save").click(function() {
@@ -2989,18 +3002,18 @@
 
             function readSingleFile(evt) {
             //Retrieve the first (and only!) File from the FileList object
-            var f = evt.target.files[0]; 
+            var f = evt.target.files[0];
 
             if (f) {
               var r = new FileReader();
 
-              r.onload = function(e) { 
+              r.onload = function(e) {
                 var contents = e.target.result;
-                console.log(contents) 
+
                 monago.reload(contents);
               }
               r.readAsText(f);
-            } else { 
+            } else {
               alert("Failed to load file");
             }
           }
@@ -3114,7 +3127,7 @@
          .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")")
 
       circleSvg.append("circle").attr("r",r0).style("opacity", "0");
-      
+
       clusterArc = circleSvg.append("svg:g")
          .selectAll("g")
            .data(clusterHierData)
@@ -3201,7 +3214,7 @@
       pVal_sort = sortGO_inf();
 
       step = (maxpVal-minpVal)/10;
-      
+
       for(i=0;i<11;i++){
         seperated_points.push(minpVal+step*i);
       }
@@ -3211,7 +3224,7 @@
       chordMatrix = d3.layout.chord()
        .padding(.03)
        .sortSubgroups(d3.descending);
-       
+
 
       chord = chordMatrix.matrix(that.matrix).groupSize(that.groupSize);
 
@@ -3237,12 +3250,13 @@
       that.goNodes = goNodes;
       that.go_inf_ori = copyGOInfFrom(go_inf);
       that.matrix = matrix;
+      //console.log(matrix)
       go_inf.forEach(function(d){
         that.groupSize.push(d.count);
       })
 
       that.clusterHierData = clusterHierData;
-
+      //console.log(clusterHierData)
 
       that.maxNumOfOverlappingGens = that.clusterHierData[0][3];
       that.minNumOfOverlappingGens = that.clusterHierData[that.clusterHierData.length-1][3];

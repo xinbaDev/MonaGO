@@ -22,6 +22,7 @@ from flask import Flask,render_template,request,send_from_directory,Response
 #for pre processing the data
 from DataProcess import DataProcess
 from DataProcess2 import DataProcess2
+from DataProcess3 import DataProcess3
 from DavidDataScrawler import DavidDataScrawler
 
 import logging
@@ -82,7 +83,8 @@ def index():
             if status == False:
                 return "Failure to get data, please make sure the identifier is correct"
 
-        matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go)
+        #matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go)
+        matrix_count, array_order, go_hier, go_inf_reord, clusterHierData = processedData3(go)
 
         if not matrix_count:
             return "Failure to process data"
@@ -315,6 +317,41 @@ def processedData2(go):
         go_inf_reord = preProcessedData["go_inf"]
         clusterHierData = preProcessedData["clusterHierData"]
         
+        return matrix,go_index_reord,go_hier,go_inf_reord,clusterHierData
+
+
+@logTime
+def processedData3(go):
+    '''
+    generate necessary data for visualization
+
+    Args:
+        a list of GO terms
+
+    Return:
+        matrix:a matrix M where M(i,j) represents the number of intersected genes betweeen GO[i] and GO[j]
+        go_index_reord:an array representing the position change of GO terms after hieracical clustering
+        go_hier:a list of GO that are ancesters of enriched GO terms.
+        go_inf_reord:an array of enriched GO terms
+        clusterHierData:an array storing hierarcical data use to generated hierarcical tree
+    '''
+
+    dataProcess = DataProcess3()
+    try:
+        preProcessedData = dataProcess.dataProcess(go)
+
+    except Exception as e:
+        logger.error(str(e))
+    else:
+        matrix = preProcessedData["matrix"]["matrix_count"]
+        go_index_reord = preProcessedData["go_index_reord"]
+        go_hier = preProcessedData["go_hier"]
+        go_inf_reord = preProcessedData["go_inf"]
+        clusterHierData = preProcessedData["clusterHierData"]
+        print matrix
+        print go_index_reord
+        print go_hier
+        print go_inf_reord
         return matrix,go_index_reord,go_hier,go_inf_reord,clusterHierData
 
 def loadConfig():
