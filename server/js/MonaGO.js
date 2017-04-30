@@ -2188,7 +2188,7 @@
       return genes;
     }
 
-    function renderGOTerm(go_num_array){
+    function generateGOTermHtml(go_num_array){
       var GOterms = "";
       var num = 0;
       var GO = "";
@@ -2355,8 +2355,7 @@
             }
             
 
-            $('#content').append(renderGOTerm(go_contents));
-            //renderGOTerm(go_contents);
+            $('#content').append(generateGOTermHtml(go_contents));
             $('.dropbtn').css("width",detailPanelWidth-50);
 
             $('.gene_name').click(function(){
@@ -2996,7 +2995,8 @@
               var r = new FileReader();
 
               r.onload = function(e) { 
-                var contents = e.target.result; 
+                var contents = e.target.result;
+                console.log(contents) 
                 monago.reload(contents);
               }
               r.readAsText(f);
