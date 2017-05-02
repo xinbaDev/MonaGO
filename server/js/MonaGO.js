@@ -710,18 +710,23 @@
       function tween(d, i, a) {
         var interpolate;
         var str;
-
-        //str = "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"  
-
+        //str = "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
         if ($('[index='+d.index+']').length !=0 ){
+            if($('[index='+d.index+'] circle')[0].getAttribute("style")=="fill: red;"){
+            str = "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+          }
+          else{
           str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
-              + "translate(" + ( d["radius"] + 5 ) + ",0)";
+          //console.log($('[index='+d.index+']')[0].getAttribute("value"))
+          }
+          str += "translate(" + ( d["radius"] + 5 ) + ",0)";
           interpolate = d3.interpolate(a,str);
 
           return function(t) {
               return interpolate(t);
           };
         }
+        else return null;
       }
     }
 
@@ -2203,7 +2208,7 @@
       return genes;
     }
 
-    function generateGOTermHtml(go_num_array){
+    function renderGOTerm(go_num_array){
       var GOterms = "";
       var num = 0;
       var GO = "";
@@ -2370,7 +2375,8 @@
             }
 
 
-            $('#content').append(generateGOTermHtml(go_contents));
+            $('#content').append(renderGOTerm(go_contents));
+            //renderGOTerm(go_contents);
             $('.dropbtn').css("width",detailPanelWidth-50);
 
             $('.gene_name').click(function(){
@@ -2610,29 +2616,22 @@
         var node_angle1=node_angle.map(function(t){
             return t-label_angle;});
 
-        for (i=0;i<node_angle1.length;i++)
-        {
+        for (i=0;i<node_angle1.length;i++){
          if (Math.abs(node_angle1[i]) < 4)
          node_angle2.push(i);
         }
 
-        if(node_angle2.length!=0)
-        {
-        if (Math.abs(label_angle-last_label_angle)>=5)
-        {
-        for (i=0;i<node_angle2.length;i++)
-        {
-
-        index=node_angle2[i]
-        //node_angle1[index]>0?node_angle[index]-=-3:node_angle[index]-=3;
-
-        node_angle1[index]>0?node_angle[index]-=-(4.1-node_angle1[index]):node_angle[index]-=4.1+node_angle1[index];
-
-
-        $('.clusterNodeView')[index].setAttribute("transform","rotate(" + node_angle[index] + ")"+ "translate(" + translate_value[index] + ",0)");
-        $('.clusterNodeView')[index].setAttribute("value",node_angle[index]);
-        }
-        }
+        if((node_angle2.length!=0)&&(Math.abs(label_angle-last_label_angle)>=5)){
+            for (i=0;i<node_angle2.length;i++){
+                index=node_angle2[i]
+                //node_angle1[index]>0?node_angle[index]-=-3:node_angle[index]-=3;
+                //if($('.clusterNodeView circle')[index].getAttribute("style")!="fill: red;"){
+                    //console.log($('.clusterNodeView circle')[index].getAttribute("style"))
+                    node_angle1[index]>0?node_angle[index]-=-(4.1-node_angle1[index]):node_angle[index]-=4.1+node_angle1[index];
+                    $('.clusterNodeView')[index].setAttribute("transform","rotate(" + node_angle[index] + ")"+ "translate(" + translate_value[index] + ",0)");
+                    $('.clusterNodeView')[index].setAttribute("value",node_angle[index]);
+                 //}
+            }
         }
         last_label_angle=label_angle
         return "rotate(" + label_angle + ")"
@@ -2782,7 +2781,7 @@
           element+='<button type="button" id="editor_save" class="btn dropdown-toggle" data-toggle="dropdown">Save image    <span class="caret"></span></button>'
           element+=	'<ul class="dropdown-menu" role="menu">';
           //element+='<button id="export" class="btn" z-index:100">pdf</button></ul>';
-    		  // element+='<li><a href="" id="PDF">PDF</a></li>'
+    		  element+='<li><a href="" id="PDF">PDF</a></li>'
     		  element+='<li><a href="" id="PNG">PNG</a></li>'
     		  element+='<li><a href=""id="SVG">SVG</a></li></ul>'
           element+=  '<button id="export" class="btn" z-index:100">Export File</button>';
@@ -2974,14 +2973,14 @@
        $('#PNG').click(function(){
        saveSvgAsPng(document.getElementById("main_vis"), "diagram.png", {scale: 5});
        });
-       // $('#PDF').click(function(){
-       //  svgAsPngUri(document.getElementById("main_vis"),{scale: 3},function(data){
-       //  var doc = new jsPDF();
-       //  doc.addImage(data, 'PNG', 0, 0, 250, 250/widthToheightRatio);
-       //  doc.save('pic.pdf');
-       //   })
+       $('#PDF').click(function(){
+        svgAsPngUri(document.getElementById("main_vis"),{scale: 3},function(data){
+        var doc = new jsPDF();
+        doc.addImage(data, 'PNG', 0, 0, 250, 250/widthToheightRatio);
+        doc.save('pic.pdf');
+         })
 
-       // });
+       });
        $('#SVG').click(function(){
         saveSvg(document.getElementById("main_vis"), "diagram.svg", {scale: 2});
        });
@@ -3012,7 +3011,6 @@
 
               r.onload = function(e) {
                 var contents = e.target.result;
-
                 monago.reload(contents);
               }
               r.readAsText(f);
