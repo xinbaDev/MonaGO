@@ -1408,9 +1408,11 @@
         return that.clusterHierData;
     }
 
-    function collapseMonaGO(nodeBeingClickedIndex){
-        if (that.clickCollapseNodeArr.indexOf(nodeBeingClickedIndex) == -1){
-          that.clickCollapseNodeArr.push(nodeBeingClickedIndex);
+    function collapseMonaGO(nodeBeingClickedIndex, collpaseType){
+        if (collpaseType == "manually"){
+          if (that.clickCollapseNodeArr.indexOf(nodeBeingClickedIndex) == -1){
+            that.clickCollapseNodeArr.push(nodeBeingClickedIndex);
+          }
         }
         //get leaf nodes(associated with the cluster) info(node index & cluster level)
         var nodes = getHierNodes(nodeBeingClickedIndex);
@@ -1509,7 +1511,7 @@
 
       if(d["status"]=="Expanded"){
 
-        clusterHierData = collapseMonaGO(nodeBeingClickedIndex);
+        clusterHierData = collapseMonaGO(nodeBeingClickedIndex,"manually");
 
       }else{
         /*console.log("node going to expand");*/
@@ -1667,7 +1669,7 @@
             clusterHierNodesStatus.map(function(d){
               if(index == d["index"]){
                 if(that.memCache[index]==undefined){
-                  that.clusterHierData = collapseMonaGO(index);
+                  that.clusterHierData = collapseMonaGO(index, "system");
 
                 }
               }
@@ -3002,9 +3004,11 @@
             }, null);
       });
 
+
       /*$('#import').click(function(){
 
             function readSingleFile(evt) {
+
             //Retrieve the first (and only!) File from the FileList object
             var f = evt.target.files[0];
 
@@ -3019,10 +3023,10 @@
               }
               r.readAsText(f);
             } else {
-              alert("Failed to load file");
+              //alert("Failed to load file");
             }
           }
-
+        
         document.getElementById('import').addEventListener('change', readSingleFile, false);
       })*/
     }
@@ -3354,7 +3358,7 @@
 
       if (that.clickCollapseNodeArr.length != 0){
         that.clickCollapseNodeArr.forEach(function(d){
-          result = collapseMonaGO(d);
+          result = collapseMonaGO(d, "manually");
           updateMoanaGOLayout(result);
           updateLabel();
         })
