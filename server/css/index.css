@@ -156,6 +156,19 @@
     padding-right: 10px;
 }
 
+.MonaGO_submit{
+    padding-top: 10px
+}
+
+.MonaGO_submit_button{
+    height:70px;
+    text-align: center;
+    line-height: 65px;
+}
+.MonaGO_input{
+    padding-left: 10px;
+    padding-right: 10px;
+}
 .demo_GOs{
     font-size: 10px
 }
@@ -216,6 +229,28 @@
 }
 
 #filedrag2.hover
+{
+  color: #f00;
+  border-color: #f00;
+  border-style: solid;
+  box-shadow: inset 0 3px 4px #888;
+}
+
+#filedrag3
+{
+  display: none;
+  font-weight: bold;
+  text-align: center;
+  padding: 1em 0;
+  margin: 1em 0;
+  color: #555;
+  border: 2px dashed #555;
+  border-radius: 7px;
+  cursor: default;
+  width: 500px;
+}
+
+#filedrag3.hover
 {
   color: #f00;
   border-color: #f00;
