@@ -66,7 +66,13 @@ def index():
                 go = parseInputGOsFromCSV(request.files['files2'])
             else:
                 go = parseInputGOs(request.form['inputGOs'])
-        else:
+            matrix_count, array_order, go_hier, go_inf_reord, clusterHierData = processedData4(go)
+            if not matrix_count:
+                return "Failure to process data"
+            data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+str(matrix_count)+";"+"var array_order="+str(array_order)+";"\
+            +"var clusterHierData="+str(clusterHierData) +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
+
+        if request.form['type'] == "david":
             #parameters needed for querying DAVID
             if request.form['inputIds'] == "":
                 inputIds = parseInputIdsFromCSV(request.files['files1'])
@@ -83,18 +89,25 @@ def index():
 
             if status == False:
                 return "Failure to get data, please make sure the identifier is correct"
+            matrix_count, array_order, go_hier, go_inf_reord, clusterHierData = processedData4(go)
+            if not matrix_count:
+                return "Failure to process data"
+            data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+str(matrix_count)+";"+"var array_order="+str(array_order)+";"\
+            +"var clusterHierData="+str(clusterHierData) +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
+
+
+        if request.form['type'] == "MonaGO":
+            content = request.files['files3'].read()
+            #print content
+            data = "<script>"+ "var size = 0"+";"+"var content ="+content+";"+"</script>"
 
         #matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go)
-        matrix_count, array_order, go_hier, go_inf_reord, clusterHierData = processedData4(go)
 
-        if not matrix_count:
-            return "Failure to process data"
 
         with open(root_dir+'templates/chord_layout.html',"r") as fr_html:
             html = "".join(fr_html.readlines())
 
-        data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+str(matrix_count)+";"+"var array_order="+str(array_order)+";"\
-        +"var clusterHierData="+str(clusterHierData) +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
+
 
         return data+html
 
@@ -385,4 +398,3 @@ def loadConfig():
 if __name__ == '__main__':
     loadConfig()
     loadGOHier()
-    app.run(debug= (config["debug"]=="true"), host="0.0.0.0", port=80, threaded = True)

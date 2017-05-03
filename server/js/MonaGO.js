@@ -103,7 +103,7 @@
     var chord;
     var detailPanelWidth = $(window).width()*0.25;
 
-    var controlPanelWidth = 520;
+    var controlPanelWidth = 510;
 
     var controlPanelHeight = 120;
 
@@ -139,6 +139,7 @@
     var details_opened = true;
     var control_opened = true;
     var reloadData = false;
+    var existReload = false;
 
     var clusterArc;
     var clusterLine1;
@@ -2733,7 +2734,7 @@
 
       $('#arrow_controlPanel').css('transform', function(){ return control_opened ? 'rotate(180deg)' : 'rotate(0deg)'});
 
-      var shiftleft = controlPanelWidth + 30;
+      var shiftleft = controlPanelWidth -20;
       $('#control-panel').css('margin-left', function(){ return control_opened ? '-' + shiftleft+ 'px' : '0'});
       control_opened = !control_opened;
     }
@@ -2759,7 +2760,7 @@
 
     function setUpControlPanel(){
 
-      if (reloadData == false){
+      if (existReload == false){
           var element = '&nbsp<label>Cluster GO term according to the minimum number of common gene(s)</label> \
               <div id="slider" class="sliderBar"></div>\
               <input type="text" id="input_slider"/>';
@@ -2783,7 +2784,7 @@
     		  element+='<li><a href="" id="PNG">PNG</a></li>'
     		  element+='<li><a href=""id="SVG">SVG</a></li></ul>'
           element+=  '<button id="export" class="btn" z-index:100">Export File</button>';
-          element+=  '<input type="file" id="import" style="display: none"> <label for="import" class="btn" id="import_label">Import File</label>'
+         // element+=  '<input type="file" id="import" style="display: none"> <label for="import" class="btn" id="import_label">Import File</label>'
 
           // element +=  '<input id="import" type="file" class="btn" z-index:100"></input>';
           element += '</div>';
@@ -2800,8 +2801,12 @@
     }
 
     function setUpRangeSlider(inputFormat,minNumOfOverlappingGens,maxNumOfOverlappingGens){
-      if(that.ranger.noUiSlider)
+      if (that.ranger != null){
+        if (that.ranger.hasOwnProperty("noUiSlider")){
         that.ranger.noUiSlider.destroy();
+        }
+        }
+
 
       noUiSlider.create(that.ranger, {
         start: [ maxNumOfOverlappingGens+1 ], // Handle start position
@@ -2870,7 +2875,7 @@
         $('#searchBox').remove();
       });
 
-      if (reloadData == false){
+      if (existReload == false){
         $('#arrow_detailedPanel').click(function(){
           toggleDetails();
         });
@@ -2997,7 +3002,7 @@
             }, null);
       });
 
-      $('#import').click(function(){
+      /*$('#import').click(function(){
 
             function readSingleFile(evt) {
             //Retrieve the first (and only!) File from the FileList object
@@ -3005,9 +3010,11 @@
 
             if (f) {
               var r = new FileReader();
-
+              //console.log(f)
               r.onload = function(e) {
                 var contents = e.target.result;
+                existReload = true;
+                //console.log(contents)
                 monago.reload(contents);
               }
               r.readAsText(f);
@@ -3017,7 +3024,7 @@
           }
 
         document.getElementById('import').addEventListener('change', readSingleFile, false);
-      })
+      })*/
     }
 
     function mextend (a, b) {
@@ -3109,7 +3116,7 @@
 
       $("#details").css("width",detailPanelWidth);
       $("#pval-label").css("margin-left",-detailPanelWidth-160);
-      $("#control-panel").css("width",controlPanelWidth+50);
+      $("#control-panel").css("width",controlPanelWidth);
       $("#control-panel").css("height",controlPanelHeight);
 
       svg = main_div
@@ -3290,7 +3297,7 @@
     }
 
     this.reload = function(content){
-      reloadData = true;
+      //reloadData = true;
       that.level_g = 0;
 
       var content = JSON.parse(content);
@@ -3309,6 +3316,7 @@
       maxNodeIndex = content["size"];
 
       that.clusterHierData = content["clusterHierData"];
+      //console.log(that.clusterHierData)
       that.maxNumOfOverlappingGens = that.clusterHierData[0][3];
       that.minNumOfOverlappingGens = that.clusterHierData[that.clusterHierData.length-1][3];
 
@@ -3330,6 +3338,7 @@
 
       createPvalLabelPanel(fill);
       createClusterNodesStatus(that.clusterHierData,[],"",[]);
+      //console.log("a")
       setUpView();
       determineLabelSize();
 
@@ -3359,8 +3368,20 @@
 
   }
 
-  monago = new MonaGO().init(size,go_inf,array_order,clusterHierData,goNodes,matrix);
+    if(size != 0){
+        monago = new MonaGO().init(size,go_inf,array_order,clusterHierData,goNodes,matrix)
+    }
+    else{
+        if(content){
+            //console.log("reload")
+            content = JSON.stringify(content)
+            monago = new MonaGO()
+            monago.reload(content)
+    }
+        else
+            alert("Fail to load file")
 
+  }
 
 })();
 

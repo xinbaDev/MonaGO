@@ -184,7 +184,7 @@
 					<br>
 					<font class="regular">Or paste a list</font>
 					<textarea rows="6" id="inputGOs" class="form-control" name="inputGOs"></textarea>
-					<div class="example_go" onclick="copyDemoGOs()"><p>Demo enriched GO terms (click to paste):</p> 
+					<div class="example_go" onclick="copyDemoGOs()"><p>Demo enriched GO terms (click to paste):</p>
 								<p class="demo_GOs">
 									GO_id,pVal,genes<br>
 									GO:0042221,1.08E-04,"cytochrome P450 family 2 subfamily A member 6(CYP2A6);thyroid hormone receptor, alpha(THRA);heat shock protein family A (Hsp70) member 6(HSPA6);paired box 8(PAX8);cytochrome P450 family 2 subfamily E member 1(CYP2E1);C-C motif chemokine ligand 5(CCL5);estrogen related receptor alpha(ESRRA);guanylate cyclase activator 1A(GUCA1A);EPH receptor B3(EPHB3);growth arrest specific 6(GAS6"...
@@ -194,7 +194,25 @@
 <!-- 					<input type="file" id="Upload2" style="display: none"> <label for="Upload2" class="btn" id="Upload_label">Upload CSV</label> -->
 					<div class="btn btn-success btn-rounded btn-lg submit-btn" onclick="manualSubmitClicked()">Submit</div>
 				</div>
-					
+
+			</div>
+
+			<div class="MonaGO_submit">
+				<div class="MonaGO_submit_button btn-success"><label class="large_label">Submit files exported from MonaGO </label></div>
+				<div class="MonaGO_input " style="display:none">
+					<h2><span class="label label-primary" title="enter enriched GO term manually">Import file exported from MonaGO</span></h2>
+
+					<div>
+						<label for="fileselect3">Files to upload:</label>
+						<input type="file" id="fileselect3" name="files3"/>
+						<div id="filedrag3" class="filedrag" style="display: block;">or drop files here</div>
+					</div>
+					<br>
+
+<!-- 					<input type="file" id="Upload2" style="display: none"> <label for="Upload2" class="btn" id="Upload_label">Upload CSV</label> -->
+					<div class="btn btn-success btn-rounded btn-lg submit-btn" onclick="MonaGO_SubmitClicked()">Submit</div>
+				</div>
+
 			</div>
 
 		</div>
@@ -257,6 +275,10 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 		  $goList = $(this).next();
           $goList.slideToggle(500);
 		})
+		$(".MonaGO_submit_button").click(function(d){
+		  $goList = $(this).next();
+          $goList.slideToggle(500);
+		})
 
 		// $('#Upload1').click(function(){
 
@@ -307,12 +329,15 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 
 		var fileselect1 = $id("fileselect1"),
 			fileselect2 = $id("fileselect2"),
+			fileselect3 = $id("fileselect3"),
 			filedrag1 = $id("filedrag1"),
 			filedrag2 = $id("filedrag2");
+			filedrag3 = $id("filedrag3");
 
 		// file select
 		fileselect1.addEventListener("change", FileSelectHandler1, false);
 		fileselect2.addEventListener("change", FileSelectHandler2, false);
+		fileselect3.addEventListener("change", FileSelectHandler3, false);
 
 		// is XHR2 available?
 		var xhr = new XMLHttpRequest();
@@ -328,6 +353,11 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 			filedrag2.addEventListener("dragleave", FileDragHover, false);
 			filedrag2.addEventListener("drop", FileSelectHandler2, false);
 			filedrag2.style.display = "block";
+
+			filedrag3.addEventListener("dragover", FileDragHover, false);
+			filedrag3.addEventListener("dragleave", FileDragHover, false);
+			filedrag3.addEventListener("drop", FileSelectHandler3, false);
+			filedrag3.style.display = "block";
 
 		}
 
@@ -364,6 +394,16 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 		// fetch FileList object
 		var file = e.target.files || e.dataTransfer.files;
 		document.querySelector("#fileselect2").files = file;
+	}
+
+	function FileSelectHandler3(e) {
+
+		// cancel event and hover styling
+		FileDragHover(e);
+
+		// fetch FileList object
+		var file = e.target.files || e.dataTransfer.files;
+		document.querySelector("#fileselect3").files = file;
 	}
 
 
@@ -417,6 +457,10 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 
 	function manualSubmitClicked(){
 		var res = uploadList("manual");
+		if(res) showLoadingIcon();
+	}
+	function MonaGO_SubmitClicked(){
+		var res = uploadList("MonaGO");
 		if(res) showLoadingIcon();
 	}
 
@@ -490,6 +534,12 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 		if(type == "manual"){
 			if((FM.inputGOs.value == "") && (!FM.files2.value)){
 				alert("Error: Please upload csv file or paste GO terms");
+				return false;
+			}
+		}
+		if(type == "MonaGO"){
+			if(!FM.files3.value){
+				alert("Error: Please upload file");
 				return false;
 			}
 		}
