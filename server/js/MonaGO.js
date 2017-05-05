@@ -2993,7 +2993,7 @@
 
           nodeCollapse = $("#input_slider").val()
 
-          var save_file = "{\"size\":" + size + "," + "\"go_inf\":" + JSON.stringify(that.MonaGOData.go_inf) + "," + "\"clusterHierData\":" +JSON.stringify(that.MonaGOData.clusterHierData)
+          var save_file = "{\"size\":" + that.MonaGOData.size + "," + "\"go_inf\":" + JSON.stringify(that.MonaGOData.go_inf) + "," + "\"clusterHierData\":" +JSON.stringify(that.MonaGOData.clusterHierData)
           + "," + "\"matrix\":" + JSON.stringify(that.MonaGOData.matrix) + "," +"\"array_order\":" + JSON.stringify(that.MonaGOData.array_order) + "," + "\"goNodes\":" + JSON.stringify(goNodes)
           + "," + "\"groupSize\":" + JSON.stringify(that.MonaGOData.groupSize) + "," + "\"nodeCollapse\":" + nodeCollapse
           + "," + "\"clickCollapseNodeArr\":" + JSON.stringify(that.clickCollapseNodeArr) + "}";
@@ -3254,7 +3254,6 @@
     }
 
     this.init = function(size,go_inf,array_order,clusterHierData,goNodes,matrix){
-
       that.go_inf = go_inf;
       that.goNodes = goNodes;
       that.go_inf_ori = copyGOInfFrom(go_inf);
@@ -3279,7 +3278,7 @@
         that.go_inf[i].genes = d.genes.split(";");
       });
 
-      that.MonaGOData = {"go_inf":that.go_inf_ori, "matrix": matrix, "array_order":array_order, "groupSize": that.groupSize, "clusterHierData": clusterHierData}
+      that.MonaGOData = {"size":size,"go_inf":that.go_inf_ori, "matrix": matrix, "array_order":array_order, "groupSize": that.groupSize, "clusterHierData": clusterHierData}
 
       perparePvalue();
 
@@ -3306,6 +3305,8 @@
 
       var content = JSON.parse(content);
 
+      
+      
       that.go_inf = content["go_inf"];
       that.goNodes = content["goNodes"];
       that.go_inf_ori = copyGOInfFrom(that.go_inf);
@@ -3332,6 +3333,8 @@
       that.clusterHierData.map(function(d){
         that.clusterHierDataStatic.push([d[2],d[3]]);
       });
+
+      that.MonaGOData = {"size":nodesSize,"go_inf":that.go_inf_ori, "matrix": matrix, "array_order":array_order, "groupSize": that.groupSize, "clusterHierData": clusterHierData}
 
       perparePvalue();
 
