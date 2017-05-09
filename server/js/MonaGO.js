@@ -1918,11 +1918,11 @@
 	}
 
 	function setCaretStatus(element,status){
-	  if (status == true){
-		d3.select(element).node().attr("status","false");
-	  }else{
-		 d3.select(element).node().attr("status","true");
-	  }
+        if (status == true){
+            d3.select(element).node().attr("status","false");
+        }else{
+            d3.select(element).node().attr("status","true");
+        }
 	}
 
 	function setUpDetailPanelListener(){
@@ -1932,13 +1932,13 @@
 
 		$('.gene_dropmenu').click(function(d){
 		  
-		  var status = getCaretStatus($(this));
+            var status = getCaretStatus($(this));
 
-		  $(this).next().css('transform', function(){ return !status ? 'rotate(0deg)' : 'rotate(180deg)'});
-		  setCaretStatus($(this),status);
+            $(this).next().css('transform', function(){ return !status ? 'rotate(0deg)' : 'rotate(180deg)'});
+            setCaretStatus($(this),status);
 
-		  $geneList = $(this).next().next();
-		  $geneList.slideToggle(500);
+            $geneList = $(this).next().next();
+            $geneList.slideToggle(500);
 		});
 
 		$('.gene_name').click(function(){
@@ -1951,71 +1951,59 @@
 			$('#filter').val($(this).html());
 			refreshDetailPanel();
 		});
-	/*    $("#exporthier").click(function() {
-		 saveSvgAsPng(document.getElementById("go_chart1"), "hierarchy.png", {scale: 5});
-		});*/
 
 		$('.go_dropmenu').click(function(d){
 			  
-		  $('#caret_GO').css('transform', function(){ return go_shown ? 'rotate(0deg)' : 'rotate(180deg)'});
-		  go_shown = !go_shown;
+            $('#caret_GO').css('transform', function(){ return go_shown ? 'rotate(0deg)' : 'rotate(180deg)'});
+            go_shown = !go_shown;
 
-		  $goList = $(this).next();
-		  $goList.slideToggle(500);
+            $goList = $(this).next();
+            $goList.slideToggle(500);
 		});
 
 		$('.go_detail_dropmenu').click(function(d){
 
-		  var status = getCaretStatus($(this));
-		  $(this).next().css('transform', function(){ return status ? 'rotate(0deg)' : 'rotate(180deg)'});
-		  setCaretStatus($(this),status);
+            var status = getCaretStatus($(this));
+            $(this).next().css('transform', function(){ return status ? 'rotate(0deg)' : 'rotate(180deg)'});
+            setCaretStatus($(this),status);
 
-		  $goList = $(this).next().next();
-		  $goList.slideToggle(500);
+            $goList = $(this).next().next();
+            $goList.slideToggle(500);
 		});
 		
 	}
 
 	function createGOHierForClusterGO(){
-	  goNameArr.forEach(function(d,i){
+        goNameArr.forEach(function(d,i){
 
-		goDetail = getGODetailByName(d)
-		var goNameID = replaceCommaWithUnderline(goDetail.GO_id);
+    		goDetail = getGODetailByName(d)
+    		var goNameID = replaceCommaWithUnderline(goDetail.GO_id);
 
-		var hierHeight = height-20;
-		var hierWidth = width-50;
+    		var hierHeight = height - 20;
+    		var hierWidth = width - 50;
 
-		var go_chart = d3.select("#"+goNameID).append("svg")
-		.attr("id","go_chart1")
-		.attr("width", hierWidth)
-		.attr("height", hierHeight);
-		$('#go_chart1').css ("border", "1px solid grey");
+    		var go_chart = d3.select("#"+goNameID).append("svg")
+    		.attr("id","go_chart1")
+    		.attr("width", hierWidth)
+    		.attr("height", hierHeight);
+    		$('#go_chart1').css ("border", "1px solid grey");
 
-	var hier_group = go_chart.append("svg:svg")
-  //   	.call(zoomhier.on("zoom", zoomed));
-	hier_group.selectAll("line")
-		.attr("x1", function(d) { return d.source.x; })
-		.attr("y1", function(d) { return d.source.y; })
-		.attr("x2", function(d) { return d.target.x; })
-		.attr("y2", function(d) { return d.target.y; });
-		hier_group.selectAll("circle")
-		.attr("cx", function(d) { return d.x; })
-		.attr("cy", function(d) { return d.y; });
-		hier_group.selectAll("text")
-		.attr("x", function(d) { return d.x; })
-		.attr("y", function(d) { return d.y + radiusScale(d.r) + 10; });
+            var hier_group = go_chart.append("svg:svg")
+            hier_group.selectAll("line")
+        		.attr("x1", function(d) { return d.source.x; })
+        		.attr("y1", function(d) { return d.source.y; })
+        		.attr("x2", function(d) { return d.target.x; })
+        		.attr("y2", function(d) { return d.target.y; });
+        		hier_group.selectAll("circle")
+        		.attr("cx", function(d) { return d.x; })
+        		.attr("cy", function(d) { return d.y; });
+        		hier_group.selectAll("text")
+        		.attr("x", function(d) { return d.x; })
+        		.attr("y", function(d) { return d.y + radiusScale(d.r) + 10; });
 
-		/*go_chart.append('rect')
-		  .style('fill','white')
-		  .style('stroke','gray')
-		  .attr('width',hierWidth)
-		  .attr('height',hierHeight)
-		  .attr('x',0)
-		  .attr('y',0);*/
+    		update(goDetail.GO_id,hier_group,hierWidth,hierHeight);
 
-		update(goDetail.GO_id,hier_group,hierWidth,hierHeight);
-
-	  })
+        })
 	}
 
 	/* function zoomed() {
