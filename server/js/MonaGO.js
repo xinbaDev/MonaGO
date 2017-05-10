@@ -1735,21 +1735,41 @@
 	}
 	function mouseoverHier(){
 	   if(!$('[id="exporthier"]').hasClass("btn")){
-			$('#go_chart').append("<div style=\"position:relative;left:25px;bottom:"+(height-5)+"px;\"><button id='exporthier' class='btn'>Export</button><div>")
+			var element="<div style=\"position:relative;left:10px;bottom:"+(height-5)+"px;\"><button id='exporthier' class='btn dropdown-toggle' data-toggle='dropdown'>Save image<span class='caret'></span></button><div>"
+            $('#go_chart').append(element)
+            element= '<ul class="dropdown-menu" role="menu" id="menu">';
+             //element+='<li><a href="" id="PDF">PDF</a></li>'
+            element+='<li><a href="#" id="png">PNG</a></li>'
+            element+='<li><a href="#"id="svg">SVG</a></li></ul>'
+            $('#exporthier').append(element)
 			setexporthierbtn();
 	   }
 	   else if($('#exporthier').hide())
 			$('#exporthier').show();
 	   }
 	function mouseoutHier(){
-	   if($('[id="exporthier"]').hasClass("btn"))
+        if($('[id="exporthier"]').hasClass("btn"))
 			$('#exporthier').hide();
 	}
+
 	function setexporthierbtn(){
-		 $("#exporthier").click(function() {
-		 saveSvgAsPng(document.getElementById("hier_group"), "hierarchy.png", {scale: 5});
-	  })
+		$("#exporthier").click(function() {
+            $('#menu.dropdown-menu').slideToggle();
+          //saveSvgAsPng(document.getElementById("hier_group"), "hierarchy.png", {scale: 5});
+        })
+
+        $('#png').click(function(){
+            console.log("png")
+            console.log(document.getElementById("hier_group"))
+            saveSvgAsPng(document.getElementById("hier_group"), "hierarchy.png", {scale: 5});
+        });
+
+        $("#svg").click(function(){
+             saveSvg(document.getElementById("hier_group"), "hierarchy.svg", {scale: 2});
+        });
+
 	}
+
 	function replaceCommaWithUnderline(term){
 		return term.replace(":","_");
 	}
@@ -3208,15 +3228,15 @@
 }
 
 if(size != 0){
-  monago = new MonaGO().init(size,go_inf,array_order,clusterHierData,goNodes,matrix)
+    monago = new MonaGO().init(size,go_inf,array_order,clusterHierData,goNodes,matrix)
 }else{
-  if(content){
-	  //console.log("reload")
-	  content = JSON.stringify(content)
-	  monago = new MonaGO()
-	  monago.reload(content)
-  }else
-	  alert("Fail to load file")
+    if(content){
+        //console.log("reload")
+        content = JSON.stringify(content)
+        monago = new MonaGO()
+        monago.reload(content)
+    }else
+        alert("Fail to load file")
 }
 
 })();
