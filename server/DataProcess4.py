@@ -337,6 +337,8 @@ class DataProcess4():
             Z[k, 3] = number_current_max
 
             # update the distance matrix
+            self.updateClusterGenes(x, y)
+
             for i in range(n):
                 id_i = id_map[i]
                 if id_i == -1 or id_i == n + k:
@@ -352,6 +354,7 @@ class DataProcess4():
                     #D_num[self.condensed_index(n, i, y)])
 
                 # calcuate the real distance
+                #self.updateClusterGenes(x, y)
                 D[self.condensed_index(n, i, y)] = self.calRealDis(i,x,y)
                 D_num[self.condensed_index(n, i, y)] = self.calRealDisNum(i,x,y)
                 if i < x:
@@ -376,12 +379,14 @@ class DataProcess4():
         calculate the real distance between different clusters based on the number of different genes.
         Instad of using the max value of two clusters/node for approxiamte estimation.
         """
-        xGenes = self.getGenes(x)
+        iGenes = self.getGenes(i)
         yGenes = self.getGenes(y)
-        totalGenes = self.getTotalGenes(xGenes, yGenes)
-        numOfIntersectedGene = self.getNumOfIntersectedGenes(i, totalGenes)
+
+        totalGenes = self.getTotalGenes(iGenes, yGenes)
+
+        numOfIntersectedGene = self.getNumOfIntersectedGenes(i, yGenes)
         percentageOfOverlappingGene = numOfIntersectedGene*100.0/len(totalGenes)
-        self.updateClusterGenes(xGenes, yGenes, y)
+
 
         #return numOfIntersectedGene
         return percentageOfOverlappingGene
@@ -397,6 +402,7 @@ class DataProcess4():
 
         return numOfIntersectedGene
     def getGenes(self, index):
+
         return self.go_info[index]["genes"].split(";")
 
     def getTotalGenes(self, xGenes, yGenes):
@@ -421,12 +427,16 @@ class DataProcess4():
                 numberOfCommonGene += 1
         return numberOfCommonGene
 
-    def updateClusterGenes(self, xGenes, yGenes, index_y):
+    def updateClusterGenes(self, x,y):
+        xGenes = self.getGenes(x)
+        yGenes = self.getGenes(y)
         for gene in xGenes:
             if gene not in yGenes:
                 yGenes.append(gene)
 
-        self.go_info[index_y]["genes"] = ";".join(yGenes)
+        self.go_info[y]["genes"] = ";".join(yGenes)
+        #print y
+        #print len(self.go_info[y]["genes"].split(";"))
 
     def getGODependency(self, GO_inf):
 
@@ -551,6 +561,7 @@ class DataProcess4():
         matrix_reOrder = self.createMatrixReord(go_inf_reOrder)  # create matrix and clusterHierData
         #print matrix_reOrder
         go_hier = self.getGODependency(go_inf_reOrder)
+
         #print self.clusterHierData
         return {"matrix": matrix_reOrder, "go_index_reord": go_index_reord, "clusterHierData": self.clusterHierData,
                 "go_inf": go_inf_reOrder, "go_hier": go_hier}

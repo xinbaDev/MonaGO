@@ -672,7 +672,7 @@
 
 	  circle.attr("r",function(d){
 		if((d["percentOfOverlappingGenes"] > 0)||(d["percentOfOverlappingGenes"]==undefined))
-		return 7;
+		return 6;
 	  }).style("fill", function(d){
 		return (d["status"]=="Expanded")?"rgb(94, 141, 141)":"red";
 	  }).attr("id","cluster")
@@ -697,7 +697,7 @@
 
 	  text = textBackground.attr("transform", function(d) {
 		 //return "rotate("  + (90 - d.angle * 180 / Math.PI) +")" + "translate(" + 0 + ",5)";
-		 return "rotate(" + "-"+ $('[index='+d.index+']')[0].getAttribute("value") +")" + "translate(" + 0 + ",4)";
+		 return "rotate(" + -( $('[index='+d.index+']')[0].getAttribute("value")) +")" + "translate(0 ,3)";
 	   }).append("text");
 
 	  text.attr('height', 'auto')
@@ -1608,8 +1608,15 @@
 	function getLevelFromPercentOfOverlappingGenes(PercentOfOverlappingGenes){
 	  var level = -1;
 	  that.clusterHierDataStatic.map(function(d,i){
+	  if(PercentOfOverlappingGenes > that.minPercentOfOverlappingGens || that.minPercentOfOverlappingGens == 0){
 		  if(d[1]>PercentOfOverlappingGenes)
 			level = i;
+	  }
+	  else{
+	  	  if(d[1] >= PercentOfOverlappingGenes)
+			level = i;
+	  }
+
 	  });
 
 	  return level;
@@ -2633,7 +2640,7 @@
 					node_angle1[index]>0?node_angle[index]-=-(4.1-node_angle1[index]):node_angle[index]-=4.1+node_angle1[index];
 					$('.clusterNodeView')[index].setAttribute("transform","rotate(" + node_angle[index] + ")"+ "translate(" + translate_value[index] + ",0)");
 					$('.clusterNodeView')[index].setAttribute("value",node_angle[index]);
-					//$('.clusterText')[index].setAttribute("transform","rotate(" + -node_angle[index] + ")"+ "translate(" + translate_value[index] + ",0)");
+
     			}
     		}
 
@@ -2792,14 +2799,16 @@
 
         noUiSlider.create(that.ranger, {
             //start: [ maxNumOfOverlappingGens+1 ], // Handle start position
-            start: [ maxPercentOfOverlappingGens+1],
+            start: [ maxPercentOfOverlappingGens],
             step: 1, // Slider moves in increments of '10'
             margin: 0, // Handles must be more than '20' apart
             direction: 'rtl', // Put '0' at the bottom of the slider
             orientation: 'horizontal', // Orient the slider vertically
             //behaviour: 'tap-drag', // Move handle on tap, bar is draggable
             range: { // Slider can select '0' to '100'
+
               'min': minPercentOfOverlappingGens,
+
               'max': maxPercentOfOverlappingGens
             }
         });
@@ -3198,6 +3207,8 @@
         that.MonaGOData = {"size":nodesSize,"go_inf":that.go_inf_ori, "matrix": matrix, "array_order":array_order, "groupSize": that.groupSize, "clusterHierData": clusterHierData};
         that.maxNumOfOverlappingGens = that.clusterHierData[0][3];
         that.minNumOfOverlappingGens = that.clusterHierData[that.clusterHierData.length-1][3];
+        that.maxPercentOfOverlappingGens = that.clusterHierData[0][4];
+        that.minPercentOfOverlappingGens = that.clusterHierData[that.clusterHierData.length-1][4];
         that.clusterHierData.map(function(d){
             //that.clusterHierDataStatic.push([d[2],d[3]]);
             that.clusterHierDataStatic.push([d[2],d[4]]);
