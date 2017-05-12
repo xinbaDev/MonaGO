@@ -671,8 +671,8 @@
 	  circle = clusterHierNodeView.append("circle");
 
 	  circle.attr("r",function(d){
-		if((d["numOfOverlappingGenes"] > 0)||(d["numOfOverlappingGenes"]==undefined))
-		return 6;
+		if((d["percentOfOverlappingGenes"] > 0)||(d["percentOfOverlappingGenes"]==undefined))
+		return 7;
 	  }).style("fill", function(d){
 		return (d["status"]=="Expanded")?"rgb(94, 141, 141)":"red";
 	  }).attr("id","cluster")
@@ -696,14 +696,16 @@
 	  textBackground = clusterHierNodeTextView.append("g");
 
 	  text = textBackground.attr("transform", function(d) {
-		 return "rotate("  + (90 - d.angle * 180 / Math.PI) +")" + "translate(" + 0 + ",5)";
+		 //return "rotate("  + (90 - d.angle * 180 / Math.PI) +")" + "translate(" + 0 + ",5)";
+		 return "rotate(" + "-"+ $('[index='+d.index+']')[0].getAttribute("value") +")" + "translate(" + 0 + ",4)";
 	   }).append("text");
 
 	  text.attr('height', 'auto')
 		.attr('text-anchor', 'middle')
+		.attr('font-size','9px')
 		.text(function(d){
-		  if((d["numOfOverlappingGenes"] > 0)||(d["numOfOverlappingGenes"]==undefined))
-		  return d["numOfOverlappingGenes"];
+		  if((d["percentOfOverlappingGenes"] > 0)||(d["percentOfOverlappingGenes"]==undefined))
+		  return d["percentOfOverlappingGenes"];
 		}).attr('style', 'text-align:center;padding:2px;margin:2px;fill:white')
 		.on("click",onClusterNodeClick)
 		.append("title").text(function(d, i) {return "Click to cluster"});
@@ -1234,22 +1236,22 @@
 			secondNode = clusterHierData[i][1];
 			index = clusterHierData[i][2];
 			numOfOverlappingGenes = clusterHierData[i][3];
-
+            percentOfOverlappingGenes = clusterHierData[i][4];
 			
 			position = calculateAClusterNodePosition(firstNode,secondNode,status,index,nodeBeingClicked,clusterNodesRadius,collapsedNodeRadius);
 			//create new cluster node based on the position
 			if(nodeBeingClicked == index){
 			  if(status == "collapse"){
-				nodeObj = {"index":index,"angle":position[0],"radius":position[1],"numOfOverlappingGenes":numOfOverlappingGenes,"status":"Collapsed"};
+				nodeObj = {"index":index,"angle":position[0],"radius":position[1],"numOfOverlappingGenes":numOfOverlappingGenes,"percentOfOverlappingGenes":percentOfOverlappingGenes ,"status":"Collapsed"};
 			  }else{
-				nodeObj = {"index":index,"angle":position[0],"radius":position[1],"numOfOverlappingGenes":numOfOverlappingGenes,"status":"Expanded"};
+				nodeObj = {"index":index,"angle":position[0],"radius":position[1],"numOfOverlappingGenes":numOfOverlappingGenes,"percentOfOverlappingGenes":percentOfOverlappingGenes ,"status":"Expanded"};
 			  }
 			}
 			else{
 			  if(collpasedNodes.indexOf(index.toString())!=-1){
-				nodeObj = {"index":index,"angle":position[0],"radius":position[1],"numOfOverlappingGenes":numOfOverlappingGenes,"status":"Collapsed"};
+				nodeObj = {"index":index,"angle":position[0],"radius":position[1],"numOfOverlappingGenes":numOfOverlappingGenes,"percentOfOverlappingGenes":percentOfOverlappingGenes ,"status":"Collapsed"};
 			  }else{
-				nodeObj = {"index":index,"angle":position[0],"radius":position[1],"numOfOverlappingGenes":numOfOverlappingGenes,"status":"Expanded"};
+				nodeObj = {"index":index,"angle":position[0],"radius":position[1],"numOfOverlappingGenes":numOfOverlappingGenes,"percentOfOverlappingGenes":percentOfOverlappingGenes ,"status":"Expanded"};
 			  }
 			}
 			
@@ -1603,10 +1605,10 @@
 	  });
 	}
 
-	function getLevelFromNumOfOverlappingGenes(numOfOverlappingGenes){
+	function getLevelFromPercentOfOverlappingGenes(PercentOfOverlappingGenes){
 	  var level = -1;
 	  that.clusterHierDataStatic.map(function(d,i){
-		  if(d[1]>=numOfOverlappingGenes)
+		  if(d[1]>PercentOfOverlappingGenes)
 			level = i;
 	  });
 
@@ -2631,6 +2633,7 @@
 					node_angle1[index]>0?node_angle[index]-=-(4.1-node_angle1[index]):node_angle[index]-=4.1+node_angle1[index];
 					$('.clusterNodeView')[index].setAttribute("transform","rotate(" + node_angle[index] + ")"+ "translate(" + translate_value[index] + ",0)");
 					$('.clusterNodeView')[index].setAttribute("value",node_angle[index]);
+					//$('.clusterText')[index].setAttribute("transform","rotate(" + -node_angle[index] + ")"+ "translate(" + translate_value[index] + ",0)");
     			}
     		}
 
@@ -2755,7 +2758,7 @@
 	function setUpControlPanel(){
 
 	    if (existReload == false){
-		    var element = '&nbsp<label>Cluster GO term according to the minimum number of common gene(s)</label> \
+		    var element = '&nbsp<label>Cluster GO term according to the minimum percentage of common gene(s)</label> \
 			    <div id="slider" class="sliderBar"></div>\
 			    <input type="text" id="input_slider"/>';
 
@@ -2776,10 +2779,10 @@
 
         that.ranger = document.getElementById('slider');
         var inputFormat = document.getElementById('input_slider');
-        setUpRangeSlider(inputFormat,that.minNumOfOverlappingGens,that.maxNumOfOverlappingGens);
+        setUpRangeSlider(inputFormat,that.minPercentOfOverlappingGens,that.maxPercentOfOverlappingGens);
 	}
 
-	function setUpRangeSlider(inputFormat,minNumOfOverlappingGens,maxNumOfOverlappingGens){
+	function setUpRangeSlider(inputFormat,minPercentOfOverlappingGens,maxPercentOfOverlappingGens){
         if (that.ranger != null){
             if (that.ranger.hasOwnProperty("noUiSlider")){
             that.ranger.noUiSlider.destroy();
@@ -2788,15 +2791,16 @@
 
 
         noUiSlider.create(that.ranger, {
-            start: [ maxNumOfOverlappingGens+1 ], // Handle start position
+            //start: [ maxNumOfOverlappingGens+1 ], // Handle start position
+            start: [ maxPercentOfOverlappingGens+1],
             step: 1, // Slider moves in increments of '10'
             margin: 0, // Handles must be more than '20' apart
             direction: 'rtl', // Put '0' at the bottom of the slider
             orientation: 'horizontal', // Orient the slider vertically
             //behaviour: 'tap-drag', // Move handle on tap, bar is draggable
             range: { // Slider can select '0' to '100'
-              'min': minNumOfOverlappingGens,
-              'max': maxNumOfOverlappingGens+1
+              'min': minPercentOfOverlappingGens,
+              'max': maxPercentOfOverlappingGens
             }
         });
 
@@ -2805,7 +2809,7 @@
         });
 
         that.ranger.noUiSlider.on('change', function( values, handle ) {
-            var level = getLevelFromNumOfOverlappingGenes(values.toString());
+            var level = getLevelFromPercentOfOverlappingGenes(values.toString());
             getClusterNodesIndexBeingSelected(level);
 
             //temporary fix
@@ -2815,7 +2819,7 @@
 
         inputFormat.addEventListener('change',function(){
             that.ranger.noUiSlider.set(this.value);
-            var level = getLevelFromNumOfOverlappingGenes(this.value);
+            var level = getLevelFromPercentOfOverlappingGenes(this.value);
             getClusterNodesIndexBeingSelected(level);
 
             if(labelOff==0)
@@ -3124,7 +3128,7 @@
 	}
 
 	function clusterGO(nodeCollapse){
-        var level = getLevelFromNumOfOverlappingGenes(nodeCollapse);
+        var level = getLevelFromPercentOfOverlappingGenes(nodeCollapse);
         getClusterNodesIndexBeingSelected(level);
 
         $("#input_slider").val(nodeCollapse);
@@ -3143,9 +3147,12 @@
         that.clusterHierData = clusterHierData;
         that.maxNumOfOverlappingGens = that.clusterHierData[0][3];
         that.minNumOfOverlappingGens = that.clusterHierData[that.clusterHierData.length-1][3];
+        that.maxPercentOfOverlappingGens = that.clusterHierData[0][4];
+        that.minPercentOfOverlappingGens = that.clusterHierData[that.clusterHierData.length-1][4];
 
         that.clusterHierData.map(function(d){
-            that.clusterHierDataStatic.push([d[2],d[3]]);
+            //that.clusterHierDataStatic.push([d[2],d[3]]);
+            that.clusterHierDataStatic.push([d[2],d[4]]);
         });
 
         //get a list of genes for each GO term
@@ -3192,7 +3199,8 @@
         that.maxNumOfOverlappingGens = that.clusterHierData[0][3];
         that.minNumOfOverlappingGens = that.clusterHierData[that.clusterHierData.length-1][3];
         that.clusterHierData.map(function(d){
-            that.clusterHierDataStatic.push([d[2],d[3]]);
+            //that.clusterHierDataStatic.push([d[2],d[3]]);
+            that.clusterHierDataStatic.push([d[2],d[4]]);
         });
 
         perparePvalue();
@@ -3219,7 +3227,8 @@
             })
         }
 
-        if (that.nodeCollapse < that.maxNumOfOverlappingGens+1){
+        //if (that.nodeCollapse < that.maxNumOfOverlappingGens+1){
+        if (that.nodeCollapse < that.maxPercentOfOverlappingGens){
             clusterGO(that.nodeCollapse)
         }
 
