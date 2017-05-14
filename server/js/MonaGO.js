@@ -76,6 +76,7 @@
 	this.MonaGOData = [];
 	this.ranger;
 	this.clickCollapseNodeArr = [];
+	this.goLabelSize = {};
 
 	var that = this;
 
@@ -120,7 +121,6 @@
 	var svg ;
 	var go_chart;
 	var circleSvg;
-	var goLabelSize = {};
 
 	var width = detailPanelWidth-70;
 	var height = 600;
@@ -2669,27 +2669,25 @@
     		 return (d.startAngle+d.endAngle)/2 > Math.PI ? "rotate(180)translate(-16)" : null;
     		})
     		.text(function(d) {
-                if(that.go_inf[d.index].cat in annotation_manual)
-                {
+                if(that.go_inf[d.index].cat in annotation_manual){
                     var annotation=annotation_manual[that.go_inf[d.index].cat];
                     var text1= (d.startAngle+d.endAngle)/2 > Math.PI ?that.go_inf[d.index].GO_name+"  "+annotation:annotation+"  "+that.go_inf[d.index].GO_name;
                     return (typeof that.go_inf[d.index].GO_id == "string")? text1:getMaxLabel(that.go_inf[d.index].GO_name)+"+";
-                }
-                    else if(that.go_inf[d.index].cat!=undefined)
-                {
-                    var text1= (d.startAngle+d.endAngle)/2 > Math.PI ?that.go_inf[d.index].GO_name+"  ["+that.go_inf[d.index].cat.slice(7,9)+"]  ":"  ["+that.go_inf[d.index].cat.slice(7,9)+"]  "+that.go_inf[d.index].GO_name;
+                }else{
+                    var text1 = that.go_inf[d.index].GO_name;
                     return (typeof that.go_inf[d.index].GO_id == "string")? text1:getMaxLabel(that.go_inf[d.index].GO_name)+"+";
                 }
 
-	       });
+            });
 	}
 
+    //the function name is a bit confusing due to word cloud implementation before
 	function getMaxLabel(d){
         var position = 0;
         var maxSize = 0;
         d.map(function(d,i){
-            if(maxSize < goLabelSize[d]){
-                maxSize = goLabelSize[d];
+            if(maxSize < that.goLabelSize[d]){
+                maxSize = that.goLabelSize[d];
                 position = i;
             }
         });
@@ -3076,8 +3074,8 @@
 
 
         that.go_inf.map(function(d){
-            if(goLabelSize[d.GO_name] == undefined){
-                goLabelSize[d.GO_name] = d.size;
+            if(that.goLabelSize[d.GO_name] == undefined){
+                that.goLabelSize[d.GO_name] = d.size;
             }
         })
 
