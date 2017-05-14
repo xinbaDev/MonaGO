@@ -125,7 +125,7 @@
 	var width = detailPanelWidth-70;
 	var height = 600;
 	var force = d3.layout.force()
-	  .charge(-3000)
+	  .charge(-2000)
 	  .linkDistance(50)
 	  .theta(0.2)
 	  .gravity(1)
@@ -405,7 +405,7 @@
 	}
 
 	//drawing the graph
-	function drawGraph(struct,svg) {
+	function drawGraph(struct,svg,width,height) {
 	  force
 		.nodes(struct.nodes)
 		.links(struct.links);
@@ -450,7 +450,7 @@
 
 	 
 	  force.on("tick", function(e) {
-		link.attr("x1", function(d) { return d.source.x; })
+		link.attr("x1", function(d) { if (d.source.x - width/2 >= 0 ) return d.source.x; })
 		  .attr("y1", function(d) { return d.source.y; })
 		  .attr("x2", function(d) { return d.target.x; })
 		  .attr("y2", function(d) { return d.target.y; });
@@ -527,7 +527,7 @@
         svg.selectAll("circle.node").remove();
         svg.selectAll("text.node").remove();
 
-        drawGraph(data,svg);
+        drawGraph(data,svg,width,height);
 	}
 
 	function getMaxPval(){
