@@ -896,7 +896,7 @@
 		.duration(500)
 		.attr("d",function(d){
 
-		  var secondLine = d3.svg.arc()
+		var secondLine = d3.svg.arc()
 			.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
 			.outerRadius(d["LineOuterPosition"]+5)
 			.startAngle(d["LineAngle"])
@@ -907,11 +907,9 @@
 	}
 
 	function drawHierarchicalClustering(clusterHierData){
-		
 		drawArc(clusterHierData);
 		drawLine(clusterHierData);
 		drawClusterNodes();
-		
 	}
 
 	function redraw(transition) {
@@ -932,7 +930,6 @@
 				}
 			}
 
-
 			zoomLevel = zoom.scale();
 		  }
 	}
@@ -943,35 +940,34 @@
 	*/ 
 	function getHierNodes(index){
 
-	  var leafNodes = [];
-	  var clusterNodesLevel = [];
+        var leafNodes = [];
+        var clusterNodesLevel = [];
 
-	  recursiveGetNodes(index-maxNodeIndex);
+        recursiveGetNodes(index-maxNodeIndex);
 
-	  function recursiveGetNodes(pos){
+        function recursiveGetNodes(pos){
 
-		  var leftNode = that.clusterHierData[pos][0];
-		  var rightNode = that.clusterHierData[pos][1];
-
-
-
-		  if(leftNode < maxNodeIndex){
-			leafNodes.push({"level":pos,"nodeId":leftNode});
-		  }else{
-			recursiveGetNodes(leftNode-maxNodeIndex);
-		  }
-
-		  if(rightNode < maxNodeIndex){
-			leafNodes.push({"level":pos,"nodeId":rightNode});
-		  }else{
-			recursiveGetNodes(rightNode-maxNodeIndex);
-		  }
-
-		  clusterNodesLevel.push(pos);
-	  }
+            var leftNode = that.clusterHierData[pos][0];
+            var rightNode = that.clusterHierData[pos][1];
 
 
-	  return {"leafNodes":leafNodes,"clusterNodesLevel":clusterNodesLevel};
+
+            if(leftNode < maxNodeIndex){
+                leafNodes.push({"level":pos,"nodeId":leftNode});
+            }else{
+                recursiveGetNodes(leftNode-maxNodeIndex);
+            }
+
+            if(rightNode < maxNodeIndex){
+                leafNodes.push({"level":pos,"nodeId":rightNode});
+            }else{
+                recursiveGetNodes(rightNode-maxNodeIndex);
+            }
+            clusterNodesLevel.push(pos);
+        }
+
+
+        return {"leafNodes":leafNodes,"clusterNodesLevel":clusterNodesLevel};
 	}
 
 	function getLeafNodesPosition(nodes){
@@ -985,36 +981,35 @@
 	}
 
 	function getClusterNodeLevel(nodes){
-	  var clusterNodesLevel = [];
-	  nodes.map(function(d){
-		clusterNodesLevel.push(d["level"]);
-	  });
+        var clusterNodesLevel = [];
+        nodes.map(function(d){
+            clusterNodesLevel.push(d["level"]);
+        });
 
-	  return clusterNodesLevel.unique();
+        return clusterNodesLevel.unique();
 	}
 
 	function getClusterGenes(nodePositions){
-	  var clustergenes = [];
+        var clustergenes = [];
 
-	  nodePositions.map(function(d){ 
-			that.go_inf[d].genes.map(function(d,i){
-				 clustergenes.push(d);
-			 });
-	  });
-	  
-	  return clustergenes.unique();
+        nodePositions.map(function(d){ 
+        	that.go_inf[d].genes.map(function(d,i){
+        		clustergenes.push(d);
+        	});
+        });
+
+        return clustergenes.unique();
 	}
 
 	function calculateNewPvalue(removeGO){
-	  var pVal = 0;
-	  removeGO.map(function(d,i){
+        var pVal = 0;
+        removeGO.map(function(d,i){
 
-		  pVal += parseFloat(d["pVal"]);
-	  });
-	  pVal = pVal/removeGO.length;
-	  return pVal;
+          pVal += parseFloat(d["pVal"]);
+        });
+        pVal = pVal/removeGO.length;
+        return pVal;
 	}
-
 
 	/**
 	*collapse/combine all go inf assoicated with the clustered node and return the removed go inf
@@ -1022,77 +1017,72 @@
 	*@return original go inf(before clustered)
 	*/
 	function collapseNodeSet(nodePositions,nodeBeingClicked){
-	  //get all the genes associated with the cluster
-	  var genes = getClusterGenes(nodePositions);
+        //get all the genes associated with the cluster
+        var genes = getClusterGenes(nodePositions);
 
-	  var clusterGOs = that.go_inf.splice(nodePositions[0],nodePositions.length);
-	  var GO_id = [];
-	  var GO_name = [];
-	  clusterGOs.map(function(d){
-		  GO_id.push(d["GO_id"]);
-		  GO_name.push(d["GO_name"]);
-	  });
+        var clusterGOs = that.go_inf.splice(nodePositions[0],nodePositions.length);
+        var GO_id = [];
+        var GO_name = [];
+        clusterGOs.map(function(d){
+            GO_id.push(d["GO_id"]);
+            GO_name.push(d["GO_name"]);
+        });
 
-	  var pVal = calculateNewPvalue(clusterGOs);
+        var pVal = calculateNewPvalue(clusterGOs);
 
-	  var newGONode = {"GO_id":GO_id,"GO_name":GO_name,"count":genes.length,"pVal":pVal,"genes":genes,"nodeBeingClicked":nodeBeingClicked};
+        var newGONode = {"GO_id":GO_id,"GO_name":GO_name,"count":genes.length,"pVal":pVal,"genes":genes,"nodeBeingClicked":nodeBeingClicked};
 
-	  that.go_inf.splice(nodePositions[0],0,newGONode);
+        that.go_inf.splice(nodePositions[0],0,newGONode);
 
-	  return clusterGOs;
+        return clusterGOs;
 	}
 
 	function expandNodeSet(nodeBeingClicked,removeGO){
-	  var position;
-
-	  that.go_inf.map(function(d,i){
-		  if(d["nodeBeingClicked"] == nodeBeingClicked)
-		  {
-			position = i;
-		  }
-	  });
-	  that.go_inf.splice(position,1);
-
-	  removeGO.map(function(d,i){
-		  that.go_inf.splice(position+i,0,d);
-	  });
-	  
+        var position;
+        that.go_inf.map(function(d,i){
+            if(d["nodeBeingClicked"] == nodeBeingClicked){
+                position = i;
+            }
+        });
+        that.go_inf.splice(position,1);
+        removeGO.map(function(d,i){
+          that.go_inf.splice(position+i,0,d);
+        });
 	}
 
 	function updateMatrix(){
-	  var newMatrix = [];
-	  var newArray = [];
+        var newMatrix = [];
+        var newArray = [];
 
-	  that.go_inf.map(function(d1,i){
-		  newArray = [];
-		  that.go_inf.map(function(d2,j){
-			var numOfCommomGenes = 0;
-			if(i != j)
-			  var numOfCommomGenes = getCommonGeneSize(d1["genes"],d2["genes"]);
-			newArray.push(numOfCommomGenes);
-		  });
-		  newMatrix.push(newArray);
-	  });
-	  matrix = newMatrix;
-	  /*console.log(matrix);*/
-
-
-	  function getCommonGeneSize(genes1,genes2){
-		  var size = 0;
-		  genes1.map(function(d){
-			  if(genes2.indexOf(d)!=-1)
-			   size++;
-		  });
-		  return size;
-	  }
+        that.go_inf.map(function(d1,i){
+            newArray = [];
+            that.go_inf.map(function(d2,j){
+                var numOfCommomGenes = 0;
+                if(i != j){
+                    var numOfCommomGenes = getCommonGeneSize(d1["genes"],d2["genes"]);
+                }
+                newArray.push(numOfCommomGenes);
+            });
+            newMatrix.push(newArray);
+        });
+        matrix = newMatrix;
+        function getCommonGeneSize(genes1,genes2){
+            var size = 0;
+            genes1.map(function(d){
+                if(genes2.indexOf(d)!=-1){
+                    size++;
+                }
+            });
+    		return size;
+        }
 	  return newMatrix;
 	}
 
 	function updateGroupSize(){
-	  that.groupSize = []
-	  that.go_inf.forEach(function(d){
-		that.groupSize.push(d.count)
-	  }) 
+        that.groupSize = []
+        that.go_inf.forEach(function(d){
+            that.groupSize.push(d.count)
+        }) 
 	}
 
 	function drawLayout(newMatrix){
@@ -1105,11 +1095,11 @@
 		groupElements.exit().remove();
 
 		groupLayout = groupElements
-		 .style("fill", function(d) { return getColor(Number(that.go_inf[d.index].pVal),fill); })
-		 .style("stroke", function(d) { return getColor(Number(that.go_inf[d.index].pVal),fill); })
-		 .attr("d", d3.svg.arc().innerRadius(r0).outerRadius(r1)) //important
-		 .attr("id","chordGroups")
-		 .on("mouseover", mouseover_group);
+    		 .style("fill", function(d) { return getColor(Number(that.go_inf[d.index].pVal),fill); })
+    		 .style("stroke", function(d) { return getColor(Number(that.go_inf[d.index].pVal),fill); })
+    		 .attr("d", d3.svg.arc().innerRadius(r0).outerRadius(r1)) //important
+    		 .attr("id","chordGroups")
+    		 .on("mouseover", mouseover_group);
 
 		chordElements = chordElements.data(chord.chords());
 
@@ -1118,103 +1108,95 @@
 		chordElements.exit().remove();
 
 		chordLayout = chordElements
-		  .attr("class", "chord")
-		  .style("fill", function(d) { return "#A0A0A0"; })
-		  //.style("opacity",".5")
-		  .attr("d", d3.svg.chord().radius(r0))
-		  .attr("id","chordChords")
-		  .on("mouseover", mouseover_chord)
-		  .on("click", click_chord);
+    		  .attr("class", "chord")
+    		  .style("fill", function(d) { return "#A0A0A0"; })
+    		  //.style("opacity",".5")
+    		  .attr("d", d3.svg.chord().radius(r0))
+    		  .attr("id","chordChords")
+    		  .on("mouseover", mouseover_chord)
+    		  .on("click", click_chord);
 
 		chordLayout.classed("fade", function(p) {
-		  return 1;
+            return 1;
 		});
-
 	}
 
 	function click_chord(d,i){
-	  if(i != that.userHighlightChordIndex){
-		  //highlight the chord
-		  chordLayout.classed("highlight", function(d,j){
-			if(i == j) return true;
-			return false;
-		  });
+        if(i != that.userHighlightChordIndex){
+            //highlight the chord
+            chordLayout.classed("highlight", function(d,j){
+            if(i == j) return true;
+                return false;
+            });
 
-		  //freeze mouseover event
-		  chordLayout.on("mouseover", function(){return false});
-		  groupLayout.on("mouseover", function(){return false});
-		  that.userHighlightChordIndex = i
+            //freeze mouseover event
+            chordLayout.on("mouseover", function(){return false});
+            groupLayout.on("mouseover", function(){return false});
+            that.userHighlightChordIndex = i
 
-		if(that.userHighlightChordIndex !=-1){// click when the chord is already freezed
-		  updateDetailPanelBasedOnChord(d,i);
-		}
+        if(that.userHighlightChordIndex !=-1){// click when the chord is already freezed
+            updateDetailPanelBasedOnChord(d,i);
+        }
 
-	  }else{
-		//back to normal
-		chordLayout.classed("highlight", function(d,j){
-		  return false;
-		});
+        }else{
+            //back to normal
+            chordLayout.classed("highlight", function(d,j){
+                return false;
+            });
 
-		chordLayout.on("mouseover", mouseover_chord);
-		groupLayout.on("mouseover", mouseover_group);
-		that.userHighlightChordIndex = -1;
-	  }
-
+            chordLayout.on("mouseover", mouseover_chord);
+            groupLayout.on("mouseover", mouseover_group);
+            that.userHighlightChordIndex = -1;
+        }
 	}
 
 	function getMinValuePosition(nodePostions){
-	  var position = 0;
-	  var min = array_order[nodePostions[0]];
+        var position = 0;
+        var min = array_order[nodePostions[0]];
 
-	  nodePostions.map(function(d,i){
-		  if(array_order[d] < min){
-			min = array_order[d];
-			position = i;
-		  }
-	  });
-
-	  return position;
-
+        nodePostions.map(function(d,i){
+            if(array_order[d] < min){
+                min = array_order[d];
+                position = i;
+            }
+        });
+        return position;
 	}
 
 	function calculateAClusterNodePosition(firstNodeIndex,secondNodeIndex,status,index,nodeBeingClicked,clusterNodesRadius,collapsedNodeRadius){
-	  //get the node object
+        //get the node object
+        if(firstNodeIndex < nodesSize){
+            firstNodeIndex = transformIndex(firstNodeIndex);
+            firstNode = chordGroupsNodePosition[firstNodeIndex];
+        }else{
+    		firstNodeIndex = transformIndex(firstNodeIndex);
+    		firstNode = clusterHierNodesStatus[firstNodeIndex];
+	    }
 
-
-	  if(firstNodeIndex < nodesSize){
-		firstNodeIndex = transformIndex(firstNodeIndex);
-		firstNode = chordGroupsNodePosition[firstNodeIndex];
-	  }
-	  else{
-		firstNodeIndex = transformIndex(firstNodeIndex);
-		firstNode = clusterHierNodesStatus[firstNodeIndex];
-	  }
-
-	  if(secondNodeIndex < nodesSize){
-		secondNodeIndex = transformIndex(secondNodeIndex);
-		secondNode = chordGroupsNodePosition[secondNodeIndex];
-	  }
-	  else{
-		secondNodeIndex = transformIndex(secondNodeIndex);
-		secondNode = clusterHierNodesStatus[secondNodeIndex];
-	  }
+	    if(secondNodeIndex < nodesSize){
+    		secondNodeIndex = transformIndex(secondNodeIndex);
+    		secondNode = chordGroupsNodePosition[secondNodeIndex];
+        }else{
+    		secondNodeIndex = transformIndex(secondNodeIndex);
+    		secondNode = clusterHierNodesStatus[secondNodeIndex];
+        }
 
  
-	  //calculate the position of new node(radius,angle)
-	  angle = (firstNode.angle+secondNode.angle)/2;
+        //calculate the position of new node(radius,angle)
+        angle = (firstNode.angle+secondNode.angle)/2;
 
-	  if((nodeBeingClicked == index)&&(status=="collapse")){
-		radius = collapsedNodeRadius;
-	  }else if((clusterNodesRadius!=undefined)&&(clusterNodesRadius.map(function(d){return d["nodeId"]}).indexOf(index)!=-1)){
-		clusterNodesRadius.map(function(d){
-		  if(d["nodeId"]==index){
-			  radius = d["radius"];
-		  }
-		});
-	  }else{
-		 radius = (firstNode.radius > secondNode.radius)?firstNode.radius+5:secondNode.radius+5;
-	  }
-	  return [angle,radius];
+        if((nodeBeingClicked == index)&&(status=="collapse")){
+            radius = collapsedNodeRadius;
+        }else if((clusterNodesRadius!=undefined)&&(clusterNodesRadius.map(function(d){return d["nodeId"]}).indexOf(index)!=-1)){
+            clusterNodesRadius.map(function(d){
+                if(d["nodeId"]==index){
+                    radius = d["radius"];
+                }
+            });
+        }else{
+            radius = (firstNode.radius > secondNode.radius)?firstNode.radius+5:secondNode.radius+5;
+        }
+        return [angle,radius];
 	}
 
 	/**
@@ -1227,38 +1209,32 @@
 	*@param collapsedNodeRadius: the radius of the collapsed node
 	*/
 	function createClusterNodesStatus(clusterHierData,nodeBeingClicked,status,collpasedNodes,clusterNodesRadius,collapsedNodeRadius){
-	  clusterHierNodesStatus = [];
-	  for(i=0;i<clusterHierData.length;i++){
-		if(clusterHierData[i]!=undefined){
-
-	 
-			firstNode = clusterHierData[i][0];
-			secondNode = clusterHierData[i][1];
-			index = clusterHierData[i][2];
-			numOfOverlappingGenes = clusterHierData[i][3];
-            percentOfOverlappingGenes = clusterHierData[i][4];
-			
-			position = calculateAClusterNodePosition(firstNode,secondNode,status,index,nodeBeingClicked,clusterNodesRadius,collapsedNodeRadius);
-			//create new cluster node based on the position
-			if(nodeBeingClicked == index){
-			  if(status == "collapse"){
-				nodeObj = {"index":index,"angle":position[0],"radius":position[1],"numOfOverlappingGenes":numOfOverlappingGenes,"percentOfOverlappingGenes":percentOfOverlappingGenes ,"status":"Collapsed"};
-			  }else{
-				nodeObj = {"index":index,"angle":position[0],"radius":position[1],"numOfOverlappingGenes":numOfOverlappingGenes,"percentOfOverlappingGenes":percentOfOverlappingGenes ,"status":"Expanded"};
-			  }
-			}
-			else{
-			  if(collpasedNodes.indexOf(index.toString())!=-1){
-				nodeObj = {"index":index,"angle":position[0],"radius":position[1],"numOfOverlappingGenes":numOfOverlappingGenes,"percentOfOverlappingGenes":percentOfOverlappingGenes ,"status":"Collapsed"};
-			  }else{
-				nodeObj = {"index":index,"angle":position[0],"radius":position[1],"numOfOverlappingGenes":numOfOverlappingGenes,"percentOfOverlappingGenes":percentOfOverlappingGenes ,"status":"Expanded"};
-			  }
-			}
-			
-			clusterHierNodesStatus.push(nodeObj);
-			
-			
-		  }
+        clusterHierNodesStatus = [];
+        for(i=0;i<clusterHierData.length;i++){
+    		if(clusterHierData[i]!=undefined){
+    			firstNode = clusterHierData[i][0];
+    			secondNode = clusterHierData[i][1];
+    			index = clusterHierData[i][2];
+    			numOfOverlappingGenes = clusterHierData[i][3];
+                percentOfOverlappingGenes = clusterHierData[i][4];
+    			
+    			position = calculateAClusterNodePosition(firstNode,secondNode,status,index,nodeBeingClicked,clusterNodesRadius,collapsedNodeRadius);
+    			//create new cluster node based on the position
+    			if(nodeBeingClicked == index){
+                    if(status == "collapse"){
+                        nodeObj = {"index":index,"angle":position[0],"radius":position[1],"numOfOverlappingGenes":numOfOverlappingGenes,"percentOfOverlappingGenes":percentOfOverlappingGenes ,"status":"Collapsed"};
+                    }else{
+                        nodeObj = {"index":index,"angle":position[0],"radius":position[1],"numOfOverlappingGenes":numOfOverlappingGenes,"percentOfOverlappingGenes":percentOfOverlappingGenes ,"status":"Expanded"};
+                    }
+    			}else{
+                    if(collpasedNodes.indexOf(index.toString())!=-1){
+                        nodeObj = {"index":index,"angle":position[0],"radius":position[1],"numOfOverlappingGenes":numOfOverlappingGenes,"percentOfOverlappingGenes":percentOfOverlappingGenes ,"status":"Collapsed"};
+                    }else{
+                        nodeObj = {"index":index,"angle":position[0],"radius":position[1],"numOfOverlappingGenes":numOfOverlappingGenes,"percentOfOverlappingGenes":percentOfOverlappingGenes ,"status":"Expanded"};
+                    }
+    			}
+    			clusterHierNodesStatus.push(nodeObj);
+    		}
 		}
 	}
 
@@ -1267,44 +1243,40 @@
 	*get rid of the merge node
 	*/
 	function removeNodesInArrayOrder(nodePositions){
-	  //remove nodes in array
-		  var newArrayOrder = [];
-		  var removeNodeInArray = [];
+        //remove nodes in array
+        var newArrayOrder = [];
+        var removeNodeInArray = [];
 
-		  array_order.map(function(d,i){
-			  if(nodePositions.indexOf(i) == -1 ){
-					  newArrayOrder.push(d);
-			  }
-			  else{
-				if(nodePositions.indexOf(i) == nodePositions.length -1){
-				  newArrayOrder.push(d);
-				}
-				removeNodeInArray.push(d);
-			  }
-		   
-		  });
-		  old_array_order = array_order;
-		  array_order = newArrayOrder;
-		  
-		  /*console.log("array_order = " + array_order);*/
+        array_order.map(function(d,i){
+            if(nodePositions.indexOf(i) == -1 ){
+        		newArrayOrder.push(d);
+            }else{
+            	if(nodePositions.indexOf(i) == nodePositions.length -1){
+            	   newArrayOrder.push(d);
+            	}
+        	    removeNodeInArray.push(d);
+            }
 
-		  return removeNodeInArray;
+        });
+        old_array_order = array_order;
+        array_order = newArrayOrder;
+        return removeNodeInArray;
 	}
 
 	function addNodesToArrayOrder(removedNodes){
-	  var position;
+        var position;
 
-	  array_order.map(function(d,i){
-		if(removedNodes.indexOf(d)!=-1){
-		  position = i;
-		}
-	  });
+        array_order.map(function(d,i){
+            if(removedNodes.indexOf(d)!=-1){
+                position = i;
+            }
+        });
 
-	  array_order.splice(position,1);
+        array_order.splice(position,1);
 
-	  removedNodes.map(function(d,i){
-		  array_order.splice(position+i,0,d);
-	  });
+        removedNodes.map(function(d,i){
+            array_order.splice(position+i,0,d);
+        });
 
 	  /*console.log("recover array order:"+array_order);*/
 	}
@@ -1337,23 +1309,21 @@
 
 	function addNodesInClusterData(removedClusterHierData){
 
-	  removedClusterHierData.map(function(d,i){
+        removedClusterHierData.map(function(d,i){
+            that.clusterHierData[d[2]-maxNodeIndex] = d;
+        });
 
-		  that.clusterHierData[d[2]-maxNodeIndex] = d;
-	  });
-
-
-	  return that.clusterHierData;
+        return that.clusterHierData;
 	}
 
 	function getRemoveClusterData(clusterNodesLevel){
-	  var removeHierData = [];
+        var removeHierData = [];
 
-	  clusterNodesLevel.map(function(d,i){
-		  removeHierData.push(that.clusterHierData[d]);
-	  });
+        clusterNodesLevel.map(function(d,i){
+            removeHierData.push(that.clusterHierData[d]);
+        });
 
-	  return removeHierData;
+        return removeHierData;
 	}
 
 	/**
@@ -1368,14 +1338,13 @@
 	function collapseHierClustering(nodePositions,clusterNodesLevel,nodeBeingClicked,collpasedNodes,clusterNodesRadius){
 		var collapsedNodeRadius;
 		clusterHierNodesStatus.map(function(d){
-		  if(d["index"]==nodeBeingClicked)
-			collapsedNodeRadius = d["radius"];
+            if(d["index"]==nodeBeingClicked){
+                collapsedNodeRadius = d["radius"];
+            }
 		});
 		 
 		clusterHierNodesStatus = [];//empty clusterHierNodesStatus
 		chordGroupsNodePosition = [];
-
-		/*console.log(clusterNodesLevel);*/
 
 		chord.groups().forEach(function(d,i){//recalculate angel,radius
 		  nodeObj = {"index":d.index,"angle":(d.startAngle+d.endAngle)/2,"radius":r1};
@@ -1412,9 +1381,9 @@
 
 	function collapseMonaGO(nodeBeingClickedIndex, collpaseType){
 		if (collpaseType == "manually"){
-		  if (that.clickCollapseNodeArr.indexOf(nodeBeingClickedIndex) == -1){
-			that.clickCollapseNodeArr.push(nodeBeingClickedIndex);
-		  }
+            if (that.clickCollapseNodeArr.indexOf(nodeBeingClickedIndex) == -1){
+                that.clickCollapseNodeArr.push(nodeBeingClickedIndex);
+            }
 		}
 		//get leaf nodes(associated with the cluster) info(node index & cluster level)
 		var nodes = getHierNodes(nodeBeingClickedIndex);
@@ -1444,8 +1413,7 @@
 
 		clusterHierNodesStatus.map(function(d){
 			if(d["index"]==nodeBeingClickedIndex){
-			  //console.log(d);
-			  clusterNodesRadius.push({"nodeId":d["index"],"radius":d["radius"]});
+                clusterNodesRadius.push({"nodeId":d["index"],"radius":d["radius"]});
 			}
 		});
 
@@ -1467,7 +1435,7 @@
 		var index = that.clickCollapseNodeArr.indexOf(nodeBeingClickedIndex);
 
 		if (index > -1) {
-		  that.clickCollapseNodeArr.splice(index, 1);
+            that.clickCollapseNodeArr.splice(index, 1);
 		}
 
 		nodeBeingMemorized = that.memCache[nodeBeingClickedIndex];
@@ -1485,8 +1453,8 @@
 		var newclusterNodesRadius = [];
 
 		clusterNodesRadius.map(function(d,i){
-		  if(d["nodeId"]!=nodeBeingClickedIndex)
-			newclusterNodesRadius.push(d);
+            if(d["nodeId"]!=nodeBeingClickedIndex)
+                newclusterNodesRadius.push(d);
 		})
 
 		clusterNodesRadius = newclusterNodesRadius;
@@ -1506,241 +1474,215 @@
 	}
 
 	function onClusterNodeClick(d,i){
+        //transform the index to clusterlevel
+        var nodeBeingClickedIndex = d["index"];
 
-	  //transform the index to clusterlevel
-
-	  var nodeBeingClickedIndex = d["index"];
-
-	  if(d["status"]=="Expanded"){
-
-		clusterHierData = collapseMonaGO(nodeBeingClickedIndex,"manually");
-
-	  }else{
-		/*console.log("node going to expand");*/
-
-		clusterHierData = expandMonaGO(nodeBeingClickedIndex);
-
-	  }
-
-	  
-	  updateMoanaGOLayout(clusterHierData);
-	  updateLabel();
+        if(d["status"]=="Expanded"){
+            clusterHierData = collapseMonaGO(nodeBeingClickedIndex,"manually");
+        }else{
+            clusterHierData = expandMonaGO(nodeBeingClickedIndex);
+        }
+        updateMoanaGOLayout(clusterHierData);
+        updateLabel();
 	}
 
 	function updateMoanaGOLayout(clusterHierData){
-
-	  createGOAndUpdateChordLayout();
-	  drawHierarchicalClustering(clusterHierData);
+        createGOAndUpdateChordLayout();
+        drawHierarchicalClustering(clusterHierData);
 	}
 
 	function createGOAndUpdateChordLayout(){
 		createInteractionGenes();
 		createGeneInfo();
-
 		drawLayout(that.matrix);
 	}
 
 	function moveOutHierCluster(){
-	  var clusterNode = d3.selectAll(".clusterNode");
+        var clusterNode = d3.selectAll(".clusterNode");
 
-	  clusterNode.transition().duration(500).attr("transform",function(d) {
-		 return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
-			 + "translate(" + (d.radius+10) + ",0)";
-	   });
+        clusterNode.transition().duration(500).attr("transform",function(d) {
+            return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+             + "translate(" + (d.radius+10) + ",0)";
+        });
 
-	  var clusterArc = d3.selectAll(".clusterArc");
+        var clusterArc = d3.selectAll(".clusterArc");
 
-	  clusterArc.transition().duration(500).attr("d",function(d){
-			var arc = d3.svg.arc()
-			  .innerRadius(d["radius"]+10)
-			  .outerRadius(d["radius"]+11)
-			  .startAngle(d["startAngle"])
-			  .endAngle(d["endAngle"]);
-			return arc();
-	  });
+        clusterArc.transition().duration(500).attr("d",function(d){
+        	var arc = d3.svg.arc()
+        	  .innerRadius(d["radius"]+10)
+        	  .outerRadius(d["radius"]+11)
+        	  .startAngle(d["startAngle"])
+        	  .endAngle(d["endAngle"]);
+        	return arc();
+        });
 
-	  var clusterLine = d3.selectAll(".clusterLine");
+        var clusterLine = d3.selectAll(".clusterLine");
 
-	  clusterLine.transition().duration(500).attr("d",function(d){
-			var Line = d3.svg.arc()
-			.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
-			.outerRadius(d["LineOuterPosition"]+5)
-			.startAngle(d["LineAngle"])
-			.endAngle(d["LineAngle"]+0.002);
+        clusterLine.transition().duration(500).attr("d",function(d){
+        	var Line = d3.svg.arc()
+        	.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
+        	.outerRadius(d["LineOuterPosition"]+5)
+        	.startAngle(d["LineAngle"])
+        	.endAngle(d["LineAngle"]+0.002);
 
-			return Line();
-	  });
-
+        	return Line();
+        });
 	}
 
 	function moveInHierCluster(){
-	  var clusterNode = d3.selectAll(".clusterNode");
+        var clusterNode = d3.selectAll(".clusterNode");
 
-	  clusterNode.transition().duration(500).attr("transform",function(d) {
-		 return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
-			 + "translate(" + (d.radius) + ",0)";
-	   });
+        clusterNode.transition().duration(500).attr("transform",function(d) {
+            return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+             + "translate(" + (d.radius) + ",0)";
+        });
 
-	  var clusterArc = d3.selectAll(".clusterArc");
+        var clusterArc = d3.selectAll(".clusterArc");
 
-	  clusterArc.transition().duration(500).attr("d",function(d){
-			var arc = d3.svg.arc()
-			  .innerRadius(d["radius"]+5)
-			  .outerRadius(d["radius"]+6)
-			  .startAngle(d["startAngle"])
-			  .endAngle(d["endAngle"]);
-			return arc();
-	  });
+        clusterArc.transition().duration(500).attr("d",function(d){
+        	var arc = d3.svg.arc()
+        	  .innerRadius(d["radius"]+5)
+        	  .outerRadius(d["radius"]+6)
+        	  .startAngle(d["startAngle"])
+        	  .endAngle(d["endAngle"]);
+        	return arc();
+        });
 
-	  var clusterLine = d3.selectAll(".clusterLine");
+        var clusterLine = d3.selectAll(".clusterLine");
 
-	  clusterLine.transition().duration(500).attr("d",function(d){
-			var Line = d3.svg.arc()
-			.innerRadius(d["LineInnerPosition"])
-			.outerRadius(d["LineOuterPosition"])
-			.startAngle(d["LineAngle"])
-			.endAngle(d["LineAngle"]+0.002);
+        clusterLine.transition().duration(500).attr("d",function(d){
+        	var Line = d3.svg.arc()
+        	.innerRadius(d["LineInnerPosition"])
+        	.outerRadius(d["LineOuterPosition"])
+        	.startAngle(d["LineAngle"])
+        	.endAngle(d["LineAngle"]+0.002);
 
-			return Line();
-	  });
+        	return Line();
+        });
 	}
 
 	function getLevelFromPercentOfOverlappingGenes(PercentOfOverlappingGenes){
-	  var level = -1;
-	  that.clusterHierDataStatic.map(function(d,i){
-	  if(PercentOfOverlappingGenes > that.minPercentOfOverlappingGens || that.minPercentOfOverlappingGens == 0){
-		  if(d[1]>PercentOfOverlappingGenes)
-			level = i;
-	  }
-	  else{
-	  	  if(d[1] >= PercentOfOverlappingGenes)
-			level = i;
-	  }
-
-	  });
-
-	  return level;
+        var level = -1;
+        that.clusterHierDataStatic.map(function(d,i){
+            if(PercentOfOverlappingGenes > that.minPercentOfOverlappingGens || that.minPercentOfOverlappingGens == 0){
+                if(d[1]>PercentOfOverlappingGenes){
+                    level = i;
+                }
+            }
+            else{
+            	if(d[1] >= PercentOfOverlappingGenes){
+            	   level = i;
+                }
+            }
+        });
+        return level;
 	}
 
 	function getClusterNodesIndexBeingSelected(level){
-	  var clusterDataLevel = [];
-	  if(level>=that.level_g){//collapse
+        var clusterDataLevel = [];
+        if(level>=that.level_g){//collapse
 		
-		for(var i=level;i >= 0; i--){
-		  if(that.clusterHierData[i]!=undefined&&clusterDataLevel.indexOf(i)==-1){
-			if(that.memCache[clusterHierData[i][2]]==undefined){
-			  var clusterNodesLevel = getHierNodes(that.clusterHierData[i][2])["clusterNodesLevel"];
-			  //console.log(clusterNodesLevel);
-			  clusterNodesLevel.map(function(d){return clusterDataLevel.push(d);});
-			  clusterDataLevel = clusterDataLevel.unique();
-			  clusterNodesIndex.push(that.clusterHierData[clusterNodesLevel[clusterNodesLevel.length-1]][2]);
-			}
-		  }
-		  clusterNodesIndex = clusterNodesIndex.unique();
+    		for(var i=level;i >= 0; i--){
+                if(that.clusterHierData[i]!=undefined&&clusterDataLevel.indexOf(i)==-1){
+                    if(that.memCache[clusterHierData[i][2]]==undefined){
+                        var clusterNodesLevel = getHierNodes(that.clusterHierData[i][2])["clusterNodesLevel"];
+                        clusterNodesLevel.map(function(d){return clusterDataLevel.push(d);});
+                        clusterDataLevel = clusterDataLevel.unique();
+                        clusterNodesIndex.push(that.clusterHierData[clusterNodesLevel[clusterNodesLevel.length-1]][2]);
+                    }
+                }
+                clusterNodesIndex = clusterNodesIndex.unique();
+            }
 
+        }else{//expand
+    		var index = level + nodesSize;
+    		var pos = [];
 
-		}
+    		clusterNodesIndex.reverse().map(function(d1,i){
+                if(d1 >= index){
+                    pos.push(i);
+                    var clusterNode = getClusterNode(d1);
+                    that.clusterHierData = expandMonaGO(clusterNode["index"]);
+                }
+    		});
 
-	  }else{//expand
-		console.log("expand");
-		var index = level + nodesSize;
-		var pos = [];
+    		clusterNodesIndex.splice(pos[0],pos.length);
 
-		clusterNodesIndex.reverse().map(function(d1,i){
-		  if(d1 >= index){
-			pos.push(i);
+    		for(var i=level;i >= 0; i--){
+                if(that.clusterHierData[i]!=undefined&&clusterDataLevel.indexOf(i)==-1){
 
-			var clusterNode = getClusterNode(d1);
-			that.clusterHierData = expandMonaGO(clusterNode["index"]);
-		  
-		  }
-		});
+                    var clusterNodesLevel = getHierNodes(that.clusterHierData[i][2])["clusterNodesLevel"];
+                    clusterNodesLevel.map(function(d){return clusterDataLevel.push(d);});
+                    clusterDataLevel = clusterDataLevel.unique();
+                    clusterNodesIndex.push(that.clusterHierData[clusterNodesLevel[clusterNodesLevel.length-1]][2]);
+                }
+    		}
+    		clusterNodesIndex = clusterNodesIndex.unique();
 
-		clusterNodesIndex.splice(pos[0],pos.length);
+    	}
 
-		for(var i=level;i >= 0; i--){
-		  if(that.clusterHierData[i]!=undefined&&clusterDataLevel.indexOf(i)==-1){
+        if(clusterNodesIndex.length!=0){
+            clusterNodesIndex.map(function(index,i){
+            	clusterHierNodesStatus.map(function(d){
+                	if(index == d["index"]){
+                		if(that.memCache[index]==undefined){
+                		  that.clusterHierData = collapseMonaGO(index, "system");
 
-			var clusterNodesLevel = getHierNodes(that.clusterHierData[i][2])["clusterNodesLevel"];
-			//console.log(clusterNodesLevel);
-			clusterNodesLevel.map(function(d){return clusterDataLevel.push(d);});
-			clusterDataLevel = clusterDataLevel.unique();
-			clusterNodesIndex.push(that.clusterHierData[clusterNodesLevel[clusterNodesLevel.length-1]][2]);
-
-		  }
-		}
-		clusterNodesIndex = clusterNodesIndex.unique();
-
-	  }
-
-	  if(clusterNodesIndex.length!=0){
-		clusterNodesIndex.map(function(index,i){
-			clusterHierNodesStatus.map(function(d){
-			  if(index == d["index"]){
-				if(that.memCache[index]==undefined){
-				  that.clusterHierData = collapseMonaGO(index, "system");
-
-				}
-			  }
-			});
-			
-		});
-	  }
+                		}
+                	}
+            	});
+            	
+            });
+        }
 
 
 
-	  that.level_g = level;
-	  updateMoanaGOLayout(that.clusterHierData);
+        that.level_g = level;
+        updateMoanaGOLayout(that.clusterHierData);
 	}
 
 	function getClusterNode(index){
-	  var node;
-	  clusterHierNodesStatus.map(function(d){
-		if(d["index"] == index)
-		  node = d;
-	  });
-	  return node;
+        var node;
+        clusterHierNodesStatus.map(function(d){
+            if(d["index"] == index){
+                node = d;
+            }
+        });
+        return node;
 	}
 
 	function createGoHierifNecessary(goid){
+        if(typeof goid == "string"){
+            $('#content').append("<div style=\"position:relative;\"><div id=\"go_chart\"></div>")
+            var go_chart = d3.select("#go_chart").append("svg")
+                .attr("id","go_chart1")
+                .attr("width", width)
+                .attr("height", height);
+            $('#go_chart1').css ("border", "1px solid grey");
 
-	  if(typeof goid == "string"){
-		  $('#content').append("<div style=\"position:relative;\"><div id=\"go_chart\"></div>")
-	  var go_chart = d3.select("#go_chart").append("svg")
+            var hier_group = go_chart.append("svg:svg")
+            .attr("id","hier_group");
 
-		.attr("id","go_chart1")
-		.attr("width", width)
-		.attr("height", height);
-	  $('#go_chart1').css ("border", "1px solid grey");
+            //   .call(zoomhier.on("zoom", zoomed));
+            hier_group.selectAll("line")
+                .attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; });
 
-	 var hier_group = go_chart.append("svg:svg")
-		.attr("id","hier_group");
+            hier_group.selectAll("circle")
+                .attr("cx", function(d) { return d.x; })
+                .attr("cy", function(d) { return d.y; });
 
-	 //   .call(zoomhier.on("zoom", zoomed));
-	 hier_group.selectAll("line")
-		.attr("x1", function(d) { return d.source.x; })
-		.attr("y1", function(d) { return d.source.y; })
-		.attr("x2", function(d) { return d.target.x; })
-		.attr("y2", function(d) { return d.target.y; });
-	 hier_group.selectAll("circle")
-		.attr("cx", function(d) { return d.x; })
-		.attr("cy", function(d) { return d.y; });
-	 hier_group.selectAll("text")
-		.attr("x", function(d) { return d.x; })
-		.attr("y", function(d) { return d.y + radiusScale(d.r) + 10; });
-	 $('#go_chart').on("mouseover",mouseoverHier);
-	 $('#go_chart').on("mouseout",mouseoutHier);
-	 /* go_chart.append('rect')
-		.style('fill','white')
-		.style('stroke','gray')
-		.attr('width',width)
-		.attr('height',height)
-		.attr('x',0)
-		.attr('y',0);*/
-	  update(goid,hier_group,width,height);
+            hier_group.selectAll("text")
+                .attr("x", function(d) { return d.x; })
+                .attr("y", function(d) { return d.y + radiusScale(d.r) + 10; });
 
+            $('#go_chart').on("mouseover",mouseoverHier);
+            $('#go_chart').on("mouseout",mouseoutHier);
 
-	}
+            update(goid,hier_group,width,height);
+        }
 	}
 	function mouseoverHier(){
 	   if(!$('[id="exporthier"]').hasClass("btn")){
@@ -1753,30 +1695,29 @@
             $('#exporthier').append(element)
 			setexporthierbtn();
 	   }
-	   else if($('#exporthier').hide())
+	   else if($('#exporthier').hide()){
 			$('#exporthier').show();
-	   }
+       }
+	}
+
 	function mouseoutHier(){
-        if($('[id="exporthier"]').hasClass("btn"))
+        if($('[id="exporthier"]').hasClass("btn")){
 			$('#exporthier').hide();
+        }
 	}
 
 	function setexporthierbtn(){
 		$("#exporthier").click(function() {
             $('#menu.dropdown-menu').slideToggle();
-          //saveSvgAsPng(document.getElementById("hier_group"), "hierarchy.png", {scale: 5});
         })
 
         $('#png').click(function(){
-            console.log("png")
-            console.log(document.getElementById("hier_group"))
             saveSvgAsPng(document.getElementById("hier_group"), "hierarchy.png", {scale: 5});
         });
 
         $("#svg").click(function(){
              saveSvg(document.getElementById("hier_group"), "hierarchy.svg", {scale: 2});
         });
-
 	}
 
 	function replaceCommaWithUnderline(term){
@@ -1785,123 +1726,118 @@
 
 	function createGoHierByGOId(goid){
 
-	  var goid_target = replaceCommaWithUnderline(goid);
+        var goid_target = replaceCommaWithUnderline(goid);
 
-	  var go_chart = d3.select('#'+goid_target).append("svg")
-		.attr("width", width)
-		.attr("height", height);
+        var go_chart = d3.select('#'+goid_target).append("svg")
+            .attr("width", width)
+            .attr("height", height);
 
-	  go_chart.append('rect')
-		.style('fill','white')
-		.style('stroke','gray')
-		.attr('width',width)
-		.attr('height',height)
-		.attr('x',0)
-		.attr('y',0);
+        go_chart.append('rect')
+            .style('fill','white')
+            .style('stroke','gray')
+            .attr('width',width)
+            .attr('height',height)
+            .attr('x',0)
+            .attr('y',0);
 
-	  update(goid,go_chart,width,height);
+        update(goid,go_chart,width,height);
 	}
 
 	function createGeneListHtml(go){
-	  var geneListInHtml = "";
+        var geneListInHtml = "";
+        geneListInHtml += "<div class='gene_content'><ol>";
+        go.genes.forEach(function(d,i){
+            var tmp = "<li>"+" <n class='gene_name'>"+ d + "</n> "+ "</li>";
+            geneListInHtml+=tmp;
+        });
+        geneListInHtml += "</ol></div>";
 
-	  geneListInHtml += "<div class='gene_content'><ol>";
-	  go.genes.forEach(function(d,i){
-		   var tmp = "<li>"+" <n class='gene_name'>"+ d + "</n> "+ "</li>";
-		   geneListInHtml+=tmp;
-	  });
-	  geneListInHtml += "</ol></div>";
-
-	  return geneListInHtml;
+        return geneListInHtml;
 	}
 
 	function getGODetailByName(goName){
 		var goDetailArr={};
 
 		that.go_inf_ori.forEach(function(d,i){
-		  if(d.GO_name == goName){
-
-			goDetailArr = d;
-		  }
+            if(d.GO_name == goName){
+                goDetailArr = d;
+            }
 		});
 
 		return goDetailArr;
 	}
 
 	function createGOdetailTempl(goName){
-	  var goDetail = "";
+        var goDetail = "";
 
-	  var goDetailArr = getGODetailByName(goName);
+        var goDetailArr = getGODetailByName(goName);
 
-	  goDetail += "<div class='go_detail_content'>";
-	  goDetail += "<p> <a class='prop-field'> GO_id: </a>" + goDetailArr.GO_id + "</p>";
-	  goDetail += " <p> <a class='prop-field'>Num of genes: </a>"+ goDetailArr.count + "</p>" +" <p> <a class='prop-field'>Annotation type: </a>"+ goDetailArr.cat + "</p>"
-					   "<p> <a class='prop-field'>P-value: </a>" + goDetailArr.pVal + "</p>";
+        goDetail += "<div class='go_detail_content'>";
+        goDetail += "<p> <a class='prop-field'> GO_id: </a>" + goDetailArr.GO_id + "</p>";
+        goDetail += " <p> <a class='prop-field'>Num of genes: </a>"+ goDetailArr.count + "</p>" +" <p> <a class='prop-field'>Annotation type: </a>"+ goDetailArr.cat + "</p>"
+        			   "<p> <a class='prop-field'>P-value: </a>" + goDetailArr.pVal + "</p>";
 
-	  var geneListInHtml = createGeneListHtml(goDetailArr);
-	  var genesListTempl = "<a class='prop-field gene_dropmenu'>Genes:</a><b id='caret_gene' class='caret rotate180'></b>"+geneListInHtml+"</p>";
+        var geneListInHtml = createGeneListHtml(goDetailArr);
+        var genesListTempl = "<a class='prop-field gene_dropmenu'>Genes:</a><b id='caret_gene' class='caret rotate180'></b>"+geneListInHtml+"</p>";
 
-	  goDetail += genesListTempl;
-	  goDetail += "<div id='"+ replaceCommaWithUnderline(goDetailArr.GO_id) +"'>" +"</div>";
+        goDetail += genesListTempl;
+        goDetail += "<div id='"+ replaceCommaWithUnderline(goDetailArr.GO_id) +"'>" +"</div>";
 
-	  goDetail += "</div>";
+        goDetail += "</div>";
 
-	  return goDetail;
+        return goDetail;
 	}
 
 	function getNumOfGOTerms(goid){
 
 		if(typeof goid === "string" ){
-		  return 1;
+            return 1;
 		}
 
 		return goid.length;
 	}
 
 	function createGOList(go_names){
-	  var goList = "<div class='go_List'><ol>";
-	  goNameArr = [];
+        var goList = "<div class='go_List'><ol>";
+        goNameArr = [];
 
-	  go_names.forEach(function(d,i){
-		   var goDetail = createGOdetailTempl(d);
+        go_names.forEach(function(d,i){
+            var goDetail = createGOdetailTempl(d);
 
-		   goNameArr.push(d);
+            goNameArr.push(d);
 
-		   var tmp = "<li>" + "<n class='Go_name go_detail_dropmenu'>"+ d + 
-		   "</n> <b id='caret_GO_details' class='caret'></b>"+ goDetail + "</li>";
-		   goList += tmp;
-	  });
+            var tmp = "<li>" + "<n class='Go_name go_detail_dropmenu'>"+ d + 
+            "</n> <b id='caret_GO_details' class='caret'></b>"+ goDetail + "</li>";
+            goList += tmp;
+        });
 
-
-	  goList += "</li></div>";
-	  return goList;
+        goList += "</li></div>";
+        return goList;
 	}
 
 	function recursiveGetArrays(arrsSource){
-	  var arrDest = [];
-
-	  recursiveGet(arrsSource);
-
-	  function recursiveGet(arrsSource){
-		if (typeof arrsSource == 'string'){
-		  arrDest.push(arrsSource);
-		}else{
-		  arrsSource.forEach(function(d){
-			  recursiveGet(d);
-		  });
-		}
-	  }
-	  
-	  return arrDest;
+        var arrDest = [];
+        recursiveGet(arrsSource);
+        function recursiveGet(arrsSource){
+            if (typeof arrsSource == 'string'){
+                arrDest.push(arrsSource);
+            }else{
+                arrsSource.forEach(function(d){
+                    recursiveGet(d);
+                });
+            }
+        }
+    	  
+        return arrDest;
 	}
 
 	function roundPval(pval,place){
-	  if (typeof pval === "string"){
-		return parseFloat(pval).toFixed(place);
-	  }
-	  else{
-		return pval.toFixed(place);
-	  }
+        if (typeof pval === "string"){
+            return parseFloat(pval).toFixed(place);
+        }
+        else{
+            return pval.toFixed(place);
+        }
 	}
 
 	function createDetailPanelTempl(i){
@@ -1926,7 +1862,7 @@
 		var genesListTempl = "<a class='prop-field gene_dropmenu'>Genes:</a><b id='caret_gene' class='caret rotate180'></b>"+geneListInHtml+"</p>";
 
 
-//        var chartTempl = (numOfGOTerms == 1)?"<p><a class='prop-field'>GO Hierarchy: </a><button id='exporthier' class='btn' z-index:50'>Export Hierarchy Image</button></p> <div id='go_chart'></div> ":"";
+        //var chartTempl = (numOfGOTerms == 1)?"<p><a class='prop-field'>GO Hierarchy: </a><button id='exporthier' class='btn' z-index:50'>Export Hierarchy Image</button></p> <div id='go_chart'></div> ":"";
 		var chartTempl = (numOfGOTerms == 1)?"<p><a class='prop-field'>GO Hierarchy: </a></p> <div id='go_chart'></div> ":"";
 		detailPanelTempl += goInfTempl + genesListTempl + chartTempl;
 
@@ -1934,16 +1870,15 @@
 	}
 
 	function getCaretStatus(element){
+        if(d3.select(element).node().attr("status")==undefined){
+            return false;
+        };
 
-	  if(d3.select(element).node().attr("status")==undefined){
-		return false;
-	  };
+        if(d3.select(element).node().attr("status")=="true"){
+            return true;
+        }
 
-	  if(d3.select(element).node().attr("status")=="true"){
-		return true;
-	  }
-
-	  return false;
+        return false;
 	}
 
 	function setCaretStatus(element,status){
@@ -2035,17 +1970,6 @@
         })
 	}
 
-	/* function zoomed() {
-		  if(zoomhier.scale()<0.5){
-			//reset zoom scale and do nothing
-			 zoomhier.scale(0.5)
-		  }else{
-		  //  (transition ? hier_group.transition() : hier_group)
-		  d3.select(this)
-	//      .attr("transform", "translate("  + 50+","+10+ " ) scale(" + zoomhier.scale() + ")");
-	  .attr("transform", "translate("+zoomhier.translate()+" ) scale(" + zoomhier.scale() + ")");
-		  }
-	}*/
 	function updateDetailPanelBasedOnChord(d,i){
 		$('#content').empty();
 		var index = d.source.index+"-"+d.source.subindex;
@@ -2062,7 +1986,6 @@
 		setUpDetailPanelListener();
 		createGoHierifNecessary(that.go_inf[i].GO_id);
 		createGOHierForClusterGO();
-
 	}
 
 	function mouseover_group(d, i) {
@@ -2085,13 +2008,7 @@
 
 		//updateDetailPanel
 		updateDetailPanelBasedOnGroup(i)
-
 	}
-
-	function mouseleave_group(){
-
-	}
-	
 
 	function changePvalPanel(index){
 		var levelElement = getPvalLevel(that.go_inf[index].pVal);
@@ -2100,33 +2017,34 @@
 
 	function getPvalLevel(pVal){
 		for(i=0;i<seperated_points.length-1;i++){
-		  if((seperated_points[i] <= pVal)&&(pVal < seperated_points[i+1])){
-			  return pValLevel[i];
-		  }
+            if((seperated_points[i] <= pVal)&&(pVal < seperated_points[i+1])){
+                return pValLevel[i];
+            }
 		}
-		if(seperated_points[seperated_points.length-1] == pVal)
-		  return pValLevel[9];
+
+		if(seperated_points[seperated_points.length-1] == pVal){
+            return pValLevel[9];
+        }
 	}
 
 	function setlevelElement(element){
-
-	  $('#'+preElement).css("border","0");
-	  $('#'+element).css("border","solid 3px red");
-	  preElement = element;
-
+        $('#'+preElement).css("border","0");
+        $('#'+element).css("border","solid 3px red");
+        preElement = element;
 	}
 
-   function removeDuplicatedItem3(ar) {
-	var ret = [];
+    function removeDuplicatedItem3(ar) {
+        var ret = [];
 
-	ar.forEach(function(e, i, ar) {
-		if (ar.indexOf(e) === i) {
-			ret.push(e);
-		}
-	});
+        ar.forEach(function(e, i, ar) {
+    		if (ar.indexOf(e) === i) {
+    			ret.push(e);
+    		}
+        });
 
-   return ret;
-}
+        return ret;
+    }
+
 	function createChordTempl(index,d){
 
 		var totalGenesNumber=removeDuplicatedItem3(that.go_inf[d.source.index].genes.concat(that.go_inf[d.source.subindex].genes)).length
@@ -2149,22 +2067,21 @@
 	}
 
 	function mouseover_chord(d, i) {
-	  updateDetailPanelBasedOnChord(d,i)
+        updateDetailPanelBasedOnChord(d,i)
 	}
 
 
 	function createOnClick(num_array){
-	  while(num_array.length!=0){
-		var num = num_array.pop();
-		var term = "#GO_button_"+num;
-		$content = $('#content').on('click',"#GO_button_"+num, function(d) {
-				var num = d.toElement.id.split("_")[2];
-				chordLayout.classed("fade", function(p) {
-				  return p.source.index != num
-					  && p.target.index != num;
-				});
-		});
-	  }
+        while(num_array.length!=0){
+    		var num = num_array.pop();
+    		var term = "#GO_button_"+num;
+    		$content = $('#content').on('click',"#GO_button_"+num, function(d) {
+    				var num = d.toElement.id.split("_")[2];
+    				chordLayout.classed("fade", function(p) {
+    				  return p.source.index != num && p.target.index != num;
+    				});
+    		});
+        }
 
 		$(".dropbtn").click(function () {
 
@@ -2175,110 +2092,105 @@
 		  //open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
 		  $content.slideToggle(500);
 		});
-
 	}
 
 	function createOnHover(num_array){
 
-	  $(".dropbtn").mouseover(function (d) {
-/*        console.log($(this)[0].id);
-		console.log(d.target.id);*/
-		var num = getTargetGONum(d.target.id);
-		groupLayout.classed("highlight", function(p){
-		  return p.index==num;
-		})
+        $(".dropbtn").mouseover(function (d) {
+    		var num = getTargetGONum(d.target.id);
+    		groupLayout.classed("highlight", function(p){
+                return p.index==num;
+    		})
 
-		changePvalPanel(num);
-	  });
+            changePvalPanel(num);
+        });
 
-	  $(".dropbtn").mouseleave(function(d){
-		  var num = getTargetGONum(d.target.id);
-		  groupLayout.classed("highlight",false,function(d){
-			  return d.index==num;
-		  });
+        $(".dropbtn").mouseleave(function(d){
+            var num = getTargetGONum(d.target.id);
+            groupLayout.classed("highlight",false,function(d){
+                return d.index==num;
+            });
 
-		  resetPvaluePanel(num);
-	  });
+            resetPvaluePanel(num);
+        });
 
 	}
 
 	function resetPvaluePanel(index){
-	  var levelElement = getPvalLevel(that.go_inf[index].pVal);
-	  $('#'+levelElement).css("border","0");
+        var levelElement = getPvalLevel(that.go_inf[index].pVal);
+        $('#'+levelElement).css("border","0");
 	}
 
 	function getTargetGONum(id){
-	  var id_arr = id.split("_");
-	  return id_arr[id_arr.length-1];
+        var id_arr = id.split("_");
+        return id_arr[id_arr.length-1];
 	}
 
 	function getGenesFromACluster(num){
-	  var genes = "<div class='gene_content'><ol>";
+        var genes = "<div class='gene_content'><ol>";
 
-	  that.go_inf[num].genes.forEach(function(d,i){
+        that.go_inf[num].genes.forEach(function(d,i){
+            var tmp = "<li>" + "<n class='gene_name'>"+ d + "</n></li>";
+            genes+=tmp;
+        });
 
-		   var tmp = "<li>" + "<n class='gene_name'>"+ d + "</n></li>";
-		   genes+=tmp;
-		});
+        genes += "</ol></div>";
 
-	  genes += "</ol></div>";
-
-	  return genes;
+        return genes;
 	}
 
 	function renderGOTerm(go_num_array){
-	  var GOterms = "";
-	  var num = 0;
-	  var GO = "";
-	  for(i=0;i<go_num_array.length;i++){
-		var num = go_num_array[i];
-		GO = that.go_inf[num].GO_id + " " + that.go_inf[num].GO_name;
+        var GOterms = "";
+        var num = 0;
+        var GO = "";
+        for(i=0;i<go_num_array.length;i++){
+            var num = go_num_array[i];
+            GO = that.go_inf[num].GO_id + " " + that.go_inf[num].GO_name;
 
-		var numOfGOTerms = getNumOfGOTerms(that.go_inf[num].GO_id);
+            var numOfGOTerms = getNumOfGOTerms(that.go_inf[num].GO_id);
 
-		var line = "<button class=\"dropbtn\""+ "id=GO_button_"+ num +">" + GO + "</button>";
-		line += "<div class=\"Go_content\">" + "<p><a class='prop-field'>" + ((numOfGOTerms == 1)?" P-value:</a> ":" P-value(Average):</a>")
-		 + that.go_inf[num].pVal + " <p><a class='prop-field'> Num of genes: </a>"+ that.go_inf[num].count + " <p> <a class='prop-field'>Annotatino type: </a>"+ that.go_inf[i].cat+ "</p>" +
-		"<p><a class='prop-field'>Genes: </a></p>" +  getGenesFromACluster(num) + "</div>";
-		GOterms += line;
-
-	  }
-	  return GOterms;
+            var line = "<button class=\"dropbtn\""+ "id=GO_button_"+ num +">" + GO + "</button>";
+            line += "<div class=\"Go_content\">" + "<p><a class='prop-field'>" + ((numOfGOTerms == 1)?" P-value:</a> ":" P-value(Average):</a>")
+            + that.go_inf[num].pVal + " <p><a class='prop-field'> Num of genes: </a>"+ that.go_inf[num].count + " <p> <a class='prop-field'>Annotatino type: </a>"+ that.go_inf[i].cat+ "</p>" +
+            "<p><a class='prop-field'>Genes: </a></p>" +  getGenesFromACluster(num) + "</div>";
+            GOterms += line;
+        }
+        return GOterms;
 	}
 
 	function getGoIndex(go_id){
-	  for(i in that.go_inf){
-		  if(that.go_inf[i].GO_id == go_id)
-			return i;
-	  }
+        for(i in that.go_inf){
+            if(that.go_inf[i].GO_id == go_id){
+                return i;
+            }
+        }
 	}
 
 	function isNum(str){
-	  if(str=="") return false;
-	  arr = str.split('');
-	  for(i=0;i<arr.length;i++)
-	  {
+        if(str=="") return false;
+            arr = str.split('');
+        for(i=0;i<arr.length;i++)
+        {
 		if(arr[i]<'0'||arr[i]>'9')
-		  return false;
-	  }
-	  return true;
+            return false;
+        }
+        return true;
 	}
 
 	function sortGOcontent(go_contents){
 
-	  function compare(a, b) {
-		pa = Number(that.go_inf[a].pVal);
-		pb = Number(that.go_inf[b].pVal);
-		if (pa > pb) {
-		  return 1;
-		}
-		if (pa < pb) {
-		  return -1;
-		}
-		// a must be equal to b
-		return 0;
-	  }
-	  go_contents.sort(compare);
+        function compare(a, b) {
+            pa = Number(that.go_inf[a].pVal);
+            pb = Number(that.go_inf[b].pVal);
+            if (pa > pb) {
+                return 1;
+            }
+            if (pa < pb) {
+                return -1;
+            }
+            return 0;
+        }
+        go_contents.sort(compare);
 	}
 
 	function resetVis(){
@@ -2289,6 +2201,7 @@
 		//moveInHierCluster();
 	}
 
+    //need to refactor, too long
 	function refreshDetailPanel(){
 	  $('#content').empty();
 
@@ -2444,147 +2357,134 @@
 	}
 
 	function popUpArcs(){
-	  clusterArc
-		.style("fill", "green")
-		.attr("class","clusterArc")
-		.transition()
-		.duration(300)
-		.attr("d",function(d){
+        clusterArc
+    		.style("fill", "green")
+    		.attr("class","clusterArc")
+    		.transition()
+    		.duration(300)
+    		.attr("d",function(d){
 
-			var arc = d3.svg.arc()
-			  .innerRadius(d["radius"]+15)
-			  .outerRadius(d["radius"]+16)
-			  .startAngle(d["startAngle"])
-			  .endAngle(d["endAngle"]);
+    			var arc = d3.svg.arc()
+    			  .innerRadius(d["radius"]+15)
+    			  .outerRadius(d["radius"]+16)
+    			  .startAngle(d["startAngle"])
+    			  .endAngle(d["endAngle"]);
 
-			return arc();
-		});
+    			return arc();
+    		});
 	}
 
 	function resetArcs(){
-	  clusterArc
-		.style("fill", "green")
-		.attr("class","clusterArc")
-		.transition()
-		.duration(300)
-		.attr("d",function(d){
+        clusterArc
+    		.style("fill", "green")
+    		.attr("class","clusterArc")
+    		.transition()
+    		.duration(300)
+    		.attr("d",function(d){
 
-			var arc = d3.svg.arc()
-			  .innerRadius(d["radius"]+10)
-			  .outerRadius(d["radius"]+11)
-			  .startAngle(d["startAngle"])
-			  .endAngle(d["endAngle"]);
+    			var arc = d3.svg.arc()
+                    .innerRadius(d["radius"]+10)
+                    .outerRadius(d["radius"]+11)
+                    .startAngle(d["startAngle"])
+                    .endAngle(d["endAngle"]);
 
-			return arc();
-		});
+    			return arc();
+    		});
 	}
 
 	function popUpLines(){
-	  clusterLine1
-		.style("fill", "green")
-		.attr("class","clusterLine")
-		.transition()
-		.duration(300)
-		.attr("d",function(d){
+        clusterLine1
+    		.style("fill", "green")
+    		.attr("class","clusterLine")
+    		.transition()
+    		.duration(300)
+    		.attr("d",function(d){
+    			var firstLine = d3.svg.arc()
+        			.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+10:d["LineInnerPosition"])
+        			.outerRadius(d["LineOuterPosition"]+10)
+        			.startAngle(d["LineAngle"])
+        			.endAngle(d["LineAngle"]+0.002);
 
-			var firstLine = d3.svg.arc()
-			.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+10:d["LineInnerPosition"])
-			.outerRadius(d["LineOuterPosition"]+10)
-			.startAngle(d["LineAngle"])
-			.endAngle(d["LineAngle"]+0.002);
+    			return firstLine();
+            });
 
-			return firstLine();
-		});
+        clusterLine2
+    		.style("fill", "green")
+    		.attr("class","clusterLine")
+    		.transition()
+    		.duration(300)
+    		.attr("d",function(d){
 
-	  clusterLine2
-		.style("fill", "green")
-		.attr("class","clusterLine")
-		.transition()
-		.duration(300)
-		.attr("d",function(d){
-
-		  var secondLine = d3.svg.arc()
-			.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+10:d["LineInnerPosition"])
-			.outerRadius(d["LineOuterPosition"]+10)
-			.startAngle(d["LineAngle"])
-			.endAngle(d["LineAngle"]+0.002);
+                var secondLine = d3.svg.arc()
+        			.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+10:d["LineInnerPosition"])
+        			.outerRadius(d["LineOuterPosition"]+10)
+        			.startAngle(d["LineAngle"])
+        			.endAngle(d["LineAngle"]+0.002);
 
 			return secondLine();
 		});
 	}
 
 	function resetLines(){
-	  clusterLine1
-		.style("fill", "green")
-		.attr("class","clusterLine")
-		.transition()
-		.duration(300)
-		.attr("d",function(d){
+        clusterLine1
+            .style("fill", "green")
+    		.attr("class","clusterLine")
+    		.transition()
+    		.duration(300)
+    		.attr("d",function(d){
+        		var firstLine = d3.svg.arc()
+        			.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
+        			.outerRadius(d["LineOuterPosition"]+5)
+        			.startAngle(d["LineAngle"])
+        			.endAngle(d["LineAngle"]+0.002);
 
-			var firstLine = d3.svg.arc()
-			.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
-			.outerRadius(d["LineOuterPosition"]+5)
-			.startAngle(d["LineAngle"])
-			.endAngle(d["LineAngle"]+0.002);
+    			return firstLine();
+    		});
 
-			return firstLine();
-		});
+        clusterLine2
+    		.style("fill", "green")
+    		.attr("class","clusterLine")
+    		.transition()
+    		.duration(300)
+    		.attr("d",function(d){
+        		var secondLine = d3.svg.arc()
+        			.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
+        			.outerRadius(d["LineOuterPosition"]+5)
+        			.startAngle(d["LineAngle"])
+        			.endAngle(d["LineAngle"]+0.002);
 
-	  clusterLine2
-		.style("fill", "green")
-		.attr("class","clusterLine")
-		.transition()
-		.duration(300)
-		.attr("d",function(d){
-
-		  var secondLine = d3.svg.arc()
-			.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
-			.outerRadius(d["LineOuterPosition"]+5)
-			.startAngle(d["LineAngle"])
-			.endAngle(d["LineAngle"]+0.002);
-
-			return secondLine();
-		});
+    			return secondLine();
+    		});
 	}
 
 	function popUpClusterNodes(){
-	  clusterHierNodeView.transition().duration(300).attrTween("transform", tween).attr("class","clusterNodeView");
-	  clusterHierNodeTextView.transition().duration(300).attrTween("transform", tween).attr("class","clusterText");
+        clusterHierNodeView.transition().duration(300).attrTween("transform", tween).attr("class","clusterNodeView");
+        clusterHierNodeTextView.transition().duration(300).attrTween("transform", tween).attr("class","clusterText");
 
-	  function tween(d, i, a) {
-			  var interpolate;
-			  var str;
-			  //console.log("popup")
-			  str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
+        function tween(d, i, a) {            
+            var str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
 			  //str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
 			   + "translate(" + ( d["radius"] + 10 ) + ",0)";
-			  interpolate = d3.interpolate(a,str);
-
-
-			  return function(t) {
-				  return interpolate(t);
-			  };
-	  }
+			var interpolate = d3.interpolate(a,str);
+			return function(t) {
+                return interpolate(t);
+			};
+        }
 	}
 
 	function resetClusterNodes(){
-	  clusterHierNodeView.transition().duration(300).attrTween("transform", tween).attr("class","clusterNodeView");
-	  clusterHierNodeTextView.transition().duration(300).attrTween("transform", tween).attr("class","clusterText");
-	  console.log("reset")
-	  function tween(d, i, a) {
-			  var interpolate;
-			  var str;
+        clusterHierNodeView.transition().duration(300).attrTween("transform", tween).attr("class","clusterNodeView");
+        clusterHierNodeTextView.transition().duration(300).attrTween("transform", tween).attr("class","clusterText");
+        function tween(d, i, a) {
+            var str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
+            //str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
+            + "translate(" + ( d["radius"] + 5 ) + ",0)";
+            var interpolate = d3.interpolate(a,str);
 
-			  str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
-			  //str = "rotate(" + (d["angle"] * 180 / Math.PI - 90) + ")"
-			   + "translate(" + ( d["radius"] + 5 ) + ",0)";
-			  interpolate = d3.interpolate(a,str);
-
-
-			  return function(t) {
-				  return interpolate(t);
-			  };
-	  }
+            return function(t) {
+                return interpolate(t);
+            };
+        }
 	}
 
 	function popUpHierarchy(){
@@ -2600,7 +2500,7 @@
 	}
 
 	function drawLable(){
-	  updateLabel();
+	    updateLabel();
 	}
 
 	function updateLabel(){
@@ -2733,7 +2633,6 @@
 	}
 
 	function toggleControl(){
-
         $('#arrow_controlPanel').css('transform', function(){ return control_opened ? 'rotate(180deg)' : 'rotate(0deg)'});
 
         var shiftleft = controlPanelWidth -20;
@@ -2742,7 +2641,6 @@
 	}
 
 	function redrawMain_vis(details_opened){
-
 	    if(!details_opened){
     		d3.select(".main_vis").attr("width",w+detailPanelWidth);
     		circleSvg.transition().attr("transform", "translate(" + (w+detailPanelWidth) / 2 + "," + h / 2 + ") scale(" + zoom.scale() + ")");
