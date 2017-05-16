@@ -13,33 +13,32 @@
 
 (function(){
 
-  Array.prototype.intersection = function() {
-	  var i, l = this.length, k = arguments, o = [];
-	  for(i=0; i<l;i+=1){
-		if(k[0].includes(this[i]))
-		  o.push(this[i])
-	  }
-	  return o;
-  };
+Array.prototype.intersection = function() {
+    var i, l = this.length, k = arguments, o = [];
+    for(i=0; i<l;i+=1){
+        if(k[0].includes(this[i]))
+          o.push(this[i])
+        }
+    return o;
+};
 
 
-  Array.prototype.getGeneString = function(){
-	var str="",l = this.length, k = arguments;
-	for(var i=0;i<l;i++){
-	  str += this[i]+k[0]
-	}
+Array.prototype.getGeneString = function(){
+    var str="",l = this.length, k = arguments;
+    for(var i=0;i<l;i++){
+      str += this[i]+k[0]
+    }
+    return str.slice(0,str.length-1);
+}
 
-	return str.slice(0,str.length-1);
-  }
+Array.prototype.unique = function() {
+    var o = {}, i, l = this.length, r = [];
+    for(i=0; i<l;i+=1) o[this[i]] = this[i];
+    for(i in o) r.push(o[i]);
+    return r;
+};
 
-  Array.prototype.unique = function() {
-	  var o = {}, i, l = this.length, r = [];
-	  for(i=0; i<l;i+=1) o[this[i]] = this[i];
-	  for(i in o) r.push(o[i]);
-	  return r;
-  };
-
-  var MonaGO = function(){
+var MonaGO = function(){
 
 	var monago;
 
@@ -197,314 +196,300 @@
 
 	//associate genes with go,cluster(using index in go_inf)
 	function createGeneInfo(){
-	  that.gene_info = {};
-	  that.go_inf.forEach(function(d,i){
-		var index = i;
-		d["genes"].forEach(function(d,i){
-		  if(that.gene_info[d]!=undefined){
-			  var str =   ";"  +  index.toString();
-			  that.gene_info[d] = that.gene_info[d] + str;
-		  }
-		  else{
-			that.gene_info[d] = index.toString();
-		  }
-		});
-	  });
-
+        that.gene_info = {};
+        that.go_inf.forEach(function(d,i){
+            var index = i;
+            d["genes"].forEach(function(d,i){
+                if(that.gene_info[d]!=undefined){
+                    var str =   ";"  +  index.toString();
+                    that.gene_info[d] = that.gene_info[d] + str;
+                }else{
+                    that.gene_info[d] = index.toString();
+                }
+            });
+        });
 	}
 
 	function createInteractionGenes(){
-	   that.dic = {};
-	   var size = that.go_inf.length;
-	   for(var i = 0;i < size;i++){
-		  for(var j = 0;j < size;j++){
-			if(i == j){
-			  that.dic[i+"-"+j] = ""
-			}else{
-			  var genes_i = that.go_inf[i]["genes"];
-			  var genes_j = that.go_inf[j]["genes"];
-			  var intersectionGenes = genes_i.intersection(genes_j);
-			  
-			  that.dic[i+"-"+j] = intersectionGenes.getGeneString(";");
-			}
-		  }
-	   }
+        that.dic = {};
+        var size = that.go_inf.length;
+        for(var i = 0;i < size;i++){
+            for(var j = 0;j < size;j++){
+                if(i == j){
+                  that.dic[i+"-"+j] = ""
+                }else{
+                    var genes_i = that.go_inf[i]["genes"];
+                    var genes_j = that.go_inf[j]["genes"];
+                    var intersectionGenes = genes_i.intersection(genes_j);
+                    that.dic[i+"-"+j] = intersectionGenes.getGeneString(";");
+                }
+            }
+        }
 	}
 
 	function GOFilter(){
-	  var go_filter = [];
-	  that.go_inf.map(function(d,i){
-		  if(Number(d.pVal) < 0.05){
-			go_filter.push(d);//remove
-		  }
-	  });
-	  that.go_inf = go_filter;
-	  nodesSize = that.go_inf.length;
+        var go_filter = [];
+        that.go_inf.map(function(d,i){
+            if(Number(d.pVal) < 0.05){
+                go_filter.push(d);//remove
+            }
+        });
+        that.go_inf = go_filter;
+        nodesSize = that.go_inf.length;
 	};
 
 	function getMinPval(){
-	  var min = Number(that.go_inf[0].pVal);
-	  for(i=0;i<nodesSize;i++){
-		if(Number(that.go_inf[i].pVal) < min){
-		  min = Number(that.go_inf[i].pVal);
-
-		}
-	  }
-	  return min;
+        var min = Number(that.go_inf[0].pVal);
+        for(i=0;i<nodesSize;i++){
+            if(Number(that.go_inf[i].pVal) < min){
+                min = Number(that.go_inf[i].pVal);
+            }
+        }
+        return min;
 	}
 
 	function parentGO(goid) {
-	  goids=[];
-	  var queue = new Queue();
-	  var go_level = [goid,1];
-	  goids.push(go_level);
-	  queue.enqueue(go_level);
+        goids=[];
+        var queue = new Queue();
+        var go_level = [goid,1];
+        goids.push(go_level);
+        queue.enqueue(go_level);
 
-	  while(!queue.isEmpty()){
-		go_level = queue.dequeue();
+        while(!queue.isEmpty()){
+            go_level = queue.dequeue();
 
-		go = go_level[0];
-		level = go_level[1];
+            go = go_level[0];
+            level = go_level[1];
 
-		current = GO(go);
-		if(current!=undefined){
-		  var parents = current['p'];//there is big difference without var
-		  for (var i = 0, count = parents.length ; i < count; i ++ ) {
-			if(parents[i]!=undefined)
-			{
-			  goid = parents[i];
-			  go_level = [goid,level+1];
+            current = GO(go);
+            if(current!=undefined){
+                var parents = current['p'];//there is big difference without var
+                for (var i = 0, count = parents.length ; i < count; i ++ ) {
+                    if(parents[i]!=undefined){
+                        goid = parents[i];
+                        go_level = [goid,level+1];
 
-			  goids.push(go_level);
-			  queue.enqueue(go_level);
-			}
-		  }
-		}
-	  }
-
-	  return goids;
+                        goids.push(go_level);
+                        queue.enqueue(go_level);
+                    }
+                }
+            }
+        }
+        return goids;
 	}
 
 	//creates a D3 structure that can be inputted into the force-directed graph layout
 	function createD3Structure(goids, target) {
 
-	  goids = getUniqueGoid(goids);
+        goids = getUniqueGoid(goids);
 
-	  nodes = [];
-	  links = [];
-	  
-	  nodeIndex = {};
-	  levels = goids[goids.length-1][1]; //total level
-	  level_width ={};
+        nodes = [];
+        links = [];
 
-	  for (var i = 0, count = goids.length ; i < count ; i ++ ) {
-		go_level = goids[i];
-		goid = go_level[0];
-		level = go_level[1];
-		node = {};
-		node['name'] = GO(goid)['n'];
-		node['id'] = goid;
-		node['r'] = 10;
-		node['is'] = 'node';
-		nodeIndex[goid] = i;
+        nodeIndex = {};
+        levels = goids[goids.length-1][1]; //total level
+        level_width ={};
+
+        for (var i = 0, count = goids.length ; i < count ; i ++ ) {
+            go_level = goids[i];
+            goid = go_level[0];
+            level = go_level[1];
+            node = {};
+            node['name'] = GO(goid)['n'];
+            node['id'] = goid;
+            node['r'] = 10;
+            node['is'] = 'node';
+            nodeIndex[goid] = i;
 		
 
-		//get the number of GO on each level
-		if(level_width[level]==undefined){
-		  level_width[level]=1;
-		  node['position'] = 1;
-		}
-		else{
-		  level_width[level]++;
-		  node['position'] = level_width[level];
-		}
+            //get the number of GO on each level
+            if(level_width[level]==undefined){
+                level_width[level]=1;
+                node['position'] = 1;
+            }
+            else{
+                level_width[level]++;
+                node['position'] = level_width[level];
+            }
 
-		nodes.push(node);
-	  }
+            nodes.push(node);
+        }
 
-	  for (var i = 0, count = goids.length ; i < count ; i ++ ) {
-		go_level = goids[i];
-		goid = go_level[0];
-		level = go_level[1];
+        for (var i = 0, count = goids.length ; i < count ; i ++ ) {
+            go_level = goids[i];
+            goid = go_level[0];
+            level = go_level[1];
 
-		parents = GO(goid)['p'];
+            parents = GO(goid)['p'];
 
-		if (parents.length > 0 ) {
-		  for (var a = 0, countA = parents.length ; a < countA ; a ++ ) {
-			parent = parents[a];
-			pgoid = parent;
-			pIndex = nodeIndex[pgoid];
+            if (parents.length > 0 ) {
+                for (var a = 0, countA = parents.length ; a < countA ; a ++ ) {
+        			parent = parents[a];
+        			pgoid = parent;
+        			pIndex = nodeIndex[pgoid];
 
-		 /*   position = nodes[pIndex]['position']; 
-			nodes[pIndex].fixed = true;
-			nodes[pIndex].x = width*(position/level_width[level]*0.5);
-			nodes[pIndex].y = height*(1-(level)/levels);*/
+        			if (pgoid == target) {
+        			  nodes[i]['is'] = 'child';
+        			  nodes[i]['r'] = 30;
+        			}
 
-			if (pgoid == target) {
-			  nodes[i]['is'] = 'child';
-			  nodes[i]['r'] = 30;
-			}
+        			if (pIndex != undefined) {
+                        link = {};
+                        link['source'] = pIndex;
+                        link['target'] = i;
+                        link['value'] = 5;
+                        //link['type'] = prel;
+                        links.push(link)
+        			}
+                }
+    		}else{        
+                nodes[i].fixed = true; //the top node
+                nodes[i].x = width / 2;
+                nodes[i].y = 50;
+                nodes[i]['is'] = 'root';
+    		}
+        }
 
-			if (pIndex != undefined) {
-			  link = {};
-			  link['source'] = pIndex;
-			  link['target'] = i;
-			  link['value'] = 5;
-			  //link['type'] = prel;
-			  links.push(link)
-			}
-		  }
-		} else {        
-		  nodes[i].fixed = true; //the top node
-		  nodes[i].x = width / 2;
-		  nodes[i].y = 50;
-		  nodes[i]['is'] = 'root';
-		}
+        nodes[nodeIndex[target]].fixed = true;
+        nodes[nodeIndex[target]].x = width / 2;
+        nodes[nodeIndex[target]].y = height - 50;
+        nodes[nodeIndex[target]]['is'] = 'target';
 
-	  }
-
-
-	  nodes[nodeIndex[target]].fixed = true;
-	  nodes[nodeIndex[target]].x = width / 2;
-	  nodes[nodeIndex[target]].y = height - 50;
-	  nodes[nodeIndex[target]]['is'] = 'target';
-
-	  return {'nodes' : nodes, 'links' : links};
+        return {'nodes' : nodes, 'links' : links};
 	}      
 
 	function GO(goid) {
-	  return that.goNodes[goid];
+        return that.goNodes[goid];
 	}
 
 	function recursiveAncestor(goid) {
-	  goids = [];
-	  goids.push(goid);
+        goids = [];
+        goids.push(goid);
 
-	  var data = GO(goid);
+        var data = GO(goid);
 
-	  if (data['p'].length > 0) {
-		for (var i = 0, count = data['p'].length ; i < count ; i ++ ) {
-		  pgoid = data['p'][i];
-		  goids = goids.concat(recursiveAncestor(pgoid));
-		}
-	  }
+        if (data['p'].length > 0) {
+            for (var i = 0, count = data['p'].length ; i < count ; i ++ ) {
+                pgoid = data['p'][i];
+                goids = goids.concat(recursiveAncestor(pgoid));
+            }
+        }
 
-	  return goids
+        return goids
 	}
 
 	function getUniqueGoid(goids){
-	  var dic={},r=[];
-	  for(i=0;i<goids.length;i++){
-		dic[goids[i][0]] = goids[i][1];
-	  }
-	  for(i in dic){
-		arr = [i,dic[i]];
-		r.push(arr);
-	  }
-	  return r;
+        var dic={},r=[];
+        for(i=0;i<goids.length;i++){
+            dic[goids[i][0]] = goids[i][1];
+        }
+        for(i in dic){
+            arr = [i,dic[i]];
+            r.push(arr);
+        }
+        return r;
 	}
 
 	//drawing the graph
 	function drawGraph(struct,svg,width,height) {
-	  force
-		.nodes(struct.nodes)
-		.links(struct.links);
+        force
+    		.nodes(struct.nodes)
+    		.links(struct.links);
 
-	  var strokeColor = d3.scale.category10();
-	  var radiusScale = d3.scale.linear().domain([0,d3.max(struct.nodes,function(d) {return d.r;})]).range([5,10]);
+        var strokeColor = d3.scale.category10();
+        var radiusScale = d3.scale.linear().domain([0,d3.max(struct.nodes,function(d) {return d.r;})]).range([5,10]);
 
-	  var link = svg.selectAll("line.link")
-		.data(struct.links)
-		.enter().append("line")
-		.attr("class", "link")
-		.style('stroke', function(d, i ) { return strokeColor(d.type);})
-		.style("stroke-width", 2);
+        var link = svg.selectAll("line.link")
+    		.data(struct.links)
+    		.enter().append("line")
+    		.attr("class", "link")
+    		.style('stroke', function(d, i ) { return strokeColor(d.type);})
+    		.style("stroke-width", 2);
 	 
-	  var node = svg.selectAll("circle.node")
-		.data(struct.nodes)
-		.enter().append("circle")
-		.attr("class", "node")
-		.attr("r", function(d) { return radiusScale(d.r);})
-		.style("fill", function(d,i) {
-		  if (d.is == "root") {
-			return 'black';
-		  } else if (d.is == "target" || d.is == 'child') {
-			return 'orange';
-		  } else {
-			return 'lightblue';
-		  }
-		})
-		.call(force.drag)
-		.on('click',function(d,i) {
-		  d.fixed=true;
-		});
+        var node = svg.selectAll("circle.node")
+            .data(struct.nodes)
+            .enter().append("circle")
+            .attr("class", "node")
+            .attr("r", function(d) { return radiusScale(d.r);})
+            .style("fill", function(d,i) {
+              if (d.is == "root") {
+            	return 'black';
+              } else if (d.is == "target" || d.is == 'child') {
+            	return 'orange';
+              } else {
+            	return 'lightblue';
+              }
+            })
+        .call(force.drag)
+        .on('click',function(d,i) {
+            d.fixed=true;
+        });
 
 	   
-	  var nodeText = svg.selectAll("text.node")
-		  .data(struct.nodes)
-		  .enter().append("text")
-		  .attr("class", "node")
-		  .text(function(d) { return d.name;})
-		  //.each(insertLinebreaks)
-		  .call(force.drag);
+        var nodeText = svg.selectAll("text.node")
+            .data(struct.nodes)
+            .enter().append("text")
+            .attr("class", "node")
+            .text(function(d) { return d.name;})
+            //.each(insertLinebreaks)
+            .call(force.drag);
 
 	 
-	  force.on("tick", function(e) {
-		link.attr("x1", function(d) { if (d.source.x - width/2 >= 0 ) return d.source.x; })
-		  .attr("y1", function(d) { return d.source.y; })
-		  .attr("x2", function(d) { return d.target.x; })
-		  .attr("y2", function(d) { return d.target.y; });
-	 
-		node.attr("cx", function(d) { return d.x; })
-		  .attr("cy", function(d) { return d.y; })
+        force.on("tick", function(e) {
+        link.attr("x1", function(d) { if (d.source.x - width/2 >= 0 ) return d.source.x; })
+          .attr("y1", function(d) { return d.source.y; })
+          .attr("x2", function(d) { return d.target.x; })
+          .attr("y2", function(d) { return d.target.y; });
 
-		nodeText.attr("x", function(d) { return d.x; })
-		  .attr("y", function(d) { return d.y + radiusScale(d.r) + 10; })
-	  });
+        node.attr("cx", function(d) { return d.x; })
+          .attr("cy", function(d) { return d.y; })
 
-	  force.start();
+        nodeText.attr("x", function(d) { return d.x; })
+          .attr("y", function(d) { return d.y + radiusScale(d.r) + 10; })
+        });
+
+        force.start();
 	}
 
 	var insertLinebreaks = function (d) {
-			  var el = d3.select(this);
-			  var words = d.name.split(' ');
-			  el.text('');
-			  var maxLength = 0;
-			  for (var i = 0; i < words.length; i++) {
-				  if(words[i].length > maxLength)
-					  maxLength = words[i].length;
-				  if(words[i].length < 4)//if length is too short,connect to previous words to save space
-				  {
-					words[i-1]=words[i-1]+" "+words[i];
-					words[i]="";
-				  }
-			  }
+        var el = d3.select(this);
+        var words = d.name.split(' ');
+        el.text('');
+        var maxLength = 0;
+        for (var i = 0; i < words.length; i++) {
+            if(words[i].length > maxLength)
+                maxLength = words[i].length;
+            //if length is too short,connect to previous words to save space
+            if(words[i].length < 4){
+                words[i-1]=words[i-1]+" "+words[i];
+                words[i]="";
+            }
+        }
 
-			  d.width = maxLength*9;
-			  d.height = words.length*9;
+        d.width = maxLength*9;
+        d.height = words.length*9;
 
-			   for (var i = 0; i < words.length; i++) {
-				  if(words[i]!="")
-				  {
-					var tspan = el.append('tspan').text(words[i]);
-					tspan.attr('x', 0).attr('dy', '10')
-					.attr("font-size", "3");
-				  }
-			  }
+        for (var i = 0; i < words.length; i++) {
+            if(words[i]!=""){
+                var tspan = el.append('tspan').text(words[i]);
+                    tspan.attr('x', 0).attr('dy', '10')
+                    .attr("font-size", "3");
+            }
+        }
 
-			};
+	};
 
 	//fixing and unfixing the nodes
 	function fixAllNodes() {
-	  for (var i = 0, count = force.nodes().length ; i < count ; i ++ ) {
-		force.nodes()[i].fixed = true;
-	  }
+        for (var i = 0, count = force.nodes().length ; i < count ; i ++ ) {
+            force.nodes()[i].fixed = true;
+        }
 	}
 
 	function unfixAllNodes() {
-	  for (var i = 0, count = force.nodes().length ; i < count ; i ++ ) {
-		if (force.nodes()[i]['is'] == "node") force.nodes()[i].fixed = false;
-	  }
+        for (var i = 0, count = force.nodes().length ; i < count ; i ++ ) {
+            if (force.nodes()[i]['is'] == "node") force.nodes()[i].fixed = false;
+        }
 	}
 
 	//recreate data structures and redraw graph with new nodes
@@ -531,379 +516,362 @@
 	}
 
 	function getMaxPval(){
-	  var max = Number(that.go_inf[0].pVal);
-	  for(i=0;i<nodesSize;i++){
-		if(Number(that.go_inf[i].pVal) > max){
-		  max = Number(that.go_inf[i].pVal);
-		}
-	  }
-	  return max;
+        var max = Number(that.go_inf[0].pVal);
+        for(i=0;i<nodesSize;i++){
+            if(Number(that.go_inf[i].pVal) > max){
+                max = Number(that.go_inf[i].pVal);
+            }
+        }
+        return max;
 	}
 
 	function sortGO_inf(){
+        pVal_sort = [];
+        for(i=0;i<nodesSize;i++)
+            pVal_sort[i] = Number(that.go_inf[i].pVal);
 
-	  pVal_sort = [];
-	  for(i=0;i<nodesSize;i++)
-		  pVal_sort[i] = Number(that.go_inf[i].pVal);
+        function compare(a, b) {
+            if (a < b) {
+                return 1;
+            }
+            if (a > b) {
+                return -1;
+            }
+            // a must be equal to b
+            return 0;
+        }
 
-	  function compare(a, b) {
-	  if (a < b) {
-		return 1;
-	  }
-	  if (a > b) {
-		return -1;
-	  }
-	  // a must be equal to b
-	  return 0;
-	  }
+        pVal_sort.sort(compare);
 
-
-	  pVal_sort.sort(compare);
-
-	  return pVal_sort;
-
+        return pVal_sort;
 	}
 
 	function determineLabelSize(){
-	  var GOMinSize = 15;
-	  var GOMaxSize = 30;
+        var GOMinSize = 15;
+        var GOMaxSize = 30;
 
-	  that.go_inf.map(function(d){
-			d["size"] = getSize(d.pVal,GOMinSize,GOMaxSize);
-	  });
+        that.go_inf.map(function(d){
+        	d["size"] = getSize(d.pVal,GOMinSize,GOMaxSize);
+        });
 
-	  function getSize(pVal,GOMinSize,GOMaxSize){
-		for(i=0;i<seperated_points.length;i++){
-			if((seperated_points[i] <= pVal) && (pVal <= seperated_points[i+1])){
-					return (10-i)*(GOMaxSize-GOMinSize)/10+GOMinSize;
-			  }
-		  }
-
-	  }
+        function getSize(pVal,GOMinSize,GOMaxSize){
+            for(i=0;i<seperated_points.length;i++){
+            	if((seperated_points[i] <= pVal) && (pVal <= seperated_points[i+1])){
+            		return (10-i)*(GOMaxSize-GOMinSize)/10+GOMinSize;
+            	}
+            }
+        }
 	}
 
 	function getColor(d,fill) {
-
-		for(i=0;i<seperated_points.length-1;i++){
-		  if((seperated_points[i] <= d)&&(d < seperated_points[i+1])){
-			  return color_scheme[i];
-		  }
-		}
-		if(seperated_points[seperated_points.length-1] == d)
-		  return color_scheme[9];
+        for(i=0;i<seperated_points.length-1;i++){
+            if((seperated_points[i] <= d)&&(d < seperated_points[i+1])){
+                return color_scheme[i];
+            }
+        }
+		if(seperated_points[seperated_points.length-1] == d){
+            return color_scheme[9];
+        }
 	}
 
 	function createPvalLabelPanel(fill){
-	  var panelTitle = [];
-	  var panel = [];
-	  panelTitle.push("p-value");
-	  panelTitle.push("<hr></hr>");
-	  panelTitle = panelTitle.join('');
-	  //create panel
-	  for(i=0;i<seperated_points.length-1;i++)
-	  {
-		from = seperated_points[i];
-		to = seperated_points[i+1];
-		panel.push('<i id="'+pValLevel[i]+'" style="background:' + getColor(from,fill) + '" ></i> ' +
-					scienceFormat(from) +" - "+ scienceFormat(to)
-		);
-	  }
+        var panelTitle = [];
+        var panel = [];
+        panelTitle.push("p-value");
+        panelTitle.push("<hr></hr>");
+        panelTitle = panelTitle.join('');
+        //create panel
+        for(i=0;i<seperated_points.length-1;i++){
+            from = seperated_points[i];
+            to = seperated_points[i+1];
+            panel.push('<i id="'+pValLevel[i]+'" style="background:' + getColor(from,fill) + '" ></i> ' +
+            			scienceFormat(from) +" - "+ scienceFormat(to)
+            );
+        }
 
+        panelLabel = "<div>" + panelTitle + panel.join('<br>') + "</div>";
+        $('#pval-label').empty();
+        $('#pval-label').append(panelLabel);
 
-	  panelLabel = "<div>" + panelTitle + panel.join('<br>') + "</div>";
-	  $('#pval-label').empty();
-	  $('#pval-label').append(panelLabel);
-
-
-	  function scienceFormat(value){
-		return value.toFixed(4).toString();
-	  }
+        function scienceFormat(value){
+            return value.toFixed(4).toString();
+        }
 	}
 
 	function transformIndex(index){
+        return (index < nodesSize)?
+        array_order.indexOf(parseInt(index)):getIndexFormClusterNode(parseInt(index));
 
-	  return (index < nodesSize)?
-		array_order.indexOf(parseInt(index)):getIndexFormClusterNode(parseInt(index));
-
-	  function getIndexFormClusterNode(index){
-		var nodeIndex = 0;
-		  clusterHierNodesStatus.map(function(d,i){
-			 if(d["index"] == index)
-				  nodeIndex = i;
-		  });
-		  return nodeIndex;
-	  }
-		
+        function getIndexFormClusterNode(index){
+            var nodeIndex = 0;
+                clusterHierNodesStatus.map(function(d,i){
+                    if(d["index"] == index){
+            		  nodeIndex = i;
+                    }
+                });
+            return nodeIndex;
+        }
 	}
 
 	function getMemKey(MenCache){
-	  var MemKeys = [];
+        var MemKeys = [];
 
-	  for (var i in MenCache){  
-		  MemKeys.push(i);
-	  }
+        for (var i in MenCache){  
+            MemKeys.push(i);
+        }
 
-	  return MemKeys;
+        return MemKeys;
 	}
 
 	function transformPolarCoordinatesTORectangleCoordinates(radius,angel){
-	  x = radius*Math.sin(angel);
-	  y = radius*Math.cos(angel);
-	  return [x,y];
+        x = radius*Math.sin(angel);
+        y = radius*Math.cos(angel);
+        return [x,y];
 	}
 
 	function drawClusterNodes(){
-	  var index;     
-	  clusterHierNodeView = clusterHierNodeView.data(clusterHierNodesStatus, function(d){return d.index;});
+        var index;     
+        clusterHierNodeView = clusterHierNodeView.data(clusterHierNodesStatus, function(d){return d.index;});
 
-	  clusterHierNodeView.enter().append("g");
+        clusterHierNodeView.enter().append("g");
 
-	  clusterHierNodeView.exit().remove();
+        clusterHierNodeView.exit().remove();
 
-	  clusterHierNodeView.attr("class","clusterNodeView");
-	  clusterHierNodeView.attr("value",function(d){return d.angle * 180 / Math.PI - 90;})
-	  clusterHierNodeView.attr("index",function(d){return d.index;});
-	  clusterHierNodeView.attr("translate_value",function(d){return d["radius"] + 5;});
-	  clusterHierNodeView.transition().duration(500).attrTween("transform", tween);
+        clusterHierNodeView.attr("class","clusterNodeView");
+        clusterHierNodeView.attr("value",function(d){return d.angle * 180 / Math.PI - 90;})
+        clusterHierNodeView.attr("index",function(d){return d.index;});
+        clusterHierNodeView.attr("translate_value",function(d){return d["radius"] + 5;});
+        clusterHierNodeView.transition().duration(500).attrTween("transform", tween);
 
-	  clusterHierNodeView.selectAll("circle").remove();
+        clusterHierNodeView.selectAll("circle").remove();
 
-	  circle = clusterHierNodeView.append("circle");
+        circle = clusterHierNodeView.append("circle");
 
-	  circle.attr("r",function(d){
-		if((d["percentOfOverlappingGenes"] > 0)||(d["percentOfOverlappingGenes"]==undefined))
-		return 6;
-	  }).style("fill", function(d){
-		return (d["status"]=="Expanded")?"rgb(94, 141, 141)":"red";
-	  }).attr("id","cluster")
+        circle.attr("r",function(d){
+            if((d["percentOfOverlappingGenes"] > 0)||(d["percentOfOverlappingGenes"]==undefined)) return 6;
+        }).style("fill", function(d){
+            return (d["status"]=="Expanded")?"rgb(94, 141, 141)":"red";
+        }).attr("id","cluster")
 
-	  .on("click",onClusterNodeClick)
-	  .append("title").text(function(d, i) {return "Click to cluster"});
+        .on("click",onClusterNodeClick)
+        .append("title").text(function(d, i) {return "Click to cluster"});
 
-	  clusterHierNodeTextView.selectAll("text").remove();
+        clusterHierNodeTextView.selectAll("text").remove();
 
-	  clusterHierNodeTextView = clusterHierNodeTextView.data(clusterHierNodesStatus,function(d){return d.index;});
+        clusterHierNodeTextView = clusterHierNodeTextView.data(clusterHierNodesStatus,function(d){return d.index;});
 
-	  clusterHierNodeTextView.enter().append("g");
+        clusterHierNodeTextView.enter().append("g");
 
-	  clusterHierNodeTextView.exit().remove();
+        clusterHierNodeTextView.exit().remove();
 
-	  clusterHierNodeTextView.transition().duration(500).attrTween("transform", tween);
-	  clusterHierNodeTextView.attr("class","clusterText");
-	  //clusterHierNodeTextView.attr("value",function(d){return d.angle * 180 / Math.PI - 90;})
-	  //clusterHierNodeTextView.attr("translate_value",function(d){return d["radius"] + 5;});
+        clusterHierNodeTextView.transition().duration(500).attrTween("transform", tween);
+        clusterHierNodeTextView.attr("class","clusterText");
+        //clusterHierNodeTextView.attr("value",function(d){return d.angle * 180 / Math.PI - 90;})
+        //clusterHierNodeTextView.attr("translate_value",function(d){return d["radius"] + 5;});
 
-	  textBackground = clusterHierNodeTextView.append("g");
+        textBackground = clusterHierNodeTextView.append("g");
 
-	  text = textBackground.attr("transform", function(d) {
-		 //return "rotate("  + (90 - d.angle * 180 / Math.PI) +")" + "translate(" + 0 + ",5)";
-		 return "rotate(" + -( $('[index='+d.index+']')[0].getAttribute("value")) +")" + "translate(0 ,3)";
-	   }).append("text");
+        text = textBackground.attr("transform", function(d) {
+            return "rotate(" + -( $('[index='+d.index+']')[0].getAttribute("value")) +")" + "translate(0 ,3)";
+        }).append("text");
 
-	  text.attr('height', 'auto')
-		.attr('text-anchor', 'middle')
-		.attr('font-size','9px')
-		.text(function(d){
-		  if((d["percentOfOverlappingGenes"] > 0)||(d["percentOfOverlappingGenes"]==undefined))
-		  return d["percentOfOverlappingGenes"];
-		}).attr('style', 'text-align:center;padding:2px;margin:2px;fill:white')
-		.on("click",onClusterNodeClick)
-		.append("title").text(function(d, i) {return "Click to cluster"});
+        text.attr('height', 'auto')
+        .attr('text-anchor', 'middle')
+        .attr('font-size','9px')
+        .text(function(d){
+            if((d["percentOfOverlappingGenes"] > 0)||(d["percentOfOverlappingGenes"]==undefined))
+                return d["percentOfOverlappingGenes"];
+            }).attr('style', 'text-align:center;padding:2px;margin:2px;fill:white')
+        .on("click",onClusterNodeClick)
+        .append("title").text(function(d, i) {return "Click to cluster"});
 
-	  function tween(d, i, a) {
-		var interpolate;
-		var str;
-		//str = "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
-		if ($('[index='+d.index+']').length !=0 ){
-			if($('[index='+d.index+'] circle')[0].getAttribute("style")=="fill: red;"){
-			str = "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
-		  }
-		  else{
-		  str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
-		  //console.log($('[index='+d.index+']')[0].getAttribute("value"))
-		  }
-		  str += "translate(" + ( d["radius"] + 5 ) + ",0)";
-		  interpolate = d3.interpolate(a,str);
+    	function tween(d, i, a) {
+    		var interpolate;
+    		var str;
+    		//str = "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+    		if ($('[index='+d.index+']').length !=0 ){
+    			if($('[index='+d.index+'] circle')[0].getAttribute("style")=="fill: red;"){
+                    str = "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+                }else{
+                    str = "rotate(" + $('[index='+d.index+']')[0].getAttribute("value") + ")"
+                }
+                str += "translate(" + ( d["radius"] + 5 ) + ",0)";
+                interpolate = d3.interpolate(a,str);
 
-		  return function(t) {
-			  return interpolate(t);
-		  };
-		}
-		else return null;
-	  }
+                return function(t) {
+                    return interpolate(t);
+        		};
+    		}else{
+                return null;
+            } 
+        }
 	}
 
 	function drawArc(clusterHierData){
+        var clusterHierDataFiltered = [];
+        var arcData = [];
 
-
-	  var clusterHierDataFiltered = [];
-	  var arcData = [];
-
-	  clusterHierData.map(function(d){
-		  if((d!=undefined) && (d[3]!=0))
-			clusterHierDataFiltered.push(d);
-	  });
-
+        clusterHierData.map(function(d){
+            if((d!=undefined) && (d[3]!=0)){
+                clusterHierDataFiltered.push(d);
+            }
+        });
 	  
-	  clusterHierDataFiltered.map(function(d){
+        clusterHierDataFiltered.map(function(d){
 			var firstNodeIndex = d[0];
 			var secondNodeIndex = d[1];
 
 			if(firstNodeIndex < nodesSize){
-			  firstNodeIndex = transformIndex(firstNodeIndex);
-			  
-			  firstNode = chordGroupsNodePosition[firstNodeIndex];
+                firstNodeIndex = transformIndex(firstNodeIndex);
+                firstNode = chordGroupsNodePosition[firstNodeIndex];
 			}else{
-			  firstNodeIndex = transformIndex(firstNodeIndex);
-			  firstNode = clusterHierNodesStatus[firstNodeIndex];
+                firstNodeIndex = transformIndex(firstNodeIndex);
+                firstNode = clusterHierNodesStatus[firstNodeIndex];
 			}
 			 if(secondNodeIndex < nodesSize){
-			  secondNodeIndex = transformIndex(secondNodeIndex);
-			  
-			  secondNode = chordGroupsNodePosition[secondNodeIndex];
+                secondNodeIndex = transformIndex(secondNodeIndex);
+                secondNode = chordGroupsNodePosition[secondNodeIndex];
 			}else{
-			  secondNodeIndex = transformIndex(secondNodeIndex);
-			  secondNode = clusterHierNodesStatus[secondNodeIndex];
+                secondNodeIndex = transformIndex(secondNodeIndex);
+                secondNode = clusterHierNodesStatus[secondNodeIndex];
 			}
 
 			if(firstNode.angle-secondNode.angle>Math.PI){
 				startAngle = secondNode.angle;
 				endAngle = firstNode.angle;
 			}else{
-			  startAngle = firstNode.angle;
-			  endAngle = secondNode.angle;
+                startAngle = firstNode.angle;
+                endAngle = secondNode.angle;
 			}
 
 			if(firstNode.radius > secondNode.radius){
-			  radius = firstNode.radius;
+                radius = firstNode.radius;
 			}
 			else{
-			  radius = secondNode.radius;
+                radius = secondNode.radius;
 			}
 
 			arcData.push({"index":d[0],"radius":radius,"startAngle":startAngle,"endAngle":endAngle});
 
 		});
 			
-	  clusterArc = clusterArc.data(arcData,function(d){return d.index;});
+        clusterArc = clusterArc.data(arcData,function(d){return d.index;});
 
-	  clusterArc.enter().append("path");
+        clusterArc.enter().append("path");
 
-	  clusterArc.exit().remove();
+        clusterArc.exit().remove();
 
-	  clusterArc
-		.style("fill", "green")
-		.attr("class","clusterArc")
-		.transition()
-		.duration(500)
-		.attr("d",function(d){
-			
-			var arc = d3.svg.arc()
-			  .innerRadius(d["radius"]+10)
-			  .outerRadius(d["radius"]+11)
-			  .startAngle(d["startAngle"])
-			  .endAngle(d["endAngle"]);
+        clusterArc
+    		.style("fill", "green")
+    		.attr("class","clusterArc")
+    		.transition()
+    		.duration(500)
+    		.attr("d",function(d){
+    			
+    			var arc = d3.svg.arc()
+                    .innerRadius(d["radius"]+10)
+                    .outerRadius(d["radius"]+11)
+                    .startAngle(d["startAngle"])
+                    .endAngle(d["endAngle"]);
 
-			return arc();
-		});
+    			return arc();
+    		});
 	}
 
 	function drawLine(clusterHierData){
-	  var clusterHierDataFiltered = [];
-	  var line1Data = [];
-	  var line2Data = [];
+        var clusterHierDataFiltered = [];
+        var line1Data = [];
+        var line2Data = [];
 	  
-	  clusterHierData.map(function(d){
-		  if((d!=undefined) && (d[3]!=0))
-			clusterHierDataFiltered.push(d);
-	  })
+        clusterHierData.map(function(d){
+            if((d!=undefined) && (d[3]!=0))
+                clusterHierDataFiltered.push(d);
+        })
 
-	  clusterHierDataFiltered.map(function(d){
-			firstNodeIndex = d[0];
-			secondNodeIndex = d[1];
-			clusterNodeIndex = d[2];
-			
-			if(firstNodeIndex < nodesSize){
-			  firstNodeIndex = transformIndex(firstNodeIndex);
-			  firstNode = chordGroupsNodePosition[firstNodeIndex];
-			}else{
-			  firstNodeIndex = transformIndex(firstNodeIndex);
-			  firstNode = clusterHierNodesStatus[firstNodeIndex];
-			}
+        clusterHierDataFiltered.map(function(d){
+        	firstNodeIndex = d[0];
+        	secondNodeIndex = d[1];
+        	clusterNodeIndex = d[2];
+        	
+        	if(firstNodeIndex < nodesSize){
+                firstNodeIndex = transformIndex(firstNodeIndex);
+                firstNode = chordGroupsNodePosition[firstNodeIndex];
+        	}else{
+                firstNodeIndex = transformIndex(firstNodeIndex);
+                firstNode = clusterHierNodesStatus[firstNodeIndex];
+        	}
 
-			if(secondNodeIndex < nodesSize){
-			  secondNodeIndex = transformIndex(secondNodeIndex);
-			  secondNode = chordGroupsNodePosition[secondNodeIndex];
-			}else{
-			  secondNodeIndex = transformIndex(secondNodeIndex);
-			  secondNode = clusterHierNodesStatus[secondNodeIndex];
-			}
+        	if(secondNodeIndex < nodesSize){
+                secondNodeIndex = transformIndex(secondNodeIndex);
+                secondNode = chordGroupsNodePosition[secondNodeIndex];
+        	}else{
+                secondNodeIndex = transformIndex(secondNodeIndex);
+                secondNode = clusterHierNodesStatus[secondNodeIndex];
+        	}
 
-			if(clusterNodeIndex < nodesSize){
-			  clusterNodeIndex = transformIndex(clusterNodeIndex);
-			  clusterNode = chordGroupsNodePosition[clusterNodeIndex];
-			}else{
-			  clusterNodeIndex = transformIndex(clusterNodeIndex);
-			  clusterNode = clusterHierNodesStatus[clusterNodeIndex];
-			}
+        	if(clusterNodeIndex < nodesSize){
+                clusterNodeIndex = transformIndex(clusterNodeIndex);
+                clusterNode = chordGroupsNodePosition[clusterNodeIndex];
+        	}else{
+                clusterNodeIndex = transformIndex(clusterNodeIndex);
+                clusterNode = clusterHierNodesStatus[clusterNodeIndex];
+        	}
 
+        	firstLineAngle = firstNode.angle;
+        	firstLineInnerPosition = firstNode.radius;
+        	firstLineOuterPosition = clusterNode.radius;
 
-			firstLineAngle = firstNode.angle;
-			firstLineInnerPosition = firstNode.radius;
-			firstLineOuterPosition = clusterNode.radius;
+        	secondLineAngle = secondNode.angle;
+        	secondLineInnerPosition = secondNode.radius;
+        	secondLineOuterPosition = clusterNode.radius;
 
-			secondLineAngle = secondNode.angle;
-			secondLineInnerPosition = secondNode.radius;
-			secondLineOuterPosition = clusterNode.radius;
+        	line1Data.push({"index":d[0],"LineInnerPosition":firstLineInnerPosition,"LineOuterPosition":firstLineOuterPosition,"LineAngle":firstLineAngle});
+        	line2Data.push({"index":d[1],"LineInnerPosition":secondLineInnerPosition,"LineOuterPosition":secondLineOuterPosition,"LineAngle":secondLineAngle});
+        });
 
-			line1Data.push({"index":d[0],"LineInnerPosition":firstLineInnerPosition,"LineOuterPosition":firstLineOuterPosition,"LineAngle":firstLineAngle});
+        clusterLine1 = clusterLine1.data(line1Data,function(d){return d.index;});
 
-			line2Data.push({"index":d[1],"LineInnerPosition":secondLineInnerPosition,"LineOuterPosition":secondLineOuterPosition,"LineAngle":secondLineAngle});
-	  });
-	  
-	  clusterLine1 = clusterLine1.data(line1Data,function(d){return d.index;});
+        clusterLine1.enter().append("path");
 
-	  clusterLine1.enter().append("path");
+        clusterLine1.exit().remove();
 
-	  clusterLine1.exit().remove();
+        clusterLine1
+            .style("fill", "green")
+            .attr("class","clusterLine")
+            .transition()
+            .duration(500)
+            .attr("d",function(d){
+            	
+            	var firstLine = d3.svg.arc()
+            	.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
+            	.outerRadius(d["LineOuterPosition"]+5)
+            	.startAngle(d["LineAngle"])
+            	.endAngle(d["LineAngle"]+0.002);
 
-	  clusterLine1
-		.style("fill", "green")
-		.attr("class","clusterLine")
-		.transition()
-		.duration(500)
-		.attr("d",function(d){
-			
-			var firstLine = d3.svg.arc()
-			.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
-			.outerRadius(d["LineOuterPosition"]+5)
-			.startAngle(d["LineAngle"])
-			.endAngle(d["LineAngle"]+0.002);
+            	return firstLine();
+            });
 
-			return firstLine();
-		});
+        clusterLine2 = clusterLine2.data(line2Data,function(d){return d.index;});
 
-	  clusterLine2 = clusterLine2.data(line2Data,function(d){return d.index;});
+        clusterLine2.enter().append("path");
 
-	  clusterLine2.enter().append("path");
+        clusterLine2.exit().remove();
 
-	  clusterLine2.exit().remove();
+        clusterLine2
+            .style("fill", "green")
+            .attr("class","clusterLine")
+            .transition()
+            .duration(500)
+            .attr("d",function(d){
 
-	  clusterLine2
-		.style("fill", "green")
-		.attr("class","clusterLine")
-		.transition()
-		.duration(500)
-		.attr("d",function(d){
+                var secondLine = d3.svg.arc()
+        			.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
+        			.outerRadius(d["LineOuterPosition"]+5)
+        			.startAngle(d["LineAngle"])
+        			.endAngle(d["LineAngle"]+0.002);
 
-		var secondLine = d3.svg.arc()
-			.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
-			.outerRadius(d["LineOuterPosition"]+5)
-			.startAngle(d["LineAngle"])
-			.endAngle(d["LineAngle"]+0.002);
-
-			return secondLine();
-		});
+                return secondLine();
+            });
 	}
 
 	function drawHierarchicalClustering(clusterHierData){
