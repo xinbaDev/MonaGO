@@ -2515,7 +2515,7 @@ var MonaGO = function(){
     		last_label_angle = label_angle
 
     		return "rotate(" + label_angle + ")"
-    		   + "translate(" + (r1 + 0) + ",0)";
+    		   + "translate(" + (r1 + 20) + ",10)";
     		}).append("svg:text")
     		.attr("x", function(d){
                 if(popUpList.indexOf(d.index)!=-1){
