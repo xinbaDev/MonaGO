@@ -41,23 +41,15 @@ Array.prototype.unique = function() {
 var MonaGO = function(){
 
 	var monago;
-
-	var force;
 	var nodesSize = size;
 	var maxNodeIndex = size;
 
 	var old_array_order = [];
 	var clusterHierDataFiltered = [];
-
-	
-	
-
-	var labelOff=0;
+	var labelOff = 0;
 
 	var clusterHierNodesStatus = [];//for storing nodes generated Hierarchical clustering
 	var chordGroupsNodePosition = [];
-
-
 
 	var popUpList = [];//store the index of go that being popped up.
 
@@ -439,8 +431,8 @@ var MonaGO = function(){
               .attr("x2", function(d) { return d.target.x; })
               .attr("y2", function(d) { return d.target.y; });
 
-            node.attr("cx", function(d) { return d.x; })
-              .attr("cy", function(d) { return d.y; })
+            node.attr("cx", function(d) { return d.x = Math.max(radiusScale(d.r), Math.min(width - radiusScale(d.r), d.x)); })
+              .attr("cy", function(d) { return d.y = Math.max(radiusScale(d.r), Math.min(height - radiusScale(d.r), d.y));; })
 
             nodeText.attr("x", function(d) { return d.x; })
               .attr("y", function(d) { return d.y + radiusScale(d.r) + 10; })
@@ -474,7 +466,6 @@ var MonaGO = function(){
                     .attr("font-size", "3");
             }
         }
-
 	};
 
 	//fixing and unfixing the nodes
@@ -496,7 +487,7 @@ var MonaGO = function(){
         force = {};
 
         force = d3.layout.force()
-        .charge(-3000)
+        .charge(-10000)
         .linkDistance(20)
         .theta(0.2)
         .gravity(0.5)
@@ -734,7 +725,7 @@ var MonaGO = function(){
                 secondNode = clusterHierNodesStatus[secondNodeIndex];
 			}
 
-			if(firstNode.angle-secondNode.angle>Math.PI){
+			if(firstNode.angle - secondNode.angle>Math.PI){
 				startAngle = secondNode.angle;
 				endAngle = firstNode.angle;
 			}else{
@@ -750,7 +741,6 @@ var MonaGO = function(){
 			}
 
 			arcData.push({"index":d[0],"radius":radius,"startAngle":startAngle,"endAngle":endAngle});
-
 		});
 			
         clusterArc = clusterArc.data(arcData,function(d){return d.index;});
