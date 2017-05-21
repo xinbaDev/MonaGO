@@ -41,23 +41,15 @@ Array.prototype.unique = function() {
 var MonaGO = function(){
 
 	var monago;
-
-	var force;
 	var nodesSize = size;
 	var maxNodeIndex = size;
 
 	var old_array_order = [];
 	var clusterHierDataFiltered = [];
-
-	
-	
-
-	var labelOff=0;
+	var labelOff = 0;
 
 	var clusterHierNodesStatus = [];//for storing nodes generated Hierarchical clustering
 	var chordGroupsNodePosition = [];
-
-
 
 	var popUpList = [];//store the index of go that being popped up.
 
@@ -94,24 +86,24 @@ var MonaGO = function(){
 	var color_scheme = ["#1249C9","#0F399B","#0A2B76","#0F2147","#2C3645","#82733D","#E1C03B","#E6AE29","#F2AB1C","#FFAB00"].reverse();
 	var pValLevel = ["p-1","p-2","p-3","p-4","p-5","p-6","p-7","p-8","p-9","p-10"];
 	var preElement = "p-1";
-	var annotation_manual={
+	var annotation_manual = {
 	  biological_process:"[BP]",
 	  cellular_component:"[CC]",
 	  molecular_function:"[MF]"
 	};
 	var chordMatrix;
 	var chord;
-	var detailPanelWidth = $(window).width()*0.25;
+	var detailPanelWidth = $(window).width() * 0.25;
 
 	var controlPanelWidth = 510;
 
 	var controlPanelHeight = 120;
 
-	var w = $(window).width()-detailPanelWidth,
+	var w = $(window).width() - detailPanelWidth,
 		 h = $(window).height(),
 		 r0 = Math.min(w, h) * .20,
 		 r1 = r0 * 1.1,
-		 widthToheightRatio = w/h;
+		 widthToheightRatio = w / h;
 
 	var goNameArr = [];
 
@@ -121,7 +113,7 @@ var MonaGO = function(){
 	var go_chart;
 	var circleSvg;
 
-	var width = detailPanelWidth-70;
+	var width = detailPanelWidth - 70;
 	var height = 600;
 	var force = d3.layout.force()
 	  .charge(-2000)
@@ -130,7 +122,7 @@ var MonaGO = function(){
 	  .gravity(1)
 	  .size([width, height]);
 
-	var zoom = d3.behavior.zoom().translate([w/2, h/2]);
+	var zoom = d3.behavior.zoom().translate([w / 2, h / 2]);
 	var zoomLevel = 1;
 	//var zoomhier=d3.behavior.zoom().translate([20,0]);
 	
@@ -412,20 +404,19 @@ var MonaGO = function(){
             .attr("class", "node")
             .attr("r", function(d) { return radiusScale(d.r);})
             .style("fill", function(d,i) {
-              if (d.is == "root") {
-            	return 'black';
-              } else if (d.is == "target" || d.is == 'child') {
-            	return 'orange';
-              } else {
-            	return 'lightblue';
-              }
+                if (d.is == "root") {
+                    return 'black';
+                } else if (d.is == "target" || d.is == 'child') {
+                    return 'orange';
+                } else {
+                    return 'lightblue';
+                }
             })
         .call(force.drag)
         .on('click',function(d,i) {
-            d.fixed=true;
+            d.fixed = true;
         });
 
-	   
         var nodeText = svg.selectAll("text.node")
             .data(struct.nodes)
             .enter().append("text")
@@ -434,18 +425,17 @@ var MonaGO = function(){
             //.each(insertLinebreaks)
             .call(force.drag);
 
-	 
         force.on("tick", function(e) {
-        link.attr("x1", function(d) { if (d.source.x - width/2 >= 0 ) return d.source.x; })
-          .attr("y1", function(d) { return d.source.y; })
-          .attr("x2", function(d) { return d.target.x; })
-          .attr("y2", function(d) { return d.target.y; });
+            link.attr("x1", function(d) { return d.source.x; })
+              .attr("y1", function(d) { return d.source.y; })
+              .attr("x2", function(d) { return d.target.x; })
+              .attr("y2", function(d) { return d.target.y; });
 
-        node.attr("cx", function(d) { return d.x; })
-          .attr("cy", function(d) { return d.y; })
+            node.attr("cx", function(d) { return d.x = Math.max(radiusScale(d.r), Math.min(width - radiusScale(d.r), d.x)); })
+              .attr("cy", function(d) { return d.y = Math.max(radiusScale(d.r), Math.min(height - radiusScale(d.r), d.y));; })
 
-        nodeText.attr("x", function(d) { return d.x; })
-          .attr("y", function(d) { return d.y + radiusScale(d.r) + 10; })
+            nodeText.attr("x", function(d) { return d.x; })
+              .attr("y", function(d) { return d.y + radiusScale(d.r) + 10; })
         });
 
         force.start();
@@ -476,7 +466,6 @@ var MonaGO = function(){
                     .attr("font-size", "3");
             }
         }
-
 	};
 
 	//fixing and unfixing the nodes
@@ -498,7 +487,7 @@ var MonaGO = function(){
         force = {};
 
         force = d3.layout.force()
-        .charge(-15000)
+        .charge(-10000)
         .linkDistance(20)
         .theta(0.2)
         .gravity(0.5)
@@ -736,7 +725,7 @@ var MonaGO = function(){
                 secondNode = clusterHierNodesStatus[secondNodeIndex];
 			}
 
-			if(firstNode.angle-secondNode.angle>Math.PI){
+			if(firstNode.angle - secondNode.angle>Math.PI){
 				startAngle = secondNode.angle;
 				endAngle = firstNode.angle;
 			}else{
@@ -751,8 +740,7 @@ var MonaGO = function(){
                 radius = secondNode.radius;
 			}
 
-			arcData.push({"index":d[0],"radius":radius,"startAngle":startAngle,"endAngle":endAngle});
-
+			arcData.push({"index":d[0],"radius":radius,"startAngle":startAngle,"endAngle":endAngle,"index2":d[1]});
 		});
 			
         clusterArc = clusterArc.data(arcData,function(d){return d.index;});
@@ -764,9 +752,13 @@ var MonaGO = function(){
         clusterArc
     		.style("fill", "green")
     		.attr("class","clusterArc")
+    		.attr("index1",function(d){return d["index"]})
+		    .attr("index2",function(d){return d["index2"]})
+		    .attr("startAngle",function(d){return d["startAngle"]})
+		    .attr("endAngle",function(d){return d["endAngle"]})
     		.transition()
     		.duration(500)
-    		.attr("d",function(d){
+    		/*.attr("d",function(d){
     			
     			var arc = d3.svg.arc()
                     .innerRadius(d["radius"]+10)
@@ -775,7 +767,27 @@ var MonaGO = function(){
                     .endAngle(d["endAngle"]);
 
     			return arc();
-    		});
+    		});*/
+    		.attrTween("d",function(d, i, a){
+			var interpolate;
+			var str;
+			var startAngle = parseFloat($('[index1='+d.index+'].clusterArc')[0].getAttribute("startAngle"))
+			var endAngle = parseFloat($('[index2='+d.index2+'].clusterArc')[0].getAttribute("endAngle"))
+			d["startAngle"] =startAngle ;
+			d["endAngle"] =endAngle ;
+			console.log(d.index)
+			console.log("arc")
+			var arc = d3.svg.arc()
+			  .innerRadius(d["radius"]+10)
+			  .outerRadius(d["radius"]+11)
+			  .startAngle(d["startAngle"])
+			  .endAngle(d["endAngle"]);
+			str = arc()
+			interpolate = d3.interpolate(a,str);
+			return function(t) {
+			return interpolate(t);
+			};
+		});
 	}
 
 	function drawLine(clusterHierData){
@@ -838,9 +850,13 @@ var MonaGO = function(){
         clusterLine1
             .style("fill", "green")
             .attr("class","clusterLine")
-            .transition()
+		    .attr("index1",function(d){return d.index;})
+		    .attr("angleValue",function(d){return d["LineAngle"];})
+		    //.attr("LineOuterPosition",function(d){return d["LineOuterPosition"];})
+		    //.attr("LineInnerPosition",function(d){return d["LineInnerPosition"];});
+        clusterLine1.transition()
             .duration(500)
-            .attr("d",function(d){
+            /*.attr("d",function(d){
             	
             	var firstLine = d3.svg.arc()
             	.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
@@ -849,7 +865,29 @@ var MonaGO = function(){
             	.endAngle(d["LineAngle"]+0.002);
 
             	return firstLine();
-            });
+            });*/
+			.attrTween("d",function(d, i, a){
+			//lineRefresh();
+			var interpolate;
+			var str;
+			var lineAngle = parseFloat($('[index1='+d.index+'].clusterLine')[0].getAttribute("angleValue"))
+			d["LineAngle"] =lineAngle ;
+			//console.log("line")
+			//console.log(lineAngle)
+	        //console.log(d["LineAngle"])
+			var firstLine = d3.svg.arc()
+			.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
+			.outerRadius(d["LineOuterPosition"]+5)
+			.startAngle(d["LineAngle"])
+			.endAngle(d["LineAngle"]+0.002);
+            //console.log("drawend")
+			str = firstLine()
+			interpolate = d3.interpolate(a,str);
+			return function(t) {
+			return interpolate(t);
+			};
+		});
+
 
         clusterLine2 = clusterLine2.data(line2Data,function(d){return d.index;});
 
@@ -860,9 +898,13 @@ var MonaGO = function(){
         clusterLine2
             .style("fill", "green")
             .attr("class","clusterLine")
+            .attr("index1",function(d){return d.index;})
+		    .attr("angleValue",function(d){return d["LineAngle"];});
+
+        clusterLine2
             .transition()
             .duration(500)
-            .attr("d",function(d){
+            /*.attr("d",function(d){
 
                 var secondLine = d3.svg.arc()
         			.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
@@ -871,7 +913,27 @@ var MonaGO = function(){
         			.endAngle(d["LineAngle"]+0.002);
 
                 return secondLine();
-            });
+            });*/
+			.attrTween("d",function(d, i, a){
+			var interpolate;
+			var str;
+		    var lineAngle = parseFloat($('[index1='+d.index+'].clusterLine')[0].getAttribute("angleValue"))
+			d["LineAngle"] =lineAngle ;
+			//console.log("line")
+			//console.log(lineAngle)
+	        //console.log(d["LineAngle"])
+			var secondLine = d3.svg.arc()
+			.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
+			.outerRadius(d["LineOuterPosition"]+5)
+			.startAngle(d["LineAngle"])
+			.endAngle(d["LineAngle"]+0.002);
+            console.log("drawend")
+			str = secondLine()
+			interpolate = d3.interpolate(a,str);
+			return function(t) {
+			return interpolate(t);
+			};
+		});
 	}
 
 	function drawHierarchicalClustering(clusterHierData){
@@ -1652,6 +1714,7 @@ var MonaGO = function(){
             update(goid,hier_group,width,height);
         }
 	}
+
 	function mouseoverHier(){
 	   if(!$('[id="exporthier"]').hasClass("btn")){
 			var element="<div style=\"position:relative;left:10px;bottom:"+(height-5)+"px;\"><button id='exporthier' class='btn dropdown-toggle' data-toggle='dropdown'>Save image<span class='caret'></span></button><div>"
@@ -1902,7 +1965,6 @@ var MonaGO = function(){
             $goList = $(this).next().next();
             $goList.slideToggle(500);
 		});
-		
 	}
 
 	function createGOHierForClusterGO(){
@@ -1934,7 +1996,6 @@ var MonaGO = function(){
         		.attr("y", function(d) { return d.y + radiusScale(d.r) + 10; });
 
     		update(goDetail.GO_id,hier_group,hierWidth,hierHeight);
-
         })
 	}
 
@@ -2016,21 +2077,16 @@ var MonaGO = function(){
 	function createChordTempl(index,d){
 
 		var totalGenesNumber=removeDuplicatedItem3(that.go_inf[d.source.index].genes.concat(that.go_inf[d.source.subindex].genes)).length
-		//console.log(totalGenesNumber)
 		var geneListInHtml = "<div class='gene_content'><ol>";
 		that.dic[index].split(";").forEach(function(d,i){
 			 var tmp = "<li>" + " <n class='gene_name'>"+ d + "</n> "+ "</li>";
 			 geneListInHtml+=tmp;
 		});
 		geneListInHtml += "</ol></div>";
-
-		//console.log(clusterHierData)
 		templ = "<p>Overlapping genes between <a class='go_id'>" + that.go_inf[d.source.index].GO_id + " (" + that.go_inf[d.source.index].GO_name + ")" +
 		"</a> and <a class='go_id'>" +  that.go_inf[d.source.subindex].GO_id + " (" + that.go_inf[d.source.subindex].GO_name +")" + "</a>:\n</p>"+
 		"Number of overlapping genes: "+ that.dic[index].split(";").length+"</a>\n</p>"+"</a></p>"+
 		"Percentage of overlapping genes: "+ parseInt(that.dic[index].split(";").length / totalGenesNumber*100)+"%" +"</a>\n</p>" + geneListInHtml;
-
-
 		return templ;
 	}
 
@@ -2052,7 +2108,6 @@ var MonaGO = function(){
         }
 
 		$(".dropbtn").click(function () {
-
 		  $header = $(this);
 		  //getting the next element
 		  $content = $header.next();
@@ -2063,7 +2118,6 @@ var MonaGO = function(){
 	}
 
 	function createOnHover(num_array){
-
         $(".dropbtn").mouseover(function (d) {
     		var num = getTargetGONum(d.target.id);
     		groupLayout.classed("highlight", function(p){
@@ -2078,7 +2132,6 @@ var MonaGO = function(){
             groupLayout.classed("highlight",false,function(d){
                 return d.index==num;
             });
-
             resetPvaluePanel(num);
         });
 
@@ -2096,14 +2149,11 @@ var MonaGO = function(){
 
 	function getGenesFromACluster(num){
         var genes = "<div class='gene_content'><ol>";
-
         that.go_inf[num].genes.forEach(function(d,i){
             var tmp = "<li>" + "<n class='gene_name'>"+ d + "</n></li>";
             genes+=tmp;
         });
-
         genes += "</ol></div>";
-
         return genes;
 	}
 
@@ -2331,13 +2381,11 @@ var MonaGO = function(){
     		.transition()
     		.duration(300)
     		.attr("d",function(d){
-
     			var arc = d3.svg.arc()
     			  .innerRadius(d["radius"]+15)
     			  .outerRadius(d["radius"]+16)
     			  .startAngle(d["startAngle"])
     			  .endAngle(d["endAngle"]);
-
     			return arc();
     		});
 	}
@@ -2349,13 +2397,11 @@ var MonaGO = function(){
     		.transition()
     		.duration(300)
     		.attr("d",function(d){
-
     			var arc = d3.svg.arc()
                     .innerRadius(d["radius"]+10)
                     .outerRadius(d["radius"]+11)
                     .startAngle(d["startAngle"])
                     .endAngle(d["endAngle"]);
-
     			return arc();
     		});
 	}
@@ -2405,7 +2451,6 @@ var MonaGO = function(){
         			.outerRadius(d["LineOuterPosition"]+5)
         			.startAngle(d["LineAngle"])
         			.endAngle(d["LineAngle"]+0.002);
-
     			return firstLine();
     		});
 
@@ -2420,7 +2465,6 @@ var MonaGO = function(){
         			.outerRadius(d["LineOuterPosition"]+5)
         			.startAngle(d["LineAngle"])
         			.endAngle(d["LineAngle"]+0.002);
-
     			return secondLine();
     		});
 	}
@@ -2472,50 +2516,70 @@ var MonaGO = function(){
 	}
 
 	function updateLabel(){
-        // groupText.remove();
-        var node_angle=[];
-        var translate_value=[];
+        var node_angle = [];
+        var translate_value = [];
         var label_angle;
         var last_label_angle
-        var clusternode=$('.clusterNodeView');
-		for (var i=0;i<clusternode.length;i++)
-		{
+        var clusternode = $('.clusterNodeView');
+		for (var i = 0;i < clusternode.length;i++){
 			node_angle.push(clusternode[i].getAttribute("value"));
 			translate_value.push(clusternode[i].getAttribute("translate_value"));
 		}
         gt.remove()
-
         gt = groupTexts.selectAll("g")
         	 .data(chord.groups)
            .enter().append("svg:g").attr("class","labeltext");
 
         gt.attr("transform", function(d) {
-            label_angle=(d.startAngle+d.endAngle)/2 * 180 / Math.PI - 90+2;
-            var node_angle2=[];
+            label_angle = (d.startAngle+d.endAngle) / 2 * 180 / Math.PI - 90 + 2;
+            var node_angle2 = [];
             var index;
-            var node_angle1=node_angle.map(function(t){
-        	   return t-label_angle;
+            var lineIndex;
+            var node_angle1 = node_angle.map(function(t){
+        	   return t - label_angle;
             });
 
-            for (i=0;i<node_angle1.length;i++){
+            for (i = 0;i < node_angle1.length;i++){
                 if (Math.abs(node_angle1[i]) < 4)
                 node_angle2.push(i);
             }
 
-    		if((node_angle2.length!=0)&&(Math.abs(label_angle-last_label_angle)>=5)){
-    			for (i=0;i<node_angle2.length;i++){
+    		if((node_angle2.length != 0)&&(Math.abs(label_angle-last_label_angle) >= 5)){
+    			for (i = 0;i < node_angle2.length;i++){
     				index=node_angle2[i]
-					node_angle1[index]>0?node_angle[index]-=-(4.1-node_angle1[index]):node_angle[index]-=4.1+node_angle1[index];
+					node_angle1[index] > 0? node_angle[index]-=-(5-node_angle1[index]):node_angle[index]-=5+node_angle1[index];
 					$('.clusterNodeView')[index].setAttribute("transform","rotate(" + node_angle[index] + ")"+ "translate(" + translate_value[index] + ",0)");
 					$('.clusterNodeView')[index].setAttribute("value",node_angle[index]);
+					$('.clusterNodeView')[index].setAttribute("value",node_angle[index]);
+					lineIndex = $('.clusterNodeView')[index].getAttribute("index");
+					//console.log(lineIndex)
+                   // console.log((node_angle[index]+90)*Math.PI/180)
+                    if ($('[index1='+lineIndex+'].clusterLine').length != 0 && $('.clusterNodeView circle')[index].getAttribute("style")!="fill: red;"){
 
+                        var clusterline = $('[index1='+lineIndex+'].clusterLine')[0];
+                        var angleValue = (node_angle[index]+90)*Math.PI/180;
+                        clusterline.setAttribute("angleValue",(node_angle[index]+90)*Math.PI/180);
+                        console.log("remove")
+                        if ($('[index1='+lineIndex+'].clusterArc')[0] != undefined){
+                            console.log(lineIndex)
+                            console.log("index1")
+                            var clusterarc = $('[index1='+lineIndex+'].clusterArc')[0];
+                            clusterarc.setAttribute("startAngle",angleValue);
+                        }
+                        else if(($('[index2='+lineIndex+'].clusterArc')[0] != undefined)){
+                        //console.log(lineIndex)
+                        //console.log("index2")
+                            var clusterarc = $('[index2='+lineIndex+'].clusterArc')[0];
+                            clusterarc.setAttribute("endAngle",angleValue);
+                        }
+                    }
     			}
     		}
 
     		last_label_angle = label_angle
 
     		return "rotate(" + label_angle + ")"
-    		   + "translate(" + (r1 + 0) + ",0)";
+    		   + "translate(" + (r1 + 20) + ",10)";
     		}).append("svg:text")
     		.attr("x", function(d){
                 if(popUpList.indexOf(d.index)!=-1){
