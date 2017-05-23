@@ -773,10 +773,8 @@ var MonaGO = function(){
 			var str;
 			var startAngle = parseFloat($('[index1='+d.index+'].clusterArc')[0].getAttribute("startAngle"))
 			var endAngle = parseFloat($('[index2='+d.index2+'].clusterArc')[0].getAttribute("endAngle"))
-			d["startAngle"] =startAngle ;
-			d["endAngle"] =endAngle ;
-			console.log(d.index)
-			console.log("arc")
+			d["startAngle"] = startAngle ;
+			d["endAngle"] = endAngle ;
 			var arc = d3.svg.arc()
 			  .innerRadius(d["radius"]+10)
 			  .outerRadius(d["radius"]+11)
@@ -785,7 +783,7 @@ var MonaGO = function(){
 			str = arc()
 			interpolate = d3.interpolate(a,str);
 			return function(t) {
-			return interpolate(t);
+                return interpolate(t);
 			};
 		});
 	}
@@ -931,7 +929,7 @@ var MonaGO = function(){
 			str = secondLine()
 			interpolate = d3.interpolate(a,str);
 			return function(t) {
-			return interpolate(t);
+                return interpolate(t);
 			};
 		});
 	}
@@ -2516,6 +2514,7 @@ var MonaGO = function(){
 	}
 
 	function updateLabel(){
+        console.log("update lable")
         var node_angle = [];
         var translate_value = [];
         var label_angle;
@@ -2531,7 +2530,7 @@ var MonaGO = function(){
            .enter().append("svg:g").attr("class","labeltext");
 
         gt.attr("transform", function(d) {
-            label_angle = (d.startAngle+d.endAngle) / 2 * 180 / Math.PI - 90 + 2;
+            label_angle = (d.startAngle + d.endAngle) / 2 * 180 / Math.PI - 90 + 2;
             var node_angle2 = [];
             var index;
             var lineIndex;
@@ -2540,35 +2539,30 @@ var MonaGO = function(){
             });
 
             for (i = 0;i < node_angle1.length;i++){
-                if (Math.abs(node_angle1[i]) < 4)
-                node_angle2.push(i);
+                if (Math.abs(node_angle1[i]) < 4){
+                    node_angle2.push(i);
+                }
             }
 
-    		if((node_angle2.length != 0)&&(Math.abs(label_angle-last_label_angle) >= 5)){
+    		if((node_angle2.length != 0)&&(Math.abs(label_angle - last_label_angle) >= 5)){
     			for (i = 0;i < node_angle2.length;i++){
-    				index=node_angle2[i]
-					node_angle1[index] > 0? node_angle[index]-=-(5-node_angle1[index]):node_angle[index]-=5+node_angle1[index];
+    				index = node_angle2[i]
+					node_angle1[index] > 0? node_angle[index] -= -(5-node_angle1[index]):node_angle[index] -= 5+node_angle1[index];
 					$('.clusterNodeView')[index].setAttribute("transform","rotate(" + node_angle[index] + ")"+ "translate(" + translate_value[index] + ",0)");
 					$('.clusterNodeView')[index].setAttribute("value",node_angle[index]);
 					$('.clusterNodeView')[index].setAttribute("value",node_angle[index]);
 					lineIndex = $('.clusterNodeView')[index].getAttribute("index");
-					//console.log(lineIndex)
-                   // console.log((node_angle[index]+90)*Math.PI/180)
                     if ($('[index1='+lineIndex+'].clusterLine').length != 0 && $('.clusterNodeView circle')[index].getAttribute("style")!="fill: red;"){
 
                         var clusterline = $('[index1='+lineIndex+'].clusterLine')[0];
                         var angleValue = (node_angle[index]+90)*Math.PI/180;
                         clusterline.setAttribute("angleValue",(node_angle[index]+90)*Math.PI/180);
-                        console.log("remove")
-                        if ($('[index1='+lineIndex+'].clusterArc')[0] != undefined){
+                        if($('[index1='+lineIndex+'].clusterArc')[0] != undefined){
                             console.log(lineIndex)
                             console.log("index1")
                             var clusterarc = $('[index1='+lineIndex+'].clusterArc')[0];
                             clusterarc.setAttribute("startAngle",angleValue);
-                        }
-                        else if(($('[index2='+lineIndex+'].clusterArc')[0] != undefined)){
-                        //console.log(lineIndex)
-                        //console.log("index2")
+                        }else if(($('[index2='+lineIndex+'].clusterArc')[0] != undefined)){
                             var clusterarc = $('[index2='+lineIndex+'].clusterArc')[0];
                             clusterarc.setAttribute("endAngle",angleValue);
                         }
@@ -2595,19 +2589,19 @@ var MonaGO = function(){
     		})
     		.attr("dy", ".45em")
     		.attr("text-anchor", function(d) {
-    		 return (d.startAngle+d.endAngle)/2 > Math.PI ? "end" : null;
+                return (d.startAngle + d.endAngle)/2 > Math.PI ? "end" : null;
     		})
     		.attr("transform", function(d) {
-    		 return (d.startAngle+d.endAngle)/2 > Math.PI ? "rotate(180)translate(-16)" : null;
+                return (d.startAngle + d.endAngle)/2 > Math.PI ? "rotate(180)translate(-16)" : null;
     		})
     		.text(function(d) {
                 if(that.go_inf[d.index].cat in annotation_manual){
-                    var annotation=annotation_manual[that.go_inf[d.index].cat];
-                    var text1= (d.startAngle+d.endAngle)/2 > Math.PI ?that.go_inf[d.index].GO_name+"  "+annotation:annotation+"  "+that.go_inf[d.index].GO_name;
-                    return (typeof that.go_inf[d.index].GO_id == "string")? text1:getMaxLabel(that.go_inf[d.index].GO_name)+"+";
+                    var annotation = annotation_manual[that.go_inf[d.index].cat];
+                    var text1 = (d.startAngle+d.endAngle)/2 > Math.PI ?that.go_inf[d.index].GO_name+"  "+annotation:annotation+"  "+that.go_inf[d.index].GO_name;
+                    return (typeof that.go_inf[d.index].GO_id == "string")? text1:getMaxLabel(that.go_inf[d.index].GO_name) + "+";
                 }else{
                     var text1 = that.go_inf[d.index].GO_name;
-                    return (typeof that.go_inf[d.index].GO_id == "string")? text1:getMaxLabel(that.go_inf[d.index].GO_name)+"+";
+                    return (typeof that.go_inf[d.index].GO_id == "string")? text1:getMaxLabel(that.go_inf[d.index].GO_name) + "+";
                 }
 
             });
@@ -2748,19 +2742,14 @@ var MonaGO = function(){
         that.ranger.noUiSlider.on('change', function( values, handle ) {
             var level = getLevelFromPercentOfOverlappingGenes(values.toString());
             getClusterNodesIndexBeingSelected(level);
-
-            //temporary fix
-            if(labelOff==0)
-                updateLabel();
+            updateLabel();
         });
 
         inputFormat.addEventListener('change',function(){
             that.ranger.noUiSlider.set(this.value);
             var level = getLevelFromPercentOfOverlappingGenes(this.value);
             getClusterNodesIndexBeingSelected(level);
-
-            if(labelOff==0)
-                updateLabel();
+            updateLabel();
         });
 	}
 
