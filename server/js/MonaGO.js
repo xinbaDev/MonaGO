@@ -756,8 +756,6 @@ var MonaGO = function(){
 		    .attr("index2",function(d){return d["index2"]})
 		    .attr("startAngle",function(d){return d["startAngle"]})
 		    .attr("endAngle",function(d){return d["endAngle"]})
-    		.transition()
-    		.duration(500)
     		/*.attr("d",function(d){
     			
     			var arc = d3.svg.arc()
@@ -768,13 +766,15 @@ var MonaGO = function(){
 
     			return arc();
     		});*/
-    		.attrTween("d",function(d, i, a){
+    		clusterArc.transition()
+    		.duration(500).attrTween("d",function(d, i, a){
 			var interpolate;
 			var str;
-			var startAngle = parseFloat($('[index1='+d.index+'].clusterArc')[0].getAttribute("startAngle"))
-			var endAngle = parseFloat($('[index2='+d.index2+'].clusterArc')[0].getAttribute("endAngle"))
-			d["startAngle"] =startAngle ;
-			d["endAngle"] =endAngle ;
+			if($('[index1='+d.index+'].clusterArc')[0] != undefined)
+			d["startAngle"] = parseFloat($('[index1='+d.index+'].clusterArc')[0].getAttribute("startAngle"))
+            if($('[index2='+d.index2+'].clusterArc')[0] != undefined)
+			d["endAngle"] = parseFloat($('[index2='+d.index2+'].clusterArc')[0].getAttribute("endAngle"))
+
 			console.log(d.index)
 			console.log("arc")
 			var arc = d3.svg.arc()
@@ -870,8 +870,8 @@ var MonaGO = function(){
 			//lineRefresh();
 			var interpolate;
 			var str;
-			var lineAngle = parseFloat($('[index1='+d.index+'].clusterLine')[0].getAttribute("angleValue"))
-			d["LineAngle"] =lineAngle ;
+			if($('[index1='+d.index+'].clusterLine')[0] != undefined)
+			d["LineAngle"] = parseFloat($('[index1='+d.index+'].clusterLine')[0].getAttribute("angleValue"))
 			//console.log("line")
 			//console.log(lineAngle)
 	        //console.log(d["LineAngle"])
@@ -917,8 +917,9 @@ var MonaGO = function(){
 			.attrTween("d",function(d, i, a){
 			var interpolate;
 			var str;
-		    var lineAngle = parseFloat($('[index1='+d.index+'].clusterLine')[0].getAttribute("angleValue"))
-			d["LineAngle"] =lineAngle ;
+			if($('[index1='+d.index+'].clusterLine')[0] != undefined)
+		    d["LineAngle"] = parseFloat($('[index1='+d.index+'].clusterLine')[0].getAttribute("angleValue"))
+			//d["LineAngle"] =lineAngle ;
 			//console.log("line")
 			//console.log(lineAngle)
 	        //console.log(d["LineAngle"])
@@ -2730,7 +2731,7 @@ var MonaGO = function(){
             start: [ maxPercentOfOverlappingGens],
             step: 1, // Slider moves in increments of '10'
             margin: 0, // Handles must be more than '20' apart
-            direction: 'rtl', // Put '0' at the bottom of the slider
+            direction: 'ltr', // Put '0' at the bottom of the slider
             orientation: 'horizontal', // Orient the slider vertically
             //behaviour: 'tap-drag', // Move handle on tap, bar is draggable
             range: { // Slider can select '0' to '100'
