@@ -31,144 +31,7 @@
 
 <div class="submitFormCentered">
 
-			<div class="David_submit">
 
-				<div class="David_submit_button btn-success" ><label class="large_label">Submit genes to DAVID for GO enrichment and visualisation</label></div>
-				
-
-				<div class="main_section" style="display:none">
-
-					<div class="step1">
-						<h2><span class="label label-primary" title="paste a list of genes seperated by comma, newline or space">Step 1: Enter Gene List</span></h2>
-
-						<div>
-							<label for="fileselect1">Files to upload:</label>
-							<input type="file" id="fileselect1" name="files1"/>
-							<div id="filedrag1" class="filedrag" style="display: block;">or drop files here</div>
-						</div>
-						<span class="example_upload_format">Upload File Format<br><a href="csv/demo.csv" id="csvDownload">csv<i class="fa fa-download"></i></a></span>
-						<br>
-						<font class="regular">Or paste a list</font>
-						<p>
-						<div >
-							<textarea rows="6" id="LISTBox" class="form-control" name="inputIds"></textarea>
-							<div class="example_gene" onclick="copyDemoGenes()"><p>Demo genes (click to paste):</p> 
-								<p id="demo_gene">
-									1007_s_at
-									1053_at
-									117_at
-									121_at
-									1255_g_at
-									1294_at
-									1316_at
-									1320_at
-									1405_i_at
-									1431_at
-									1438_at
-									1487_at
-									1494_f_at
-									1598_g_at  ....
-								</p>
-							</div>
-						</div>
-				
-						<input type="Button" value="Clear" class="btn" onclick="clearDavidPaste();" name="B3">
-						<!-- <input type="file" id="Upload1" style="display: none"> <label for="Upload1" class="btn" id="Upload_label">Upload CSV</label> -->
-						
-					</div>
-
-
-					<div class="step2">
-
-						<h2><span class="label label-primary" title="choose gene identifier">Step 2: Choose Identifier</span></h2>
-			
-									<br>
-									  <select class="selectpicker" data-width="300px" size="10" name="idType">
-								  
-										  	<option value="AFFYMETRIX_3PRIME_IVT_ID">AFFYMETRIX_3PRIME_IVT_ID</option>						
-										  	<option value="AFFYMETRIX_EXON_GENE_ID">AFFYMETRIX_EXON_GENE_ID</option>	
-										  	<option value="AFFYMETRIX_SNP_ID">AFFYMETRIX_SNP_ID</option>
-										  	<option value="AGILENT_CHIP_ID">AGILENT_CHIP_ID</option>
-										  	<option value="AGILENT_ID">AGILENT_ID</option>
-										  	<option value="AGILENT_OLIGO_ID">AGILENT_OLIGO_ID</option>
-										  	<option value="ENSEMBL_GENE_ID">ENSEMBL_GENE_ID</option>
-										  	<option value="ENSEMBL_TRANSCRIPT_ID">ENSEMBL_TRANSCRIPT_ID</option>
-										  	<option value="ENTREZ_GENE_ID">ENTREZ_GENE_ID</option>
-										  	<option value="FLYBASE_GENE_ID">FLYBASE_GENE_ID</option>
-										  	<option value="FLYBASE_TRANSCRIPT_ID">FLYBASE_TRANSCRIPT_ID</option>
-										  	<option value="GENBANK_ACCESSION">GENBANK_ACCESSION</option>
-										  	<option value="GENOMIC_GI_ACCESSION">GENOMIC_GI_ACCESSION</option>
-										  	<option value="GENPEPT_ACCESSION">GENPEPT_ACCESSION</option>
-										  	<option value="ILLUMINA_ID">ILLUMINA_ID</option>	
-										  	<option value="IPI_ID">IPI_ID</option>
-										  	<option value="MGI_ID">MGI_ID</option>									
-										  	<option value="OFFICIAL_GENE_SYMBOL">OFFICIAL_GENE_SYMBOL</option>									
-										  	<option value="PFAM_ID">PFAM_ID</option>
-										  	<option value="PIR_ID">PIR_ID</option>
-										  	<option value="PROTEIN_GI_ACCESSION">PROTEIN_GI_ACCESSION</option>
-										  	<option value="REFSEQ_GENOMIC">REFSEQ_GENOMIC</option>
-										  	<option value="REFSEQ_MRNA">REFSEQ_MRNA</option>
-										  	<option value="REFSEQ_PROTEIN">REFSEQ_PROTEIN</option>
-										  	<option value="REFSEQ_RNA">REFSEQ_RNA</option>
-										  	<option value="RGD_ID">RGD_ID</option>
-										  	<option value="SGD_ID">SGD_ID</option>
-										  	<option value="TAIR_ID">TAIR_ID</option>
-										  	<option value="UCSC_GENE_ID">UCSC_GENE_ID</option>
-										  	<option value="UNIGENE">UNIGENE</option>
-										  	<option value="UNIPROT_ACCESSION">UNIPROT_ACCESSION</option>
-										  	<option value="UNIPROT_ID">UNIPROT_ID</option>
-										  	<option value="UNIREF100_ID">UNIREF100_ID</option>
-										  	<option value="WORMBASE_GENE_ID">WORMBASE_GENE_ID</option>
-										  	<option value="WORMPEP_ID">WORMPEP_ID</option>
-										  	<option value="ZFIN_ID">ZFIN_ID</option>
-											<option value="NA">Not Sure </option>
-								 
-										  </select>
-								
-									
-								
-								 	<br>
-					</div>
-
-					<div class="step3">		
-			
-						<h2><span class="label label-primary" title="choose p-value from 0.05 to 0.001">Step 3: Choose p-value</span></h2>
-
-						<br>
-
-
-						<div style="display: flex; margin-left: 15px;">
-			            	<div id="slider" class="sliderBar"></div>
-          					<input type="text" id="input_slider"/>
-          					<input type="text" id="input3_slider" hidden/> 
-
-						</div>
-			       
-
-					</div>
-
-					<div class="step4">
-
-	        			<h2><span class="label label-primary" title="choose Gene Ontology annotation type">Step 4: Choose Annotation Type</span></h2>
-
-	        			<br>
-						
-							<select class="selectpicker show-tick" data-width="500px" name="annotType" multiple>
-
-				            	<option value="GOTERM_BP" selected>Biological Process</option>
-								<option value="GOTERM_MF">Molecular Function</option>
-				            	<option value="GOTERM_CC">Cellular Component</option>
-				
-				            </select>
-
-
-						<br>
-
-					</div>
-					<div class="btn btn-success btn-rounded btn-lg submit-btn" onclick="davidSubmitClicked()">Submit</div>
-				</div>
-
-			</div>
 
 			<div class="manual_submit">
 				<div class="manual_submit_button btn-success"><label class="large_label">Submit enriched GO terms for visualisation</label></div>
@@ -211,6 +74,144 @@
 
 <!-- 					<input type="file" id="Upload2" style="display: none"> <label for="Upload2" class="btn" id="Upload_label">Upload CSV</label> -->
 					<div class="btn btn-success btn-rounded btn-lg submit-btn" onclick="MonaGO_SubmitClicked()">Submit</div>
+				</div>
+
+			</div>
+			<div class="David_submit">
+
+				<div class="David_submit_button btn-success" ><label class="large_label">Submit genes to DAVID for GO enrichment and visualisation</label></div>
+
+
+				<div class="main_section" style="display:none">
+
+					<div class="step1">
+						<h2><span class="label label-primary" title="paste a list of genes seperated by comma, newline or space">Step 1: Enter Gene List</span></h2>
+
+						<div>
+							<label for="fileselect1">Files to upload:</label>
+							<input type="file" id="fileselect1" name="files1"/>
+							<div id="filedrag1" class="filedrag" style="display: block;">or drop files here</div>
+						</div>
+						<span class="example_upload_format">Upload File Format<br><a href="csv/demo.csv" id="csvDownload">csv<i class="fa fa-download"></i></a></span>
+						<br>
+						<font class="regular">Or paste a list</font>
+						<p>
+						<div >
+							<textarea rows="6" id="LISTBox" class="form-control" name="inputIds"></textarea>
+							<div class="example_gene" onclick="copyDemoGenes()"><p>Demo genes (click to paste):</p>
+								<p id="demo_gene">
+									1007_s_at
+									1053_at
+									117_at
+									121_at
+									1255_g_at
+									1294_at
+									1316_at
+									1320_at
+									1405_i_at
+									1431_at
+									1438_at
+									1487_at
+									1494_f_at
+									1598_g_at  ....
+								</p>
+							</div>
+						</div>
+
+						<input type="Button" value="Clear" class="btn" onclick="clearDavidPaste();" name="B3">
+						<!-- <input type="file" id="Upload1" style="display: none"> <label for="Upload1" class="btn" id="Upload_label">Upload CSV</label> -->
+
+				</div>
+
+
+					<div class="step2">
+
+						<h2><span class="label label-primary" title="choose gene identifier">Step 2: Choose Identifier</span></h2>
+
+									<br>
+									  <select class="selectpicker" data-width="300px" size="10" name="idType">
+
+										  	<option value="AFFYMETRIX_3PRIME_IVT_ID">AFFYMETRIX_3PRIME_IVT_ID</option>
+										  	<option value="AFFYMETRIX_EXON_GENE_ID">AFFYMETRIX_EXON_GENE_ID</option>
+										  	<option value="AFFYMETRIX_SNP_ID">AFFYMETRIX_SNP_ID</option>
+										  	<option value="AGILENT_CHIP_ID">AGILENT_CHIP_ID</option>
+										  	<option value="AGILENT_ID">AGILENT_ID</option>
+										  	<option value="AGILENT_OLIGO_ID">AGILENT_OLIGO_ID</option>
+										  	<option value="ENSEMBL_GENE_ID">ENSEMBL_GENE_ID</option>
+										  	<option value="ENSEMBL_TRANSCRIPT_ID">ENSEMBL_TRANSCRIPT_ID</option>
+										  	<option value="ENTREZ_GENE_ID">ENTREZ_GENE_ID</option>
+										  	<option value="FLYBASE_GENE_ID">FLYBASE_GENE_ID</option>
+										  	<option value="FLYBASE_TRANSCRIPT_ID">FLYBASE_TRANSCRIPT_ID</option>
+										  	<option value="GENBANK_ACCESSION">GENBANK_ACCESSION</option>
+										  	<option value="GENOMIC_GI_ACCESSION">GENOMIC_GI_ACCESSION</option>
+										  	<option value="GENPEPT_ACCESSION">GENPEPT_ACCESSION</option>
+										  	<option value="ILLUMINA_ID">ILLUMINA_ID</option>
+										  	<option value="IPI_ID">IPI_ID</option>
+										  	<option value="MGI_ID">MGI_ID</option>
+										  	<option value="OFFICIAL_GENE_SYMBOL">OFFICIAL_GENE_SYMBOL</option>
+										  	<option value="PFAM_ID">PFAM_ID</option>
+										  	<option value="PIR_ID">PIR_ID</option>
+										  	<option value="PROTEIN_GI_ACCESSION">PROTEIN_GI_ACCESSION</option>
+										  	<option value="REFSEQ_GENOMIC">REFSEQ_GENOMIC</option>
+										  	<option value="REFSEQ_MRNA">REFSEQ_MRNA</option>
+										  	<option value="REFSEQ_PROTEIN">REFSEQ_PROTEIN</option>
+										  	<option value="REFSEQ_RNA">REFSEQ_RNA</option>
+										  	<option value="RGD_ID">RGD_ID</option>
+										  	<option value="SGD_ID">SGD_ID</option>
+										  	<option value="TAIR_ID">TAIR_ID</option>
+										  	<option value="UCSC_GENE_ID">UCSC_GENE_ID</option>
+										  	<option value="UNIGENE">UNIGENE</option>
+										  	<option value="UNIPROT_ACCESSION">UNIPROT_ACCESSION</option>
+										  	<option value="UNIPROT_ID">UNIPROT_ID</option>
+										  	<option value="UNIREF100_ID">UNIREF100_ID</option>
+										  	<option value="WORMBASE_GENE_ID">WORMBASE_GENE_ID</option>
+										  	<option value="WORMPEP_ID">WORMPEP_ID</option>
+										  	<option value="ZFIN_ID">ZFIN_ID</option>
+											<option value="NA">Not Sure </option>
+
+										  </select>
+
+
+
+								 	<br>
+					</div>
+
+					<div class="step3">
+
+						<h2><span class="label label-primary" title="choose p-value from 0.05 to 0.001">Step 3: Choose p-value</span></h2>
+
+						<br>
+
+
+						<div style="display: flex; margin-left: 15px;">
+			            	<div id="slider" class="sliderBar"></div>
+          					<input type="text" id="input_slider"/>
+          					<input type="text" id="input3_slider" hidden/>
+
+						</div>
+
+
+					</div>
+
+					<div class="step4">
+
+	        			<h2><span class="label label-primary" title="choose Gene Ontology annotation type">Step 4: Choose Annotation Type</span></h2>
+
+	        			<br>
+
+							<select class="selectpicker show-tick" data-width="500px" name="annotType" multiple>
+
+				            	<option value="GOTERM_BP" selected>Biological Process</option>
+								<option value="GOTERM_MF">Molecular Function</option>
+				            	<option value="GOTERM_CC">Cellular Component</option>
+
+				            </select>
+
+
+						<br>
+
+					</div>
+					<div class="btn btn-success btn-rounded btn-lg submit-btn" onclick="davidSubmitClicked()">Submit</div>
 				</div>
 
 			</div>

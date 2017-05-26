@@ -147,10 +147,13 @@
     line-height: 65px;
 }
 
-.manual_submit{
+/*.manual_submit{
+    padding-top: 10px
+}*/
+
+.David_submit{
     padding-top: 10px
 }
-
 .manual_input{
     padding-left: 10px;
     padding-right: 10px;

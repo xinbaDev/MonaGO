@@ -170,14 +170,14 @@ textarea{
         </div>
         <div id="form">
             <h2>
-                <strong>Help/Information</strong>
+                <strong>Help Page</strong>
             </h2>
        
-        <h3>Usage</h3>
+        <h3>1. Introduction</h3>
             <p>MonaGO is a visualization tool for Gene Ontology (GO) enrichment analysis which facilitates a better interpretation of GO enrichment results by using innovative interactive visualization techniques. MonaGO can visualize GO enrichment analysis results produced by <a href="https://david.ncifcrf.gov/" target="_blank">DAVID</a>, or enriched GO terms directly.</p>
             <p>Three kinds of input are supported in MonaGO.</p>
             <center><img src="../img/input.png" style="width:500px"/></center>
-            <h4>Using DAVID as input</h4>
+            <h4>1.1 Using DAVID as input</h4>
             <!-- <p>To produce a GO enrichment visualization, users can either:</p> -->
             
             <p>A user can submit a list of genes on MonaGO to <a href="https://david.ncifcrf.gov/" target="_blank">DAVID</a> to obtain GO enrichment results and visualize them.</p>
@@ -189,7 +189,7 @@ textarea{
                     <p>(4) Choose the GO annotation type (Biological Process, Molecular Function, Cellular Component). </p>
                 </div>
                 <center><img src="../img/david.png" style="width:500px"/></center>
-            <p><b>Options used in <a href="https://david.ncifcrf.gov/" target="_blank">DAVID</a></b></p>
+            <h4>Options used in <a href="https://david.ncifcrf.gov/" target="_blank">DAVID</a></h4>
             <P>MonaGO utilizes the following options in Functional Annotation Tool of DAVID.</P>
                 <div style="padding-left: 50px">
                     <p>(1) Input of gene lists are posted to Step 1(Enter Gene List)</p>
@@ -203,7 +203,7 @@ textarea{
                 </code>
             <center><img src="../img/david3.png" style="width:800px"/></center>
             <!-- <p>or</p> -->
-            <h4>Submit enriched GO terms for visualization directly.</h4>
+            <h4>1.2 Submit enriched GO terms for visualization directly.</h4>
                 
 
             <p> There are two ways to submit enriched GO terms.</p>
@@ -215,21 +215,23 @@ textarea{
             
             </p>
                 <center><img src="../img/upload2.png" style="width:500px"/></center>
-            <p></p>        
+            <p></p>
+            <h4>1.3 Submit files exported from MonaGO </h4>
+            <p>A JSON file that stores the current state of the main chord diagram can be downloaded and uploaded to get restoration. Submission Interface can be found in Figure 5.</p>
+            <center><img src="../img/import.png" style="width:500px"/></center>
         
         
-        
-        <h3>Interface<h3>
+        <h3>2. Interface<h3>
         <center>
             <img src="../img/interface1.png" style="width:500px">
         </center>
-        <h4>1. Main visualization panel</h4>
+        <h4>2.1  Main visualization panel</h4>
 
         <p>The main visualization component is the chord diagram, which has auxiliary visual elements attached to it, including the GO term labels and the hierarchical clustering tree.Prefixes are used in label to differentiate 3 branches of GO, such as BP(biological process),
             CC（cellular component) and MF（molecular function).</p>
 
 
-        <h5>1.1 The chord diagram</h5>
+        <h5>2.1.1 The chord diagram</h5>
 
         <p>Each element in the chord diagram represents a GO term or a cluster of GO terms. Length of the element is proportional to number of genes related with the GO term or a cluster of GO terms. The edges inside the chord diagram between two elements denote the fact that there are common genes between them. </p>
 
@@ -240,14 +242,14 @@ textarea{
         The hierarchical clustering tree that allows the collapsing/expansion of GO terms.</p>
         Note that the size and the position of the chord diagram can be changed.
 
-        <h5>1.2 Hierarchical clustering tree</h5>
+        <h5>2.1.2 Hierarchical clustering tree</h5>
         <p>Clustering can be performed systematically or manually using the hierarchical clustering tree:
         The slider on the top left allows systematic clustering of GO terms based on a threshold of the minimum number of common genes.
         Alternatively, the nodes in the hierarchical clustering tree can be clicked to manually collapse GO /terms/clusters and expand clusters. </p>
-        <h5>1.3 Save image</h5>
+        <h5>2.1.3 Save image</h5>
          <p>Image of main diagram can be saved in two formats, svg and png, by clicking drop-down menu button on top left(Save image).</p>
 
-        <h4>2. Details panel</h4>
+        <h4>2.2 Details panel</h4>
 
         <p>The details panel shows detailed information about a GO term or a cluster in the main visualization panel. The details panel is activated when the mouse hovers over a GO term/cluster in the chord diagram. </p>
 
@@ -280,16 +282,21 @@ textarea{
             <img src="../img/hierarchy.png" style="width:200px">
         </center>
 
-        <h4>3. Search panel</h4>
+        <h4>2.3 Search panel</h4>
         <p>The search panel allows the search of GO terms by gene names, and IDs or names of GO terms (search by its full name).
 
         <p>All GO terms/clusters relevant to a search query will be highlighted (popping out) on the chord diagram in the  main visualization panel. Moreover, relevant GO terms/clusters will be listed in the details panel. 
-
-        
-        <h3>What does visualization result mean</h3>
+        <center>
+        <table><tr>
+        <td><img src="../img/search1.png" style="height:500px" border=0></td>
+        <td><img src="../img/search.png" style="height:500px" border=0></td>
+        </tr></table>
+        </center>
+        <h3>3. What does visualization result mean</h3>
 
             <p>MonaGO helps users reduce redundancy by assisting user to cluster similar GO term. In  MonaGO, enriched GO terms are ordered and visualised in a way that  GO terms whose common genes percentage(Cluster A AND Cluster B/ Cluster A OR Cluster B) are larger are close to each other.</p>
-            <p>In this way, user can easily group them as cluster in which only the most represented GO terms will be displayed in the chord diagram, thereby reducing the “information overload”. Following is an example of GO enrichment result visualised in MonaGO. As shown in the picture below, many enriched GO terms are redundant. An example is the redundancy between GO1 and GO2(They share 11 common genes which takes 100% of their total genes thus considered to be highly related). Therefore they are placed right next to each other.</p>
+            <p>In this way, user can easily group them as cluster in which only the most represented GO terms will be displayed in the chord diagram, thereby reducing the “information overload”. Following is an example of GO enrichment result visualised in MonaGO. As shown in the picture below, many enriched GO terms are redundant. An example is the redundancy between GO1 and GO2(They share 11 common genes which takes 100
+                % of their total genes thus considered to be highly related). Therefore they are placed right next to each other.</p>
             <center>
                 <img src="../img/cluster3.png" style="width:500px"/>
             </center>
