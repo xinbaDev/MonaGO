@@ -46,7 +46,6 @@ var MonaGO = function(){
 
 	var old_array_order = [];
 	var clusterHierDataFiltered = [];
-	var labelOff = 0;
 
 	var clusterHierNodesStatus = [];//for storing nodes generated Hierarchical clustering
 	var chordGroupsNodePosition = [];
@@ -2630,8 +2629,6 @@ var MonaGO = function(){
 	}
 
 	function drawHierCluster(){
-	    labelOff = 1;
-
         if(popUpList.length != 0){
             drawPopUpHierarchy();
         }else{

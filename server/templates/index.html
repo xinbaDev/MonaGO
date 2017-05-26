@@ -342,7 +342,7 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 		// is XHR2 available?
 		var xhr = new XMLHttpRequest();
 		if (xhr.upload) {
-
+			console.log("test")
 			// file drop
 			filedrag1.addEventListener("dragover", FileDragHover, false);
 			filedrag1.addEventListener("dragleave", FileDragHover, false);
@@ -403,6 +403,7 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 
 		// fetch FileList object
 		var file = e.target.files || e.dataTransfer.files;
+		console.log(file)
 		document.querySelector("#fileselect3").files = file;
 	}
 
