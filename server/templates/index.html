@@ -89,8 +89,13 @@
 
 						<div>
 							<label for="fileselect1">Files to upload:</label>
-							<input type="file" id="fileselect1" name="files1"/>
-							<div id="filedrag1" class="filedrag" style="display: block;">or drop files here</div>
+							<div id="drop-zone1" class="drop-zone">
+							    Drop files here...
+							    <div id="clickHere1" class="clickHere">
+							        or click here..
+							        <input type="file" id="fileselect1" name="files1"/>
+							    </div>
+							</div>
 						</div>
 						<span class="example_upload_format">Upload File Format<br><a href="csv/demo.csv" id="csvDownload">csv<i class="fa fa-download"></i></a></span>
 						<br>
@@ -276,92 +281,104 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 		  $goList = $(this).next();
           $goList.slideToggle(500);
 		})
+
 		$(".MonaGO_submit_button").click(function(d){
 		  $goList = $(this).next();
           $goList.slideToggle(500);
 		})
 
-		// $('#Upload1').click(function(){
+		// var fileselect1 = $id("fileselect1"),
+		// 	fileselect2 = $id("fileselect2"),
+		// 	fileselect3 = $id("fileselect3"),
+		// 	filedrag1 = $id("filedrag1"),
+		// 	filedrag2 = $id("filedrag2");
+		// 	filedrag3 = $id("filedrag3");
 
-		//     function readSingleFile(evt) {
-		// 	    //Retrieve the first (and only!) File from the FileList object
-		// 	    var f = evt.target.files[0]; 
+		// // file select
+		// fileselect1.addEventListener("change", FileSelectHandler1, false);
+		// fileselect2.addEventListener("change", FileSelectHandler2, false);
+		// fileselect3.addEventListener("change", FileSelectHandler3, false);
 
-		// 	    if (f) {
-		// 	      var r = new FileReader();
+		// // is XHR2 available?
+		// var xhr = new XMLHttpRequest();
+		// if (xhr.upload) {
+		// 	console.log("test")
+		// 	// file drop
+		// 	filedrag1.addEventListener("dragover", FileDragHover, false);
+		// 	filedrag1.addEventListener("dragleave", FileDragHover, false);
+		// 	filedrag1.addEventListener("drop", FileSelectHandler1, false);
+		// 	filedrag1.style.display = "block";
 
-		// 	      r.onload = function(e) { 
-		// 	        var contents = e.target.result; 
-		// 	        document.frmManager.inputIds.value = contents;
-		// 	      }
-		// 	      r.readAsText(f);
-		// 	    } else { 
-		// 	      alert("Failed to load file");
-		// 	    }
-		//   	}
+		// 	filedrag2.addEventListener("dragover", FileDragHover, false);
+		// 	filedrag2.addEventListener("dragleave", FileDragHover, false);
+		// 	filedrag2.addEventListener("drop", FileSelectHandler2, false);
+		// 	filedrag2.style.display = "block";
 
-  //   	document.getElementById('Upload1').addEventListener('change', readSingleFile, false);
-     
-		// });
+		// 	filedrag3.addEventListener("dragover", FileDragHover, false);
+		// 	filedrag3.addEventListener("dragleave", FileDragHover, false);
+		// 	filedrag3.addEventListener("drop", FileSelectHandler3, false);
+		// 	filedrag3.style.display = "block";
 
-		// $('#Upload2').click(function(){
+		// }
 
-		//     function readSingleFile(evt) {
-		// 	    //Retrieve the first (and only!) File from the FileList object
-		// 	    var f = evt.target.files[0]; 
+		setUpUploadFileListener()
 
-		// 	    if (f) {
-		// 	      var r = new FileReader();
+	}
 
-		// 	      r.onload = function(e) { 
-		// 	        var contents = e.target.result; 
-		// 	        document.frmManager.inputGOs.value = contents;
-		// 	      }
-		// 	      r.readAsText(f);
-		// 	    } else { 
-		// 	      alert("Failed to load file");
-		// 	    }
-		//   	}
+	function setUpUploadFileListener(){
+		var dropZoneId = "drop-zone1";
+	    var buttonId = "clickHere1";
+	    var mouseOverClass = "mouse-over";
 
-  //   	document.getElementById('Upload2').addEventListener('change', readSingleFile, false);
-     
-		// });
+	    var dropZone = $("#" + dropZoneId);
+	    var ooleft = dropZone.offset().left;
+	    var ooright = dropZone.outerWidth() + ooleft;
+	    var ootop = dropZone.offset().top;
+	    var oobottom = dropZone.outerHeight() + ootop;
+	    var inputFile = dropZone.find("input");
+	    console.log(ooleft)
 
+	    document.getElementById(dropZoneId).addEventListener("dragover", function (e) {
+	        e.preventDefault();
+	        e.stopPropagation();
+	        dropZone.addClass(mouseOverClass);
+	        var x = e.pageX;
+	        var y = e.pageY;
 
-		var fileselect1 = $id("fileselect1"),
-			fileselect2 = $id("fileselect2"),
-			fileselect3 = $id("fileselect3"),
-			filedrag1 = $id("filedrag1"),
-			filedrag2 = $id("filedrag2");
-			filedrag3 = $id("filedrag3");
+	        if (!(x < ooleft || x > ooright || y < ootop || y > oobottom)) {
+	            inputFile.offset({ top: y - 15, left: x - 100 });
+	        } else {
+	            inputFile.offset({ top: -400, left: -400 });
+	        }
 
-		// file select
-		fileselect1.addEventListener("change", FileSelectHandler1, false);
-		fileselect2.addEventListener("change", FileSelectHandler2, false);
-		fileselect3.addEventListener("change", FileSelectHandler3, false);
+	    }, true);
 
-		// is XHR2 available?
-		var xhr = new XMLHttpRequest();
-		if (xhr.upload) {
-			console.log("test")
-			// file drop
-			filedrag1.addEventListener("dragover", FileDragHover, false);
-			filedrag1.addEventListener("dragleave", FileDragHover, false);
-			filedrag1.addEventListener("drop", FileSelectHandler1, false);
-			filedrag1.style.display = "block";
+	    if (buttonId != "") {
+	        var clickZone = $("#" + buttonId);
 
-			filedrag2.addEventListener("dragover", FileDragHover, false);
-			filedrag2.addEventListener("dragleave", FileDragHover, false);
-			filedrag2.addEventListener("drop", FileSelectHandler2, false);
-			filedrag2.style.display = "block";
+	        var oleft = clickZone.offset().left;
+	        var oright = clickZone.outerWidth() + oleft;
+	        var otop = clickZone.offset().top;
+	        var obottom = clickZone.outerHeight() + otop;
 
-			filedrag3.addEventListener("dragover", FileDragHover, false);
-			filedrag3.addEventListener("dragleave", FileDragHover, false);
-			filedrag3.addEventListener("drop", FileSelectHandler3, false);
-			filedrag3.style.display = "block";
+	        console.log(oleft)
+	        console.log(oright)
+	        console.log(otop)
+	        console.log(obottom)
+	        $("#" + buttonId).mousemove(function (e) {
+	            var x = e.pageX;
+	            var y = e.pageY;
+	            if (!(x < oleft || x > oright || y < otop || y > obottom)) {
+	                inputFile.offset({ top: y - 15, left: x - 160 });
+	            } else {
+	                inputFile.offset({ top: -400, left: -400 });
+	            }
+	        });
+	    }
 
-		}
-
+	    document.getElementById(dropZoneId).addEventListener("drop", function (e) {
+	        $("#" + dropZoneId).removeClass(mouseOverClass);
+	    }, true);
 	}
 
 		// getElementById
