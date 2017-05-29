@@ -120,6 +120,7 @@ var MonaGO = function(){
 	  .theta(0.2)
 	  .gravity(1)
 	  .size([width, height]);
+    var maxNodeNum = 15;
 
 	var zoom = d3.behavior.zoom().translate([w / 2, h / 2]);
 	var zoomLevel = 1;
@@ -424,7 +425,7 @@ var MonaGO = function(){
             //.each(insertLinebreaks)
             .call(force.drag);
 
-        if(struct.nodes.length < 15){
+        if(struct.nodes.length < maxNodeNum){
             force.on("tick", function(e) {
                 link.attr("x1", function(d) { return d.source.x; })
                   .attr("y1", function(d) { return d.source.y; })
@@ -503,7 +504,7 @@ var MonaGO = function(){
         force = {};
         struct = parentGO(goid);
         data = createD3Structure(struct,goid);
-        if(data.nodes.length < 15){
+        if(data.nodes.length < maxNodeNum){
             force = d3.layout.force()
                 .charge(-10000)
                 .linkDistance(20)
