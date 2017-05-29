@@ -424,18 +424,36 @@ var MonaGO = function(){
             //.each(insertLinebreaks)
             .call(force.drag);
 
-        force.on("tick", function(e) {
-            link.attr("x1", function(d) { return d.source.x; })
-              .attr("y1", function(d) { return d.source.y; })
-              .attr("x2", function(d) { return d.target.x; })
-              .attr("y2", function(d) { return d.target.y; });
+        if(struct.nodes.length < 15){
+            force.on("tick", function(e) {
+                link.attr("x1", function(d) { return d.source.x; })
+                  .attr("y1", function(d) { return d.source.y; })
+                  .attr("x2", function(d) { return d.target.x; })
+                  .attr("y2", function(d) { return d.target.y; });
 
-            node.attr("cx", function(d) { return d.x = Math.max(radiusScale(d.r), Math.min(width - radiusScale(d.r), d.x)); })
-              .attr("cy", function(d) { return d.y = Math.max(radiusScale(d.r), Math.min(height - radiusScale(d.r), d.y));; })
+                node.attr("cx", function(d) { return d.x = Math.max(radiusScale(d.r), Math.min(width - radiusScale(d.r), d.x)); })
+                  .attr("cy", function(d) { return d.y = Math.max(radiusScale(d.r), Math.min(height - radiusScale(d.r), d.y));; })
 
-            nodeText.attr("x", function(d) { return d.x; })
-              .attr("y", function(d) { return d.y + radiusScale(d.r) + 10; })
-        });
+                nodeText.attr("x", function(d) { return d.x; })
+                  .attr("y", function(d) { return d.y + radiusScale(d.r) + 10; })
+            });
+        }else{
+            //if exceeds 15 nodes, display without constraint
+            force.on("tick", function(e) {
+                link.attr("x1", function(d) { return d.source.x; })
+                  .attr("y1", function(d) { return d.source.y; })
+                  .attr("x2", function(d) { return d.target.x; })
+                  .attr("y2", function(d) { return d.target.y; });
+
+                node.attr("cx", function(d) { return d.x; })
+                    .attr("cy", function(d) { return d.y; })
+
+                nodeText.attr("x", function(d) { return d.x; })
+                  .attr("y", function(d) { return d.y + radiusScale(d.r) + 10; })
+            }); 
+        }
+
+
 
         force.start();
 	}
@@ -482,24 +500,27 @@ var MonaGO = function(){
 
 	//recreate data structures and redraw graph with new nodes
 	function update(goid,svg,width,height) {
-
         force = {};
-
-        force = d3.layout.force()
-        .charge(-10000)
-        .linkDistance(20)
-        .theta(0.2)
-        .gravity(0.5)
-        .size([width, height]);
-
         struct = parentGO(goid);
-
         data = createD3Structure(struct,goid);
-
+        if(data.nodes.length < 15){
+            force = d3.layout.force()
+                .charge(-10000)
+                .linkDistance(20)
+                .theta(0.2)
+                .gravity(0.5)
+                .size([width, height]);
+        }else{
+            force = d3.layout.force()
+                .charge(-2000)
+                .linkDistance(20)
+                .theta(0.2)
+                .gravity(0.5)
+                .size([width, height]);
+        }
         svg.selectAll("line.link").remove();
         svg.selectAll("circle.node").remove();
         svg.selectAll("text.node").remove();
-
         drawGraph(data,svg,width,height);
 	}
 
@@ -873,15 +894,11 @@ var MonaGO = function(){
 			var str;
 			if($('[index1='+d.index+'].clusterLine')[0] != undefined)
 			d["LineAngle"] = parseFloat($('[index1='+d.index+'].clusterLine')[0].getAttribute("angleValue"))
-			//console.log("line")
-			//console.log(lineAngle)
-	        //console.log(d["LineAngle"])
 			var firstLine = d3.svg.arc()
 			.innerRadius((d["index"]>nodesSize)?d["LineInnerPosition"]+5:d["LineInnerPosition"])
 			.outerRadius(d["LineOuterPosition"]+5)
 			.startAngle(d["LineAngle"])
 			.endAngle(d["LineAngle"]+0.002);
-            //console.log("drawend")
 			str = firstLine()
 			interpolate = d3.interpolate(a,str);
 			return function(t) {
@@ -1450,9 +1467,6 @@ var MonaGO = function(){
 		});
 
 		that.memCache["clusterNodesRadius"] = clusterNodesRadius;
-
-		//console.log(clusterNodesRadius);
-		/*console.log(removeHierData);*/
 
 		var nodeBeingMemorized = {"go_inf":removeGOs,"array_order":removeNodeInArray,"clusterHierData":removedHierData,"clusterNodesLevel":clusterNodesLevel};
 
