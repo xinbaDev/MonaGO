@@ -39,9 +39,14 @@
 					<h2><span class="label label-primary" title="enter enriched GO term manually">Enter Enriched GO Terms Manually (Beta)</span></h2>
 
 					<div>
-						<label for="fileselect2">Files to upload:</label>
-						<input type="file" id="fileselect2" name="files2"/>
-						<div id="filedrag2" class="filedrag" style="display: block;">or drop files here</div>
+						<label for="fileselect2">Files to upload:<span id="uploadFile2"></span></label>
+						<div id="drop-zone2" class="drop-zone">
+						    Drop files here...
+						    <div id="clickHere2" class="clickHere">
+						        or click here..
+						        <input type="file" id="fileselect2" name="files2"/>
+						    </div>
+						</div>
 					</div>
 					<span class="example_upload_format">Upload File Format<br><a href="csv/demo2.csv" id="csvDownload">csv<i class="fa fa-download"></i></a></span>
 					<br>
@@ -65,11 +70,16 @@
 				<div class="MonaGO_input " style="display:none">
 					<h2><span class="label label-primary" title="enter enriched GO term manually">Import file exported from MonaGO</span></h2>
 
-					<div>
-						<label for="fileselect3">Files to upload:</label>
-						<input type="file" id="fileselect3" name="files3"/>
-						<div id="filedrag3" class="filedrag" style="display: block;">or drop files here</div>
-					</div>
+						<div>
+							<label for="fileselect3">Files to upload:<span id="uploadFile3"></span></label>
+							<div id="drop-zone3" class="drop-zone">
+							    Drop files here...
+							    <div id="clickHere3" class="clickHere">
+							        or click here..
+							        <input type="file" id="fileselect3" name="files3"/>
+							    </div>
+							</div>
+						</div>
 					<br>
 
 <!-- 					<input type="file" id="Upload2" style="display: none"> <label for="Upload2" class="btn" id="Upload_label">Upload CSV</label> -->
@@ -88,7 +98,7 @@
 						<h2><span class="label label-primary" title="paste a list of genes seperated by comma, newline or space">Step 1: Enter Gene List</span></h2>
 
 						<div>
-							<label for="fileselect1">Files to upload:</label>
+							<label for="fileselect1">Files to upload:<span id="uploadFile1"></span></label>
 							<div id="drop-zone1" class="drop-zone">
 							    Drop files here...
 							    <div id="clickHere1" class="clickHere">
@@ -275,59 +285,34 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 		$(".David_submit_button").click(function(d){
 		  $goList = $(this).next();
           $goList.slideToggle(500);
+          setUpUploadListener(1);
 		})
 
 		$(".manual_submit_button").click(function(d){
 		  $goList = $(this).next();
           $goList.slideToggle(500);
+          setUpUploadListener(2)
 		})
 
 		$(".MonaGO_submit_button").click(function(d){
 		  $goList = $(this).next();
           $goList.slideToggle(500);
+          setUpUploadListener(3)
 		})
 
-		// var fileselect1 = $id("fileselect1"),
-		// 	fileselect2 = $id("fileselect2"),
-		// 	fileselect3 = $id("fileselect3"),
-		// 	filedrag1 = $id("filedrag1"),
-		// 	filedrag2 = $id("filedrag2");
-		// 	filedrag3 = $id("filedrag3");
+		var fileselect1 = $id("fileselect1"),
+			fileselect2 = $id("fileselect2"),
+			fileselect3 = $id("fileselect3");
 
-		// // file select
-		// fileselect1.addEventListener("change", FileSelectHandler1, false);
-		// fileselect2.addEventListener("change", FileSelectHandler2, false);
-		// fileselect3.addEventListener("change", FileSelectHandler3, false);
-
-		// // is XHR2 available?
-		// var xhr = new XMLHttpRequest();
-		// if (xhr.upload) {
-		// 	console.log("test")
-		// 	// file drop
-		// 	filedrag1.addEventListener("dragover", FileDragHover, false);
-		// 	filedrag1.addEventListener("dragleave", FileDragHover, false);
-		// 	filedrag1.addEventListener("drop", FileSelectHandler1, false);
-		// 	filedrag1.style.display = "block";
-
-		// 	filedrag2.addEventListener("dragover", FileDragHover, false);
-		// 	filedrag2.addEventListener("dragleave", FileDragHover, false);
-		// 	filedrag2.addEventListener("drop", FileSelectHandler2, false);
-		// 	filedrag2.style.display = "block";
-
-		// 	filedrag3.addEventListener("dragover", FileDragHover, false);
-		// 	filedrag3.addEventListener("dragleave", FileDragHover, false);
-		// 	filedrag3.addEventListener("drop", FileSelectHandler3, false);
-		// 	filedrag3.style.display = "block";
-
-		// }
-
-		setUpUploadFileListener()
+		fileselect1.addEventListener("change", FileSelectHandler1, false);
+		fileselect2.addEventListener("change", FileSelectHandler2, false);
+		fileselect3.addEventListener("change", FileSelectHandler3, false);
 
 	}
 
-	function setUpUploadFileListener(){
-		var dropZoneId = "drop-zone1";
-	    var buttonId = "clickHere1";
+	function setUpUploadListener(d){
+		var dropZoneId = "drop-zone"+d;
+	    var buttonId = "clickHere"+d;
 	    var mouseOverClass = "mouse-over";
 
 	    var dropZone = $("#" + dropZoneId);
@@ -336,7 +321,6 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 	    var ootop = dropZone.offset().top;
 	    var oobottom = dropZone.outerHeight() + ootop;
 	    var inputFile = dropZone.find("input");
-	    console.log(ooleft)
 
 	    document.getElementById(dropZoneId).addEventListener("dragover", function (e) {
 	        e.preventDefault();
@@ -361,10 +345,6 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 	        var otop = clickZone.offset().top;
 	        var obottom = clickZone.outerHeight() + otop;
 
-	        console.log(oleft)
-	        console.log(oright)
-	        console.log(otop)
-	        console.log(obottom)
 	        $("#" + buttonId).mousemove(function (e) {
 	            var x = e.pageX;
 	            var y = e.pageY;
@@ -381,48 +361,21 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 	    }, true);
 	}
 
-		// getElementById
 	function $id(id) {
 		return document.getElementById(id);
 	}
 
-	// file drag hover
-	function FileDragHover(e) {
-		e.stopPropagation();
-		e.preventDefault();
-		e.target.className = (e.type == "dragover" ? "hover" : "");
-	}
-
 	// file selection
 	function FileSelectHandler1(e) {
-
-		// cancel event and hover styling
-		FileDragHover(e);
-
-		// fetch FileList object
-		var file = e.target.files || e.dataTransfer.files;
-		document.querySelector("#fileselect1").files = file;
+		$("#uploadFile1").html(e.target.files[0].name)
 	}
 
 	function FileSelectHandler2(e) {
-
-		// cancel event and hover styling
-		FileDragHover(e);
-
-		// fetch FileList object
-		var file = e.target.files || e.dataTransfer.files;
-		document.querySelector("#fileselect2").files = file;
+		$("#uploadFile2").html(e.target.files[0].name)
 	}
 
 	function FileSelectHandler3(e) {
-
-		// cancel event and hover styling
-		FileDragHover(e);
-
-		// fetch FileList object
-		var file = e.target.files || e.dataTransfer.files;
-		console.log(file)
-		document.querySelector("#fileselect3").files = file;
+		$("#uploadFile3").html(e.target.files[0].name)
 	}
 
 

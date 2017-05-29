@@ -266,45 +266,37 @@
 }*/
 
 .drop-zone {
-    /*Sort of important*/
     width: 500px;
-    /*Sort of important*/
-    height: 200px;
-    position:absolute;
+    height: 150px;
+   /* position:absolute;*/
     border: 2px dashed rgba(0,0,0,.3);
     border-radius: 20px;
     font-family: Arial;
     text-align: center;
-    line-height: 180px;
+    line-height: 150px;
     font-size: 20px;
     color: rgba(0,0,0,.3);
 }
 
 .drop-zone input {
-    /*Important*/
     position: absolute;
-    /*Important*/
     cursor: pointer;
     left: 0px;
     top: 0px;
-    /*opacity:0;*/ 
+    opacity:0; 
 }
 
-/*Important*/
+
 .drop-zone.mouse-over {
     border: 2px dashed rgba(0,0,0,.5);
     color: rgba(0,0,0,.5);
 }
 
 
-/*If you dont want the button*/
 .clickHere {
-    position: absolute;
     cursor: pointer;
-    left: 50%;
-    top: 50%;
-    margin-left: -50px;
-    margin-top: 20px;
+    margin-left: 200px;
+    margin-top: -60px;
     line-height: 26px;
     color: white;
     font-size: 12px;
