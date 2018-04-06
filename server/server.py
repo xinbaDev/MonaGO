@@ -13,6 +13,8 @@
 
 
 import sys
+import json
+# import yaml
 
 from datetime import datetime
 
@@ -59,10 +61,12 @@ def index():
         return render_template("index.html")
     else:
         if request.form['type'] == "manual":
+            pVal = request.form['pVal']
             if request.form['inputGOs'] == "":
-                go = parseInputGOsFromCSV(request.files['files2'])
+                go = parseInputGOsFromCSV(request.files['files2'],float(str(pVal)))
             else:
-                go = parseInputGOs(request.form['inputGOs'])
+                go = parseInputGOs(request.form['inputGOs'],float(str(pVal)))
+
             matrix_count, array_order, go_hier, go_inf_reord, clusterHierData = processedData(go)
             if not matrix_count:
                 return "Failure to process data"
@@ -94,11 +98,23 @@ def index():
 
 
         if request.form['type'] == "MonaGO":
+            pVal = request.form['pVal']
             content = request.files['files3'].read()
-            #print content
-            data = "<script>"+ "var size = 0"+";"+"var content ="+content+";"+"</script>"
+            content_dict = json.loads(content, encoding='utf-8')
+            content_dict["go_inf"] = parseInputMonagos(content_dict, float(str(pVal)))
 
-        #matrix_count,array_order,go_hier,go_inf_reord,clusterHierData = processedData(go)
+            # content_dict = yaml.safe_load(content_dict, encoding='utf-8')
+
+            matrix_count, array_order, go_hier, go_inf_reord, clusterHierData = processedData(content_dict["go_inf"])
+
+
+            if not matrix_count:
+                return "Failure to process data"
+            data = "<script>"+"var go_inf="+str(go_inf_reord)+";"+"var matrix="+str(matrix_count)+";"+"var array_order="+str(array_order)+";"\
+            +"var clusterHierData="+str(clusterHierData) +";"+"var size="+str(len(go_inf_reord))+";"+"var goNodes="+str(go_hier)+"</script>"
+            #data = "<script>"+ "var size = 0"+";"+"var content ="+content+";"+"</script>"
+
+
 
 
         with open(root_dir+'templates/chord_layout.html',"r") as fr_html:
@@ -184,9 +200,9 @@ def export():
 def getDemoCSV(filename):
     return send_from_directory(root_dir+'csv', filename)
 
-def parseInputGOsFromCSV(file):
+def parseInputGOsFromCSV(file,pVal):
     data = file.read()
-    return parseInputGOs(data)
+    return parseInputGOs(data,pVal)
 
 def parseInputIdsFromCSV(file):
     data = file.read()
@@ -217,7 +233,7 @@ def getGONameAndCatergory(GO_id):
     else:
         return GO_inf
 
-def parseInputGOs(go_csvFormat):
+def parseInputGOs(go_csvFormat,pVal):
     #GO_id,p-value,genes
 
     loadGOHier()
@@ -237,9 +253,35 @@ def parseInputGOs(go_csvFormat):
 
             if go_inf != "":
                 go_cat,go_name = go_inf.split(",")
-                goDictContainer.append({"count": count,"genes":str(cols[2].strip("\r\"")), "GO_id": str(cols[0]), "GO_name": go_name, "cat": go_cat,
-                    "pVal": str(cols[1])})
+                if float(str(cols[1])) < pVal:
+                    goDictContainer.append({"count": count,"genes":str(cols[2].strip("\r\"")), "GO_id": str(cols[0]), "GO_name": go_name, "cat": go_cat,
+                        "pVal": str(cols[1])})
 
+    return goDictContainer
+def byteify(input, encoding='utf-8'):
+    if isinstance(input, dict):
+        return {byteify(key): byteify(value) for key, value in input.iteritems()}
+    elif isinstance(input, list):
+        return [byteify(element) for element in input]
+    elif isinstance(input, unicode):
+        return input.encode(encoding)
+    else:
+        return input
+
+def parseInputMonagos(content_dict,pVal):
+    goDictContainer = []
+    num = len(content_dict["go_inf"])
+    for index_monago in range(num):
+        content_dict["go_inf"][index_monago]["genes"] = ';'.join(map(str, content_dict["go_inf"][index_monago]["genes"]))
+        pVal_each = float(str(content_dict["go_inf"][index_monago]["pVal"]))
+        count = str(content_dict["go_inf"][index_monago]["count"])
+        genes = str(content_dict["go_inf"][index_monago]["genes"])
+        GO_id = str(content_dict["go_inf"][index_monago]["GO_id"])
+        cat = str(content_dict["go_inf"][index_monago]["cat"])
+        GO_name = str(content_dict["go_inf"][index_monago]["GO_name"])
+        if pVal_each < pVal:
+            goDictContainer.append({"count":count , "genes": genes, "GO_id": GO_id, "GO_name": GO_name,
+                 "cat": cat,"pVal": pVal_each})
     return goDictContainer
 
 @logTime

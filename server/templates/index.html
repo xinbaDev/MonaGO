@@ -60,6 +60,23 @@
 							</div>
 					<input type="Button" value="Clear" class="btn" onclick="clearManualPaste();" name="B3">
 <!-- 					<input type="file" id="Upload2" style="display: none"> <label for="Upload2" class="btn" id="Upload_label">Upload CSV</label> -->
+
+
+						<h2><span class="label label-primary" title="choose p-value from 0.05 to 0.001">Choose p-value</span></h2>
+
+						<br>
+
+
+						<div style="display: flex; margin-left: 15px;">
+			            	<div id="slider_manual" class="sliderBar"></div>
+          					<input type="text" id="input_slider_manual"/>
+
+
+						</div>
+
+
+
+
 					<div class="btn btn-success btn-rounded btn-lg submit-btn" onclick="manualSubmitClicked()">Submit</div>
 				</div>
 
@@ -81,6 +98,17 @@
 							</div>
 						</div>
 					<br>
+					<h2><span class="label label-primary" title="choose p-value from 0.05 to 0.001">Choose p-value</span></h2>
+
+						<br>
+
+
+						<div style="display: flex; margin-left: 15px;">
+			            	<div id="slider_monago" class="sliderBar"></div>
+          					<input type="text" id="input_slider_monago"/>
+
+
+						</div>
 
 <!-- 					<input type="file" id="Upload2" style="display: none"> <label for="Upload2" class="btn" id="Upload_label">Upload CSV</label> -->
 					<div class="btn btn-success btn-rounded btn-lg submit-btn" onclick="MonaGO_SubmitClicked()">Submit</div>
@@ -252,7 +280,12 @@
 /*	$(".submitFormCentered").width(width/1.8);
 	$(".footer").width(width/1.8);
 */
+
+	var ranger_manual = document.getElementById('slider_manual');
+	var ranger_monago = document.getElementById('slider_monago');
 	var ranger = document.getElementById('slider');
+	var inputFormat_manual = document.getElementById('input_slider_manual');
+	var inputFormat_monago = document.getElementById('input_slider_monago');
 	var inputFormat = document.getElementById('input_slider');
 	var demoGenes = "1007_s_at,1053_at,117_at,121_at,1255_g_at,1294_at,1316_at,1320_at,1405_i_at,1431_at,1438_at,1487_at,1494_f_at,1598_g_at";
 	
@@ -273,6 +306,8 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 	function init(){
 
 		setUpRangeSlider(ranger,inputFormat);
+		setUpRangeSlider(ranger_manual,inputFormat_manual);
+		setUpRangeSlider(ranger_monago,inputFormat_monago);
 
 		if($("body .background").length!=0){
 			$("body .background").remove();
@@ -494,6 +529,7 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 				return false;
 			}
 
+
 			
 
 			if(FM.annotCat.value == ""){
@@ -501,6 +537,7 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 
 				return false;
 			}
+			FM.pVal.value = $("#input_slider").val();
 		}
 
 		if(type == "manual"){
@@ -508,17 +545,19 @@ GO:0042330,0.049042278,C-C motif chemokine ligand 5(CCL5);EPH receptor B3(EPHB3)
 				alert("Error: Please upload csv file or paste GO terms");
 				return false;
 			}
+			FM.pVal.value = $("#input_slider_manual").val();
 		}
 		if(type == "MonaGO"){
 			if(!FM.files3.value){
 				alert("Error: Please upload file");
 				return false;
 			}
+			FM.pVal.value = $("#input_slider_monago").val();
 		}
 
 
 
-		FM.pVal.value = $("#input_slider").val();
+
 
 		FM.inputIds.value = convertInputIds(FM.inputIds.value);
 		

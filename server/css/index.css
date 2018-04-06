@@ -124,7 +124,18 @@
     margin-left: 20px;
     margin-top: -3px;
 }
-
+#input_slider_manual{
+    width: 60;
+    padding-left: 10px;
+    margin-left: 20px;
+    margin-top: -3px;
+}
+#input_slider_monago{
+    width: 60;
+    padding-left: 10px;
+    margin-left: 20px;
+    margin-top: -3px;
+}
 
 .dummy_header {
     height:10%;
