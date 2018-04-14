@@ -594,6 +594,7 @@ var MonaGO = function(){
         for(i=0;i<seperated_points.length-1;i++){
             from = seperated_points[i];
             to = seperated_points[i+1];
+            // console.log('from = ' + from + ', to = ' + to);
             panel.push('<i id="'+pValLevel[i]+'" style="background:' + getColor(from,fill) + '" ></i> ' +
             			scienceFormat(from) +" - "+ scienceFormat(to)
             );
@@ -604,7 +605,11 @@ var MonaGO = function(){
         $('#pval-label').append(panelLabel);
 
         function scienceFormat(value){
-            return value.toFixed(4).toString();
+            if (value >= 0.0001) {
+                return value.toFixed(4).toString();
+            } else {
+                return value.toExponential(1).toString();
+            }
         }
 	}
 
