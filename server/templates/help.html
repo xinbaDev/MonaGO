@@ -174,7 +174,7 @@ textarea{
             </h2>
        
         <h3>1. Introduction</h3>
-            <p>MonaGO is a visualization tool for Gene Ontology (GO) enrichment analysis which facilitates a better interpretation of GO enrichment results by using innovative interactive visualization techniques. MonaGO can visualize GO enrichment analysis results produced by <a href="https://david.ncifcrf.gov/" target="_blank">DAVID</a>, or enriched GO terms directly.</p>
+            <p>MonaGO is a visualization tool for Gene Ontology (GO) enrichment which facilitates a better interpretation of GO enrichment results by using innovative interactive visualization techniques. MonaGO can visualize GO enrichment analysis results produced by <a href="https://david.ncifcrf.gov/" target="_blank">DAVID</a>, or enriched GO terms directly.</p>
             <p>Three kinds of input are supported in MonaGO.</p>
             <center><img src="../img/input1.png" style="width:500px"/></center>
 
@@ -183,7 +183,7 @@ textarea{
                 
 
             <p> There are two ways to submit enriched GO terms.</p>
-            <p>(1) Pasting enriched GO terms in the text area manually. The text needs to be in a comma-delimited format, where each line contains three columns: (1) the enriched GO term ("GO_id"), (2) the p-value ("pVal"), and (3) the list of genes ("genes"). As shown in the screenshot below, the list of genes of an enriched GO term should be separated by semicolons. Note that the header shouldn't be included.
+            <p>(1) Pasting enriched GO terms in the text area manually. The text needs to be in a comma-delimited format, where each line contains three columns: (1) the enriched GO term ("GO_id"), (2) the enrichment values (e.g., p-values, "pVal"), and (3) the list of genes ("genes"). As shown in the screenshot below, the list of genes of an enriched GO term should be separated by semicolons. Note that the header shouldn't be included.
             </p>
                 <center><img src="../img/upload1.png" style="width:500px"/></center>
             
@@ -210,8 +210,8 @@ textarea{
             <h4>Options used in <a href="https://david.ncifcrf.gov/" target="_blank">DAVID</a></h4>
             <P>MonaGO utilizes the following options in Functional Annotation Tool of DAVID.</P>
                 <div style="padding-left: 50px">
-                    <p>(1) Input of gene lists are posted to Step 1(Enter Gene List)</p>
-                    <p>(2) Gene identifier selected are posted to Step 2(Select Identifier)</p>
+                    <p>(1) Input of gene lists are posted to Step 1 (Enter Gene List)</p>
+                    <p>(2) Gene identifier selected are posted to Step 2 (Select Identifier)</p>
                     <p>(3) Select Gene List in Step 3</p>
                 </div>
                 <center><img src="../img/david1.png" style="width:200px"/></center>
@@ -227,8 +227,7 @@ textarea{
         </center>
         <h4>2.1  Main visualization panel</h4>
 
-        <p>The main visualization component is the chord diagram, which has auxiliary visual elements attached to it, including the GO term labels and the hierarchical clustering tree.Prefixes are used in label to differentiate 3 branches of GO, such as BP(biological process),
-            CC（cellular component) and MF（molecular function).</p>
+        <p>The main visualization component is the chord diagram, which has auxiliary visual elements attached to it, including the GO term labels and the hierarchical clustering tree.Prefixes are used in label to differentiate 3 branches of GO, such as BP (biological process), CC（cellular component) and MF（molecular function).</p>
 
 
         <h5>2.1.1 The chord diagram</h5>
@@ -247,7 +246,7 @@ textarea{
         The slider on the top left allows systematic clustering of GO terms based on a threshold of the minimum number of common genes.
         Alternatively, the nodes in the hierarchical clustering tree can be clicked to manually collapse GO /terms/clusters and expand clusters. </p>
         <h5>2.1.3 Save image</h5>
-         <p>Image of main diagram can be saved in two formats, svg and png, by clicking drop-down menu button on top left(Save image).</p>
+         <p>Image of main diagram can be saved in two formats, svg and png, by clicking drop-down menu button on top left (Save image).</p>
 
         <h4>2.2 Details panel</h4>
 
@@ -294,9 +293,8 @@ textarea{
         </center>
         <h3>3. What does visualization result mean</h3>
 
-            <p>MonaGO helps users reduce redundancy by assisting user to cluster similar GO term. In  MonaGO, enriched GO terms are ordered and visualised in a way that  GO terms whose common genes percentage(Cluster A AND Cluster B/ Cluster A OR Cluster B) are larger are close to each other.</p>
-            <p>In this way, user can easily group them as cluster in which only the most represented GO terms will be displayed in the chord diagram, thereby reducing the “information overload”. Following is an example of GO enrichment result visualised in MonaGO. As shown in the picture below, many enriched GO terms are redundant. An example is the redundancy between GO1 and GO2(They share 11 common genes which takes 100
-                % of their total genes thus considered to be highly related). Therefore they are placed right next to each other.</p>
+            <p>MonaGO helps users reduce redundancy by assisting user to cluster similar GO term. In  MonaGO, enriched GO terms are ordered and visualised in a way that  GO terms whose common genes percentage (Cluster A AND Cluster B/ Cluster A OR Cluster B) are larger are close to each other.</p>
+            <p>In this way, user can easily group them as cluster in which only the most represented GO terms will be displayed in the chord diagram, thereby reducing the “information overload”. Following is an example of GO enrichment result visualised in MonaGO. As shown in the picture below, many enriched GO terms are redundant. An example is the redundancy between GO1 and GO2(They share 11 common genes which takes 100% of their total genes thus considered to be highly related). Therefore they are placed right next to each other.</p>
             <center>
                 <img src="../img/cluster3.png" style="width:500px"/>
             </center>
@@ -311,10 +309,10 @@ textarea{
         
 
         <h2>Contacts:</h2>
-        <p>Alex Xin: <a href="mailto:zxin9@student.monash.edu">zxin9@student.monash.edu</a></p>
+<!--         <p>Alex Xin: <a href="mailto:zxin9@student.monash.edu">zxin9@student.monash.edu</a></p>
         <p>Yujun Cai: <a href="mailto:Yajun.Cai@monash.edu">Yajun.Cai@monash.edu</a></p>
-        <p>Yuan-Fang Li: <a href="mailto:yuanfang.li@monash.edu">yuanfang.li@monash.edu</a></p>
-        <p>Mirana Ramialison: <a href="mailto:mirana.ramialison@monash.edu">mirana.ramialison@monash.edu</a></p>
+ -->        <p>Yuan-Fang Li: <a href="mailto:yuanfang.li@monash.edu">yuanfang.li@monash.edu</a></p>
+            <p>Mirana Ramialison: <a href="mailto:mirana.ramialison@monash.edu">mirana.ramialison@monash.edu</a></p>
         
         <h2>Source code</h2>
         <p>The source code is available on <a href="https://github.com/xinba123/MonaGO">GitHub</a>.</p>
