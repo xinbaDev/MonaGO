@@ -2836,8 +2836,8 @@ var MonaGO = function(){
         });
         $('#PDF').click(function(){
             svgAsPngUri(document.getElementById("main_vis"),{scale: 3},function(data){
-                var doc = new jsPDF();
-                doc.addImage(data, 'PNG', 0, 0, 250, 250/widthToheightRatio);
+                var doc = new jsPDF('p', 'mm', 'a4', true);
+                doc.addImage(data, 'PNG', 0, 0, 250, 250/widthToheightRatio, '', 'FAST');
                 doc.save('pic.pdf');
             })
 
